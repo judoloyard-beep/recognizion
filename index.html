@@ -1,0 +1,792 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Senko Hand Universe</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: radial-gradient(ellipse at center, #11132b, #03040c 75%);
+  color: white;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+  height: 100dvh;
+}
+
+canvas {
+  display: block;
+}
+
+#scene {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+}
+
+header {
+  position: absolute;
+  z-index: 5;
+  top: 20px;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  pointer-events: none;
+}
+
+header h2 {
+  font-size: 19px;
+  letter-spacing: 4px;
+  color: #d8caff;
+  text-shadow: 0 0 15px #a45cff;
+}
+
+header p {
+  margin-top: 7px;
+  color: #8888b5;
+  font-size: 10px;
+  letter-spacing: 2px;
+}
+
+#status {
+  position: absolute;
+  z-index: 5;
+  top: 95px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #c7aaff;
+  font-size: 12px;
+  padding: 9px 18px;
+  border: 1px solid #7452b8;
+  border-radius: 30px;
+  background: #151027aa;
+  white-space: nowrap;
+}
+
+#cameraBox {
+  position: absolute;
+  z-index: 5;
+  top: 18px;
+  right: 15px;
+  width: 105px;
+  height: 135px;
+  border: 1px solid #9866ff;
+  border-radius: 13px;
+  overflow: hidden;
+  background: #111;
+  box-shadow: 0 0 20px #8745ff44;
+}
+
+#camera {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+}
+
+#cameraLabel {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  font-size: 9px;
+  padding: 5px;
+  background: #090817bb;
+  color: #d4baff;
+}
+
+#panel {
+  position: absolute;
+  z-index: 5;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(94%, 450px);
+  padding: 15px;
+  border: 1px solid #62458c;
+  border-radius: 18px;
+  background: #0b0919dc;
+  backdrop-filter: blur(15px);
+  box-shadow: 0 0 25px #7b38ff22;
+}
+
+#gesture {
+  text-align: center;
+  color: #c8b0ff;
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+
+.buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 7px;
+}
+
+button {
+  border: 1px solid #60458c;
+  background: #19132b;
+  color: white;
+  border-radius: 10px;
+  padding: 11px 3px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+button.active {
+  background: #7945c9;
+  border-color: #d1aaff;
+  box-shadow: 0 0 15px #9c55ff77;
+}
+
+#start {
+  width: 100%;
+  margin-top: 12px;
+  padding: 13px;
+  background: linear-gradient(90deg, #6b36c9, #a34dff);
+  border: none;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+#hint {
+  color: #77718f;
+  font-size: 10px;
+  text-align: center;
+  margin-top: 10px;
+}
+
+@media(max-height:600px) {
+  header { top: 8px; }
+  #status { top: 55px; }
+  #panel { bottom: 8px; padding: 9px; }
+  #cameraBox { width: 75px; height: 95px; }
+}
+</style>
+</head>
+
+<body>
+
+<div id="scene"></div>
+
+<header>
+  <h2>SENKO UNIVERSE</h2>
+  <p>HAND INTERACTIVE EXPERIENCE</p>
+</header>
+
+<div id="status">✦ UNIVERSE READY</div>
+
+<div id="cameraBox">
+  <video id="camera" autoplay playsinline muted></video>
+  <div id="cameraLabel">HAND CAMERA</div>
+</div>
+
+<div id="panel">
+
+  <div id="gesture">✋ Aktifkan kamera untuk memulai</div>
+
+  <div class="buttons">
+    <button data-mode="1" class="active">🌌 SPACE</button>
+    <button data-mode="2">🪐 SATURN</button>
+    <button data-mode="3">💙 LOVE</button>
+    <button data-mode="4">💗 HEART</button>
+  </div>
+
+  <button id="start">✦ AKTIFKAN HAND TRACKING</button>
+
+  <div id="hint">
+    Buka telapak · Telunjuk · Peace · Genggam
+  </div>
+
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+  }
+}
+</script>
+
+<script type="module">
+
+import * as THREE from "three";
+import {
+  HandLandmarker,
+  FilesetResolver
+} from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14";
+
+const $ = id => document.getElementById(id);
+
+const video = $("camera");
+const status = $("status");
+const gestureText = $("gesture");
+
+const COUNT = 1800;
+
+let mode = 1;
+let handX = 0;
+let handY = 0;
+let handScale = 1;
+
+let handLandmarker = null;
+let stream = null;
+let lastVideoTime = -1;
+
+let candidateMode = 1;
+let candidateCount = 0;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x03040c);
+
+const camera = new THREE.PerspectiveCamera(
+  55,
+  innerWidth / innerHeight,
+  0.1,
+  100
+);
+
+camera.position.z = 11;
+
+const renderer = new THREE.WebGLRenderer({
+  antialias: true,
+  alpha: true
+});
+
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 1.7));
+$("scene").appendChild(renderer.domElement);
+
+const universe = new THREE.Group();
+scene.add(universe);
+
+// ==============================
+// GENERATE PARTICLES
+// ==============================
+
+function randomSphere(radius) {
+  const theta = Math.random() * Math.PI * 2;
+  const z = Math.random() * 2 - 1;
+  const r = radius * Math.cbrt(Math.random());
+  const s = Math.sqrt(1 - z*z);
+
+  return [
+    r*s*Math.cos(theta),
+    r*s*Math.sin(theta),
+    r*z
+  ];
+}
+
+const space = [];
+const saturn = [];
+const heart = [];
+const love = [];
+
+for(let i=0; i<COUNT; i++) {
+
+  space.push(...randomSphere(3.8));
+
+  // Saturn: sphere + ring
+  if(i < COUNT * 0.62) {
+    saturn.push(...randomSphere(1.35));
+  } else {
+    const a = Math.random() * Math.PI * 2;
+    const r = 1.8 + Math.random() * 1.6;
+
+    saturn.push(
+      Math.cos(a)*r,
+      (Math.random()-0.5)*0.08,
+      Math.sin(a)*r
+    );
+  }
+
+  // Solid heart
+  const t = Math.random() * Math.PI * 2;
+  const scale = Math.sqrt(Math.random());
+
+  const hx = 16 * Math.pow(Math.sin(t), 3);
+  const hy =
+    13*Math.cos(t)
+    -5*Math.cos(2*t)
+    -2*Math.cos(3*t)
+    -Math.cos(4*t);
+
+  heart.push(
+    hx * scale * 0.15,
+    hy * scale * 0.15,
+    (Math.random()-0.5)*0.7
+  );
+}
+
+// Generate I LOVE YOU using canvas
+const textCanvas = document.createElement("canvas");
+textCanvas.width = 1000;
+textCanvas.height = 250;
+
+const ctx = textCanvas.getContext("2d");
+
+ctx.fillStyle = "white";
+ctx.textAlign = "center";
+ctx.textBaseline = "middle";
+ctx.font = "bold 135px Arial";
+ctx.fillText("I LOVE YOU", 500, 125);
+
+const pixels = ctx.getImageData(
+  0, 0, 1000, 250
+).data;
+
+const available = [];
+
+for(let y=0; y<250; y+=2) {
+  for(let x=0; x<1000; x+=2) {
+    if(pixels[(y*1000+x)*4+3] > 100) {
+      available.push([x,y]);
+    }
+  }
+}
+
+for(let i=0; i<COUNT; i++) {
+  const p = available[
+    Math.floor(Math.random()*available.length)
+  ];
+
+  love.push(
+    (p[0]-500)*0.008,
+    (125-p[1])*0.008,
+    (Math.random()-0.5)*0.12
+  );
+}
+
+// ==============================
+// PARTICLE GEOMETRY
+// ==============================
+
+const geometry = new THREE.BufferGeometry();
+
+const positions = new Float32Array(COUNT*3);
+const colors = new Float32Array(COUNT*3);
+
+for(let i=0; i<COUNT; i++) {
+  positions[i*3] = space[i*3];
+  positions[i*3+1] = space[i*3+1];
+  positions[i*3+2] = space[i*3+2];
+}
+
+geometry.setAttribute(
+  "position",
+  new THREE.BufferAttribute(positions,3)
+);
+
+geometry.setAttribute(
+  "color",
+  new THREE.BufferAttribute(colors,3)
+);
+
+const material = new THREE.PointsMaterial({
+  size: 0.055,
+  vertexColors: true,
+  transparent: true,
+  opacity: 0.95,
+  blending: THREE.AdditiveBlending,
+  depthWrite: false,
+  sizeAttenuation: true
+});
+
+const particles = new THREE.Points(
+  geometry,
+  material
+);
+
+universe.add(particles);
+
+// ==============================
+// BACKGROUND STARS
+// ==============================
+
+const starGeometry = new THREE.BufferGeometry();
+const starPositions = [];
+
+for(let i=0; i<500; i++) {
+  starPositions.push(
+    (Math.random()-0.5)*35,
+    (Math.random()-0.5)*25,
+    -5-Math.random()*15
+  );
+}
+
+starGeometry.setAttribute(
+  "position",
+  new THREE.Float32BufferAttribute(starPositions,3)
+);
+
+const stars = new THREE.Points(
+  starGeometry,
+  new THREE.PointsMaterial({
+    color: 0x8275ff,
+    size: 0.035,
+    transparent: true,
+    opacity: 0.65
+  })
+);
+
+scene.add(stars);
+
+// ==============================
+// COLORS
+// ==============================
+
+const palette = {
+  1: [0.15, 0.45, 1.0],
+  2: [1.0, 0.55, 0.12],
+  3: [0.05, 0.85, 1.0],
+  4: [1.0, 0.08, 0.4]
+};
+
+let currentTarget = space;
+
+function updateColors() {
+  const c = palette[mode];
+
+  for(let i=0; i<COUNT; i++) {
+    let factor = 0.65 + Math.random()*0.35;
+
+    if(mode === 2 && i >= COUNT*0.62) {
+      colors[i*3] = 1;
+      colors[i*3+1] = 0.75;
+      colors[i*3+2] = 0.3;
+    } else {
+      colors[i*3] = c[0]*factor;
+      colors[i*3+1] = c[1]*factor;
+      colors[i*3+2] = c[2]*factor;
+    }
+  }
+
+  geometry.attributes.color.needsUpdate = true;
+}
+
+function setMode(newMode) {
+  if(mode === newMode) return;
+
+  mode = newMode;
+
+  currentTarget = {
+    1: space,
+    2: saturn,
+    3: love,
+    4: heart
+  }[mode];
+
+  updateColors();
+
+  const labels = {
+    1: "🌌 COSMIC UNIVERSE",
+    2: "🪐 SATURN 3D",
+    3: "💙 I LOVE YOU",
+    4: "💗 HEART 3D"
+  };
+
+  status.textContent = labels[mode];
+
+  document.querySelectorAll("[data-mode]").forEach(btn => {
+    btn.classList.toggle(
+      "active",
+      Number(btn.dataset.mode) === mode
+    );
+  });
+}
+
+updateColors();
+
+document.querySelectorAll("[data-mode]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    setMode(Number(btn.dataset.mode));
+  });
+});
+
+// ==============================
+// HAND GESTURE DETECTION
+// ==============================
+
+function detectGesture(lm) {
+
+  const tips = [8,12,16,20];
+  const pips = [6,10,14,18];
+
+  const fingers = tips.map((tip,i) => {
+    return lm[tip].y < lm[pips[i]].y;
+  });
+
+  if(fingers.every(v => !v)) {
+    return 4;
+  }
+
+  if(fingers[0] &&
+     !fingers[1] &&
+     !fingers[2] &&
+     !fingers[3]) {
+    return 2;
+  }
+
+  if(fingers[0] &&
+     fingers[1] &&
+     !fingers[2] &&
+     !fingers[3]) {
+    return 3;
+  }
+
+  if(fingers.every(v => v)) {
+    return 1;
+  }
+
+  return 1;
+}
+
+// ==============================
+// CAMERA INITIALIZATION
+// ==============================
+
+async function startTracking() {
+
+  try {
+
+    status.textContent = "MEMUAT AI HAND TRACKING...";
+
+    $("start").disabled = true;
+    $("start").textContent = "MEMUAT...";
+
+    stream = await navigator.mediaDevices.getUserMedia({
+      audio: false,
+      video: {
+        facingMode: "user",
+        width: { ideal: 640 },
+        height: { ideal: 480 }
+      }
+    });
+
+    video.srcObject = stream;
+
+    await video.play();
+
+    const vision = await FilesetResolver.forVisionTasks(
+      "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm"
+    );
+
+    handLandmarker = await HandLandmarker.createFromOptions(
+      vision,
+      {
+        baseOptions: {
+          modelAssetPath:
+          "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
+          delegate: "GPU"
+        },
+
+        runningMode: "VIDEO",
+        numHands: 1,
+
+        minHandDetectionConfidence: 0.55,
+        minHandPresenceConfidence: 0.55,
+        minTrackingConfidence: 0.55
+      }
+    );
+
+    status.textContent = "✋ HAND TRACKING ACTIVE";
+    gestureText.textContent = "Gerakkan tangan di depan kamera";
+
+    $("start").textContent = "✦ HAND TRACKING AKTIF";
+
+    requestAnimationFrame(trackHands);
+
+  } catch(error) {
+
+    console.error(error);
+
+    status.textContent = "KAMERA / AI GAGAL DIMUAT";
+
+    gestureText.textContent =
+      "Periksa izin kamera dan koneksi internet";
+
+    $("start").disabled = false;
+    $("start").textContent = "COBA LAGI";
+  }
+}
+
+function trackHands() {
+
+  if(!handLandmarker || video.readyState < 2) {
+    requestAnimationFrame(trackHands);
+    return;
+  }
+
+  if(video.currentTime !== lastVideoTime) {
+
+    lastVideoTime = video.currentTime;
+
+    const result = handLandmarker.detectForVideo(
+      video,
+      performance.now()
+    );
+
+    if(result.landmarks && result.landmarks.length > 0) {
+
+      const lm = result.landmarks[0];
+
+      const detected = detectGesture(lm);
+
+      if(detected === candidateMode) {
+        candidateCount++;
+      } else {
+        candidateMode = detected;
+        candidateCount = 0;
+      }
+
+      // Prevent rapid mode switching
+      if(candidateCount >= 5) {
+        setMode(detected);
+      }
+
+      const wrist = lm[0];
+
+      handX += ((0.5-wrist.x)*5.5-handX)*0.18;
+      handY += ((0.5-wrist.y)*4.0-handY)*0.18;
+
+      const palmWidth = Math.hypot(
+        lm[5].x-lm[17].x,
+        lm[5].y-lm[17].y
+      );
+
+      const targetScale = THREE.MathUtils.clamp(
+        0.07/(palmWidth+0.001),
+        0.75,
+        1.6
+      );
+
+      handScale += (targetScale-handScale)*0.1;
+
+      const names = {
+        1: "✋ TELAPAK TERBUKA | COSMOS",
+        2: "☝️ TELUNJUK | SATURNUS",
+        3: "✌️ PEACE | I LOVE YOU",
+        4: "✊ GENGGAM | HEART"
+      };
+
+      gestureText.textContent = names[detected];
+
+      status.textContent = "✦ HAND DETECTED";
+
+    } else {
+
+      candidateCount = 0;
+
+      gestureText.textContent =
+        "Tangan tidak terdeteksi";
+
+      status.textContent = "MENUNGGU TANGAN...";
+    }
+  }
+
+  requestAnimationFrame(trackHands);
+}
+
+$("start").addEventListener("click", startTracking);
+
+// ==============================
+// 3D ANIMATION
+// ==============================
+
+let rotation = 0;
+let clock = new THREE.Clock();
+
+function animate() {
+
+  requestAnimationFrame(animate);
+
+  const elapsed = clock.getElapsedTime();
+
+  const pos = geometry.attributes.position.array;
+
+  for(let i=0; i<COUNT; i++) {
+
+    const index = i*3;
+
+    pos[index] +=
+      (currentTarget[index]-pos[index])*0.085;
+
+    pos[index+1] +=
+      (currentTarget[index+1]-pos[index+1])*0.085;
+
+    pos[index+2] +=
+      (currentTarget[index+2]-pos[index+2])*0.085;
+  }
+
+  geometry.attributes.position.needsUpdate = true;
+
+  rotation += mode === 1 ? 0.002 :
+              mode === 2 ? 0.012 :
+              mode === 4 ? 0.006 : 0.001;
+
+  if(mode === 1) {
+    universe.position.set(0,0,0);
+    universe.rotation.y += 0.002;
+    universe.rotation.x = Math.sin(elapsed*0.3)*0.12;
+    universe.scale.setScalar(1);
+  } else {
+
+    universe.position.x +=
+      (handX-universe.position.x)*0.07;
+
+    universe.position.y +=
+      (handY-universe.position.y)*0.07;
+
+    universe.scale.setScalar(
+      THREE.MathUtils.clamp(handScale,0.75,1.6)
+    );
+
+    universe.rotation.y += rotation;
+
+    if(mode === 2) {
+      universe.rotation.x = 0.35;
+      universe.rotation.z = 0.1;
+    }
+
+    if(mode === 3) {
+      universe.rotation.x = 0;
+      universe.rotation.z = 0;
+    }
+
+    if(mode === 4) {
+      universe.rotation.x = Math.sin(elapsed)*0.12;
+    }
+  }
+
+  stars.rotation.y += 0.0002;
+
+  renderer.render(scene,camera);
+}
+
+animate();
+
+// ==============================
+// RESIZE
+// ==============================
+
+window.addEventListener("resize", () => {
+
+  camera.aspect = innerWidth/innerHeight;
+  camera.updateProjectionMatrix();
+
+  renderer.setSize(innerWidth,innerHeight);
+  renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));
+
+});
+
+</script>
+</body>
+  </html>
+  

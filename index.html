@@ -3,82 +3,75 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>NEON BOXING AI</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>NEON BOXING 2.0</title>
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{
- background:#070812;color:white;
- font-family:Arial,sans-serif;
- overflow:hidden;
+ background:#070711;color:white;
+ font-family:Arial,sans-serif;overflow:hidden;
 }
 .app{
- height:100dvh;padding:14px;
- display:flex;flex-direction:column;gap:12px;
+ height:100dvh;padding:12px;
+ display:flex;flex-direction:column;gap:10px;
 }
-header{
- display:flex;justify-content:space-between;
- align-items:center;
-}
-.logo{font-size:20px;font-weight:bold;color:#bd72ff;letter-spacing:2px}
+header{display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:19px;font-weight:900;letter-spacing:2px;color:#c084fc}
 .status{font-size:10px;color:#00ffc3}
 .arena{
  flex:1;min-height:0;position:relative;
- overflow:hidden;border-radius:18px;
- border:1px solid #8139c7;
- background:radial-gradient(ellipse,#25123e,#090a16 70%);
+ overflow:hidden;border:1px solid #7837ad;
+ border-radius:17px;
+ background:radial-gradient(ellipse,#25103e,#080914 75%);
 }
-video,canvas{
- position:absolute;width:100%;height:100%;
- object-fit:cover;
+#camera{
+ position:absolute;inset:0;width:100%;height:100%;
+ object-fit:cover;opacity:.15;transform:scaleX(-1);
 }
-video{opacity:.38;transform:scaleX(-1)}
-canvas{transform:scaleX(-1)}
-.enemy{
- position:absolute;left:50%;top:43%;
- transform:translate(-50%,-50%);
- text-align:center;pointer-events:none;
+#game{
+ position:absolute;inset:0;width:100%;height:100%;
 }
-.enemy-icon{
- font-size:90px;
- filter:drop-shadow(0 0 15px #b34cff);
- animation:bob 1.5s infinite alternate;
-}
-.enemy-name{font-size:11px;color:#e3a5ff;letter-spacing:3px}
-@keyframes bob{to{transform:translateY(-10px)}}
 .hud{
- position:absolute;top:12px;left:12px;right:12px;
- display:flex;justify-content:space-between;
- gap:15px;pointer-events:none;
+ position:absolute;z-index:4;top:12px;left:10px;right:10px;
+ display:flex;justify-content:space-between;gap:12px;
+ pointer-events:none;
 }
-.health{width:45%}
-.health span{font-size:10px;color:#ddd}
+.health{width:47%}
+.health small{font-size:10px;font-weight:bold}
 .bar{
- height:9px;background:#242039;
- border-radius:10px;margin-top:5px;overflow:hidden;
+ margin-top:5px;height:9px;background:#29243a;
+ border-radius:20px;overflow:hidden;
 }
 .fill{height:100%;width:100%;background:#a855f7;transition:width .2s}
-.enemybar{background:#ff426d}
-.stats{
- display:grid;grid-template-columns:repeat(3,1fr);
- gap:8px;
+.enemy-fill{background:#ff386c}
+.round{
+ position:absolute;top:60px;left:50%;
+ transform:translateX(-50%);z-index:4;
+ font-size:11px;color:#e6b5ff;
+ letter-spacing:2px;white-space:nowrap;
 }
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
 .stat{
- background:#141323;padding:12px 5px;
- border:1px solid #302345;border-radius:12px;
- text-align:center;
+ background:#151322;border:1px solid #342348;
+ padding:10px 4px;border-radius:11px;text-align:center;
 }
-.stat small{display:block;color:#888;font-size:9px}
-.stat b{display:block;margin-top:5px;color:#c084fc;font-size:16px}
+.stat small{font-size:9px;color:#999}
+.stat b{display:block;color:#d8a0ff;margin-top:5px;font-size:16px}
 .controls{display:flex;gap:9px}
 button{
- flex:1;padding:15px;border:0;border-radius:12px;
+ border:0;border-radius:11px;padding:14px;
  background:#9333ea;color:white;font-weight:bold;
+ flex:1;
 }
-.stop{background:#29263b}
-.message{
- text-align:center;color:#aaa;font-size:11px;
+.stop{background:#29263a}
+#message{
+ font-size:11px;text-align:center;color:#aaa;
+ min-height:15px;
+}
+#flash{
+ position:absolute;inset:0;z-index:3;
+ background:#bd45ff;opacity:0;pointer-events:none;
 }
 </style>
 </head>
@@ -87,187 +80,562 @@ button{
 <div class="app">
 
 <header>
- <div class="logo">NEON BOXING</div>
- <div class="status" id="status">● WAITING</div>
+ <div class="logo">NEON BOXING 2.0</div>
+ <div class="status" id="status">● OFFLINE</div>
 </header>
 
 <div class="arena">
-
- <video id="video" autoplay muted playsinline></video>
- <canvas id="canvas"></canvas>
+ <video id="camera" autoplay muted playsinline></video>
+ <div id="game"></div>
+ <div id="flash"></div>
 
  <div class="hud">
   <div class="health">
-   <span>PLAYER HP</span>
+   <small>PLAYER</small>
    <div class="bar"><div class="fill" id="playerHP"></div></div>
   </div>
   <div class="health">
-   <span>ENEMY HP</span>
-   <div class="bar"><div class="fill enemybar" id="enemyHP"></div></div>
+   <small>CYBER BOT</small>
+   <div class="bar"><div class="fill enemy-fill" id="enemyHP"></div></div>
   </div>
  </div>
 
- <div class="enemy">
-  <div class="enemy-icon" id="enemyIcon">🥊</div>
-  <div class="enemy-name">CYBER BOT</div>
- </div>
-
+ <div class="round" id="round">ROUND 01</div>
 </div>
 
 <div class="stats">
- <div class="stat">
-  <small>SCORE</small><b id="score">0</b>
- </div>
- <div class="stat">
-  <small>COMBO</small><b id="combo">0</b>
- </div>
- <div class="stat">
-  <small>LAST MOVE</small><b id="move">READY</b>
- </div>
+ <div class="stat"><small>SCORE</small><b id="score">0</b></div>
+ <div class="stat"><small>COMBO</small><b id="combo">0</b></div>
+ <div class="stat"><small>MOVE</small><b id="move">READY</b></div>
 </div>
 
 <div class="controls">
- <button onclick="startGame()">START GAME</button>
+ <button onclick="startGame()">START FIGHT</button>
  <button class="stop" onclick="stopGame()">STOP</button>
 </div>
 
-<div class="message" id="message">
- Gerakkan tangan untuk mulai bertarung!
-</div>
+<div id="message">Siapkan tangan kaka untuk bertarung!</div>
 
 </div>
+
+<script type="importmap">
+{
+ "imports":{
+  "three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+ }
+}
+</script>
 
 <script type="module">
+
+import * as THREE from "three";
 
 import {
  HandLandmarker,
  FilesetResolver
 } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14";
 
-const video=document.getElementById("video");
-const canvas=document.getElementById("canvas");
-const ctx=canvas.getContext("2d");
-
-let tracker,stream,running=false;
-let previous=[];
-let cooldown=[0,0];
-let player=100,enemy=100;
-let score=0,combo=0;
-let lastHit=0,lastEnemyAttack=0;
-let lastFrame=-1;
-let gameEnded=false;
-
 const $=id=>document.getElementById(id);
+const video=$("camera");
+const game=$("game");
 
-async function setupAI(){
+let scene,camera,renderer;
+let player,enemy;
+let tracker,stream;
+let running=false;
+let gameOver=false;
+
+let playerHP=100;
+let enemyHP=100;
+let score=0;
+let combo=0;
+let lastPunch=0;
+let lastEnemyAttack=0;
+let lastTime=0;
+let lastVideoTime=-1;
+
+let handData=[];
+let punchAnimations=[];
+let enemyAnimation=0;
+let round=1;
+
+const clock=new THREE.Clock();
+
+function material(color,metalness=0.3,roughness=0.4){
+ return new THREE.MeshStandardMaterial({
+  color,metalness,roughness,
+  emissive:color,
+  emissiveIntensity:0.16
+ });
+}
+
+const purple=material(0x9b35ff);
+const cyan=material(0x00dfff);
+const dark=material(0x17172c);
+const white=material(0xe5e5ff);
+const red=material(0xff315f);
+
+function makeBox(parent,geo,mat,pos){
+ const mesh=new THREE.Mesh(geo,mat);
+ mesh.position.set(...pos);
+ mesh.castShadow=true;
+ parent.add(mesh);
+ return mesh;
+}
+
+function createFighter(isEnemy=false){
+
+ const root=new THREE.Group();
+
+ const bodyMat=isEnemy?red:purple;
+ const gloveMat=isEnemy?red:cyan;
+
+ const torso=makeBox(
+  root,new THREE.BoxGeometry(.8,1.05,.43),
+  bodyMat,[0,1.65,0]
+ );
+
+ torso.scale.set(1,1,1);
+
+ const head=makeBox(
+  root,new THREE.SphereGeometry(.34,20,16),
+  white,[0,2.48,0]
+ );
+
+ const helmet=makeBox(
+  root,new THREE.BoxGeometry(.65,.2,.48),
+  dark,[0,2.69,0]
+ );
+
+ // neon eyes
+ for(let side of [-1,1]){
+  makeBox(root,new THREE.BoxGeometry(.13,.07,.04),
+   cyan,[side*.13,2.48,.28]);
+ }
+
+ const legs=[];
+
+ for(let side of [-1,1]){
+  const leg=new THREE.Group();
+  leg.position.set(side*.22,1.1,0);
+  root.add(leg);
+
+  makeBox(leg,new THREE.CylinderGeometry(.13,.17,.7,12),
+   dark,[0,-.35,0]);
+
+  makeBox(leg,new THREE.BoxGeometry(.28,.18,.43),
+   bodyMat,[0,-.72,.1]);
+
+  legs.push(leg);
+ }
+
+ const arms=[];
+
+ for(let side of [-1,1]){
+
+  const arm=new THREE.Group();
+  arm.position.set(side*.48,2.02,0);
+  root.add(arm);
+
+  makeBox(arm,new THREE.CylinderGeometry(.13,.16,.55,12),
+   bodyMat,[0,-.28,0]);
+
+  makeBox(arm,new THREE.CylinderGeometry(.12,.14,.48,12),
+   white,[0,-.72,0]);
+
+  const glove=makeBox(
+   arm,new THREE.SphereGeometry(.22,16,12),
+   gloveMat,[0,-1.02,.02]
+  );
+
+  arms.push(arm);
+ }
+
+ // glowing chest
+ makeBox(root,new THREE.BoxGeometry(.25,.12,.04),
+  cyan,[0,1.72,.23]);
+
+ root.userData={
+  arms,legs,torso,head,
+  baseRot:isEnemy?-Math.PI/2:Math.PI/2
+ };
+
+ return root;
+}
+
+function init3D(){
+
+ scene=new THREE.Scene();
+ scene.fog=new THREE.Fog(0x090817,8,19);
+
+ camera=new THREE.PerspectiveCamera(
+  43,1,.1,100
+ );
+
+ camera.position.set(0,3.2,9);
+ camera.lookAt(0,1.45,0);
+
+ renderer=new THREE.WebGLRenderer({
+  alpha:true,antialias:true
+ });
+
+ renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
+ renderer.shadowMap.enabled=true;
+ renderer.setSize(game.clientWidth,game.clientHeight);
+
+ game.innerHTML="";
+ game.appendChild(renderer.domElement);
+
+ scene.add(new THREE.HemisphereLight(0xb9aaff,0x161020,2));
+
+ const light=new THREE.DirectionalLight(0xffffff,2.5);
+ light.position.set(2,7,5);
+ scene.add(light);
+
+ const floor=new THREE.Mesh(
+  new THREE.CircleGeometry(5,64),
+  new THREE.MeshStandardMaterial({
+   color:0x111026,metalness:.7,roughness:.3
+  })
+ );
+
+ floor.rotation.x=-Math.PI/2;
+ floor.position.y=-.02;
+ scene.add(floor);
+
+ // arena rings
+ for(let r of [2.5,3.5,4.5]){
+  const ring=new THREE.Mesh(
+   new THREE.TorusGeometry(r,.018,8,100),
+   r===3.5?cyan:purple
+  );
+  ring.rotation.x=Math.PI/2;
+  ring.position.y=.02;
+  scene.add(ring);
+ }
+
+ // arena pillars
+ for(let x of [-4.5,4.5]){
+  const pillar=new THREE.Mesh(
+   new THREE.BoxGeometry(.12,3,.12),purple
+  );
+  pillar.position.set(x,1.5,-1);
+  scene.add(pillar);
+ }
+
+ player=createFighter(false);
+ enemy=createFighter(true);
+
+ player.position.set(-1.45,0,0);
+ enemy.position.set(1.45,0,-.4);
+
+ player.rotation.y=0;
+ enemy.rotation.y=Math.PI;
+
+ scene.add(player);
+ scene.add(enemy);
+
+ window.addEventListener("resize",resize3D);
+
+}
+
+function resize3D(){
+
+ if(!renderer)return;
+
+ const w=game.clientWidth;
+ const h=game.clientHeight;
+
+ camera.aspect=w/h;
+ camera.updateProjectionMatrix();
+ renderer.setSize(w,h);
+
+}
+
+async function initAI(){
 
  $("status").textContent="● LOADING AI";
 
  const vision=await FilesetResolver.forVisionTasks(
- "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm"
+  "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm"
  );
 
- tracker=await HandLandmarker.createFromOptions(vision,{
-  baseOptions:{
-   modelAssetPath:
-   "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
-   delegate:"CPU"
-  },
-  runningMode:"VIDEO",
-  numHands:2,
-  minHandDetectionConfidence:.55,
-  minHandPresenceConfidence:.5,
-  minTrackingConfidence:.5
- });
+ tracker=await HandLandmarker.createFromOptions(
+  vision,{
+   baseOptions:{
+    modelAssetPath:
+    "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
+    delegate:"CPU"
+   },
+   runningMode:"VIDEO",
+   numHands:2,
+   minHandDetectionConfidence:.55,
+   minHandPresenceConfidence:.5,
+   minTrackingConfidence:.5
+  }
+ );
+
 }
 
 async function startGame(){
 
  try{
-  if(!tracker)await setupAI();
+
+  if(!renderer)init3D();
+  if(!tracker)await initAI();
 
   stream=await navigator.mediaDevices.getUserMedia({
    audio:false,
    video:{
     facingMode:"user",
-    width:{ideal:640},
-    height:{ideal:480}
+    width:{ideal:480},
+    height:{ideal:360},
+    frameRate:{ideal:24,max:30}
    }
   });
 
   video.srcObject=stream;
   await video.play();
 
-  canvas.width=video.videoWidth;
-  canvas.height=video.videoHeight;
-
-  player=100;
-  enemy=100;
+  playerHP=100;
+  enemyHP=100;
   score=0;
   combo=0;
-  previous=[];
-  cooldown=[0,0];
-  gameEnded=false;
-  lastHit=0;
-  lastEnemyAttack=Date.now();
+  round=1;
+  gameOver=false;
+  handData=[];
+  punchAnimations=[];
+
+  player.visible=true;
+  enemy.visible=true;
 
   updateHUD();
 
   running=true;
-  $("status").textContent="● SYSTEM ACTIVE";
-  $("message").textContent="AYO! GERAKKAN TANGAN KAKA!";
+  lastEnemyAttack=performance.now();
+  lastVideoTime=-1;
+
+  $("round").textContent="ROUND 01";
+  $("status").textContent="● FIGHTING";
+  $("message").textContent="GERAKKAN TANGAN KAKA!";
+
+  clock.start();
   requestAnimationFrame(loop);
 
  }catch(e){
+
   console.error(e);
-  $("status").textContent="● CAMERA ERROR";
-  alert("Kamera tidak dapat dibuka. Gunakan HTTPS dan izinkan kamera.");
+  $("status").textContent="● ERROR";
+  $("message").textContent="Gagal membuka kamera atau memuat AI.";
+
+  alert("Pastikan menggunakan HTTPS dan izin kamera sudah diberikan.");
+
  }
+
 }
 
-function drawHand(points){
+function updateHUD(){
 
- const w=canvas.width;
- const h=canvas.height;
+ $("playerHP").style.width=playerHP+"%";
+ $("enemyHP").style.width=enemyHP+"%";
+ $("score").textContent=score;
+ $("combo").textContent=combo;
 
- // Kotak neon mengikuti tangan
+}
 
- let minX=1,minY=1,maxX=0,maxY=0;
+function punch(index){
 
- points.forEach(p=>{
-  minX=Math.min(minX,p.x);
-  minY=Math.min(minY,p.y);
-  maxX=Math.max(maxX,p.x);
-  maxY=Math.max(maxY,p.y);
+ if(gameOver)return;
+
+ const now=performance.now();
+
+ if(now-lastPunch<850){
+  combo++;
+ }else{
+  combo=1;
+ }
+
+ lastPunch=now;
+
+ const damage=8+Math.min(combo,5)*2;
+
+ enemyHP=Math.max(0,enemyHP-damage);
+ score+=100+combo*25;
+
+ const arm=player.userData.arms[index%2];
+
+ punchAnimations.push({
+  arm,
+  start:now,
+  duration:350,
+  direction:1
  });
 
- const pad=.035;
- minX=Math.max(0,minX-pad);
- minY=Math.max(0,minY-pad);
- maxX=Math.min(1,maxX+pad);
- maxY=Math.min(1,maxY+pad);
+ enemyAnimation=1;
 
- ctx.strokeStyle="#bd5cff";
- ctx.lineWidth=3;
- ctx.shadowColor="#ad43ff";
- ctx.shadowBlur=18;
- ctx.strokeRect(
-  minX*w,minY*h,
-  (maxX-minX)*w,(maxY-minY)*h
- );
+ $("move").textContent=index===0?"RIGHT HIT":"LEFT HIT";
+ $("message").textContent="POW! COMBO x"+combo;
 
- // Titik tangan
+ flash();
 
- ctx.fillStyle="#00f6ff";
- ctx.shadowColor="#00f6ff";
+ updateHUD();
 
- points.forEach(p=>{
-  ctx.beginPath();
-  ctx.arc(p.x*w,p.y*h,3,0,Math.PI*2);
-  ctx.fill();
+ if(enemyHP<=0)finish(true);
+
+}
+
+function flash(){
+
+ $("flash").style.opacity=".2";
+
+ setTimeout(()=>{
+  $("flash").style.opacity="0";
+ },90);
+
+}
+
+function enemyAttack(now){
+
+ if(now-lastEnemyAttack<4200||gameOver)return;
+
+ lastEnemyAttack=now;
+
+ playerHP=Math.max(0,playerHP-7);
+
+ $("message").textContent="CYBER BOT MENYERANG!";
+
+ updateHUD();
+
+ if(playerHP<=0)finish(false);
+
+}
+
+function finish(win){
+
+ gameOver=true;
+
+ $("message").textContent=win?
+ "🏆 KAKA MENANG! BOSS DIKALAHKAN!":
+ "GAME OVER! COBA LAGI!";
+
+ $("move").textContent=win?"WIN":"LOSE";
+
+}
+
+function detectHands(now){
+
+ if(!tracker||video.readyState<2)return;
+
+ if(video.currentTime===lastVideoTime)return;
+
+ lastVideoTime=video.currentTime;
+
+ const result=tracker.detectForVideo(video,now);
+ const hands=result.landmarks;
+
+ const next=[];
+
+ hands.forEach((points,i)=>{
+
+  const wrist=points[0];
+  const indexTip=points[8];
+  const middleTip=points[12];
+
+  const old=handData[i];
+
+  const current={
+   x:wrist.x,
+   y:wrist.y,
+   z:wrist.z
+  };
+
+  if(old){
+
+   const dz=current.z-old.z;
+
+   // Gerakan tangan mendekati kamera
+   if(dz<-.025 && now-old.hit>650){
+
+    current.hit=now;
+    punch(i);
+
+   }else{
+    current.hit=old.hit;
+   }
+
+  }else{
+   current.hit=0;
+  }
+
+  next[i]=current;
+
+  // Mapping gerakan tangan untuk pose bertahan
+  const raised=wrist.y<.72;
+
+  if(raised){
+   const arm=player.userData.arms[i%2];
+   arm.rotation.z=THREE.MathUtils.lerp(
+    arm.rotation.z,.25,.18
+   );
+  }
+
  });
 
- ctx.shadowBlur=0;
+ handData=next;
+
+ if(hands.length===0){
+  $("move").textContent="SEARCHING";
+ }
+
+}
+
+function animateFighters(now){
+
+ // Reset pose secara smooth
+ for(const arm of player.userData.arms){
+  arm.rotation.z=THREE.MathUtils.lerp(
+   arm.rotation.z,0,.12
+  );
+ }
+
+ // Punch animation
+ punchAnimations=punchAnimations.filter(anim=>{
+
+  const progress=(now-anim.start)/anim.duration;
+
+  if(progress>=1){
+   return false;
+  }
+
+  const wave=Math.sin(progress*Math.PI);
+
+  anim.arm.rotation.z=wave*1.25;
+
+  return true;
+
+ });
+
+ // Enemy reaction
+ if(enemyAnimation>0){
+  enemy.position.x=1.45+enemyAnimation*.18;
+  enemy.rotation.z=enemyAnimation*.12;
+  enemyAnimation*=.84;
+
+  if(enemyAnimation<.02){
+   enemyAnimation=0;
+   enemy.position.x=1.45;
+   enemy.rotation.z=0;
+  }
+ }
+
+ // Idle movement
+ player.userData.legs.forEach((leg,i)=>{
+  leg.rotation.x=Math.sin(now*.002+i)*.025;
+ });
+
+ enemy.userData.legs.forEach((leg,i)=>{
+  leg.rotation.x=Math.sin(now*.002+i)*.025;
+ });
 
 }
 
@@ -275,132 +643,16 @@ function loop(){
 
  if(!running)return;
 
- if(video.currentTime!==lastFrame&&video.readyState>=2){
+ const now=performance.now();
 
-  lastFrame=video.currentTime;
+ detectHands(now);
+ animateFighters(now);
 
-  const result=tracker.detectForVideo(video,performance.now());
+ if(!gameOver)enemyAttack(now);
 
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-
-  const hands=result.landmarks;
-
-  if(hands.length===0){
-   $("move").textContent="SEARCH";
-   previous=[];
-  }
-
-  hands.forEach((points,i)=>{
-
-   drawHand(points);
-
-   const wrist=points[0];
-   const now=Date.now();
-
-   if(!previous[i]){
-    previous[i]={z:wrist.z,x:wrist.x,y:wrist.y};
-    return;
-   }
-
-   const old=previous[i];
-
-   // Deteksi gerakan tangan ke arah kamera
-   const dz=wrist.z-old.z;
-
-   // Deteksi pukulan dengan perubahan kedalaman
-   if(dz<-.035 && now-cooldown[i]>550 && !gameEnded){
-
-    cooldown[i]=now;
-    punch(i);
-   }
-
-   previous[i]={
-    z:old.z*.35+wrist.z*.65,
-    x:wrist.x,
-    y:wrist.y
-   };
-
-  });
-
-  // Posisi bertahan: dua tangan berada di bagian bawah wajah
-  if(hands.length>=2){
-   const guarded=hands.every(p=>
-    p[0].y<.75
-   );
-   if(guarded)$("move").textContent="GUARD";
-  }
-
-  enemyAttack();
- }
+ renderer.render(scene,camera);
 
  requestAnimationFrame(loop);
-}
-
-function punch(hand){
-
- const now=Date.now();
-
- if(now-lastHit<1100)combo++;
- else combo=1;
-
- lastHit=now;
-
- const damage=8+Math.min(combo,5)*2;
-
- enemy=Math.max(0,enemy-damage);
- score+=100+combo*20;
-
- $("move").textContent=hand===0?"PUNCH 1":"PUNCH 2";
-
- $("enemyIcon").textContent="💥";
-
- setTimeout(()=>{
-  if(!gameEnded)$("enemyIcon").textContent="🥊";
- },180);
-
- updateHUD();
-
- if(enemy<=0)endGame(true);
-
-}
-
-function enemyAttack(){
-
- const now=Date.now();
-
- if(now-lastEnemyAttack>3500&&!gameEnded){
-
-  lastEnemyAttack=now;
-
-  player=Math.max(0,player-8);
-
-  $("message").textContent="CYBER BOT MENYERANG!";
-
-  updateHUD();
-
-  if(player<=0)endGame(false);
- }
-}
-
-function updateHUD(){
-
- $("playerHP").style.width=player+"%";
- $("enemyHP").style.width=enemy+"%";
- $("score").textContent=score;
- $("combo").textContent=combo;
-
-}
-
-function endGame(win){
-
- gameEnded=true;
-
- $("message").textContent=win?
- "🏆 KAKA MENANG! CYBER BOT KALAH!":
- "GAME OVER! COBA LAGI!";
-
- $("move").textContent=win?"WIN":"LOSE";
- $("enemyIcon").textContent=win?"🏆":"🤖";
 
 }
 
@@ -414,7 +666,6 @@ function stopGame(){
  }
 
  video.srcObject=null;
- ctx.clearRect(0,0,canvas.width,canvas.height);
 
  $("status").textContent="● OFFLINE";
  $("message").textContent="GAME STOPPED";

@@ -3,442 +3,428 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Face Motion Tracker</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>NEON BOXING AI</title>
 
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+ background:#070812;color:white;
+ font-family:Arial,sans-serif;
+ overflow:hidden;
 }
-
-body {
-  background: #050711;
-  color: white;
-  font-family: Arial, sans-serif;
-  overflow: hidden;
+.app{
+ height:100dvh;padding:14px;
+ display:flex;flex-direction:column;gap:12px;
 }
-
-.app {
-  height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  padding: 18px;
-  gap: 14px;
+header{
+ display:flex;justify-content:space-between;
+ align-items:center;
 }
-
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.logo{font-size:20px;font-weight:bold;color:#bd72ff;letter-spacing:2px}
+.status{font-size:10px;color:#00ffc3}
+.arena{
+ flex:1;min-height:0;position:relative;
+ overflow:hidden;border-radius:18px;
+ border:1px solid #8139c7;
+ background:radial-gradient(ellipse,#25123e,#090a16 70%);
 }
-
-.logo {
-  color: #a855f7;
-  font-size: 20px;
-  font-weight: bold;
-  letter-spacing: 2px;
+video,canvas{
+ position:absolute;width:100%;height:100%;
+ object-fit:cover;
 }
-
-.status {
-  color: #00ffae;
-  font-size: 11px;
+video{opacity:.38;transform:scaleX(-1)}
+canvas{transform:scaleX(-1)}
+.enemy{
+ position:absolute;left:50%;top:43%;
+ transform:translate(-50%,-50%);
+ text-align:center;pointer-events:none;
 }
-
-.camera {
-  flex: 1;
-  min-height: 0;
-  position: relative;
-  overflow: hidden;
-  border: 1px solid #7137b8;
-  border-radius: 20px;
-  background: #101322;
-  box-shadow: 0 0 25px #7626b533;
+.enemy-icon{
+ font-size:90px;
+ filter:drop-shadow(0 0 15px #b34cff);
+ animation:bob 1.5s infinite alternate;
 }
-
-video, canvas {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transform: scaleX(-1);
+.enemy-name{font-size:11px;color:#e3a5ff;letter-spacing:3px}
+@keyframes bob{to{transform:translateY(-10px)}}
+.hud{
+ position:absolute;top:12px;left:12px;right:12px;
+ display:flex;justify-content:space-between;
+ gap:15px;pointer-events:none;
 }
-
-canvas {
-  pointer-events: none;
+.health{width:45%}
+.health span{font-size:10px;color:#ddd}
+.bar{
+ height:9px;background:#242039;
+ border-radius:10px;margin-top:5px;overflow:hidden;
 }
-
-.overlay {
-  position: absolute;
-  inset: 12px;
-  border: 1px solid #a855f733;
-  border-radius: 12px;
-  pointer-events: none;
+.fill{height:100%;width:100%;background:#a855f7;transition:width .2s}
+.enemybar{background:#ff426d}
+.stats{
+ display:grid;grid-template-columns:repeat(3,1fr);
+ gap:8px;
 }
-
-.scan {
-  position: absolute;
-  height: 2px;
-  width: 100%;
-  background: linear-gradient(
-    90deg, transparent, #a855f7, #00eaff, transparent
-  );
-  box-shadow: 0 0 15px #a855f7;
-  animation: scan 4s linear infinite;
+.stat{
+ background:#141323;padding:12px 5px;
+ border:1px solid #302345;border-radius:12px;
+ text-align:center;
 }
-
-@keyframes scan {
-  0% { top: 0; }
-  100% { top: 100%; }
+.stat small{display:block;color:#888;font-size:9px}
+.stat b{display:block;margin-top:5px;color:#c084fc;font-size:16px}
+.controls{display:flex;gap:9px}
+button{
+ flex:1;padding:15px;border:0;border-radius:12px;
+ background:#9333ea;color:white;font-weight:bold;
 }
-
-.info {
-  background: #101322;
-  border: 1px solid #292441;
-  border-radius: 16px;
-  padding: 15px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
-}
-
-.label {
-  font-size: 10px;
-  color: #9293a9;
-  margin-bottom: 5px;
-}
-
-.value {
-  font-size: 16px;
-  color: #c084fc;
-  font-weight: bold;
-}
-
-.controls {
-  display: flex;
-  gap: 10px;
-}
-
-button {
-  flex: 1;
-  border: none;
-  padding: 15px;
-  border-radius: 12px;
-  background: #9333ea;
-  color: white;
-  font-weight: bold;
-  font-size: 14px;
-}
-
-button.stop {
-  background: #28243b;
-}
-
-footer {
-  text-align: center;
-  font-size: 10px;
-  color: #696a83;
+.stop{background:#29263b}
+.message{
+ text-align:center;color:#aaa;font-size:11px;
 }
 </style>
 </head>
 
 <body>
-
 <div class="app">
 
 <header>
-  <div class="logo">NEURAL / VISION</div>
-  <div class="status" id="status">● OFFLINE</div>
+ <div class="logo">NEON BOXING</div>
+ <div class="status" id="status">● WAITING</div>
 </header>
 
-<div class="camera">
-  <video id="video" autoplay playsinline muted></video>
-  <canvas id="canvas"></canvas>
-  <div class="overlay"></div>
-  <div class="scan"></div>
+<div class="arena">
+
+ <video id="video" autoplay muted playsinline></video>
+ <canvas id="canvas"></canvas>
+
+ <div class="hud">
+  <div class="health">
+   <span>PLAYER HP</span>
+   <div class="bar"><div class="fill" id="playerHP"></div></div>
+  </div>
+  <div class="health">
+   <span>ENEMY HP</span>
+   <div class="bar"><div class="fill enemybar" id="enemyHP"></div></div>
+  </div>
+ </div>
+
+ <div class="enemy">
+  <div class="enemy-icon" id="enemyIcon">🥊</div>
+  <div class="enemy-name">CYBER BOT</div>
+ </div>
+
 </div>
 
-<div class="info">
-
-  <div>
-    <div class="label">FACE STATUS</div>
-    <div class="value" id="face">NOT DETECTED</div>
-  </div>
-
-  <div>
-    <div class="label">MOTION</div>
-    <div class="value" id="motion">STANDBY</div>
-  </div>
-
-  <div>
-    <div class="label">POSITION X</div>
-    <div class="value" id="posX">0.00</div>
-  </div>
-
-  <div>
-    <div class="label">POSITION Y</div>
-    <div class="value" id="posY">0.00</div>
-  </div>
-
+<div class="stats">
+ <div class="stat">
+  <small>SCORE</small><b id="score">0</b>
+ </div>
+ <div class="stat">
+  <small>COMBO</small><b id="combo">0</b>
+ </div>
+ <div class="stat">
+  <small>LAST MOVE</small><b id="move">READY</b>
+ </div>
 </div>
 
 <div class="controls">
-  <button onclick="startCamera()">START TRACKING</button>
-  <button class="stop" onclick="stopCamera()">STOP</button>
+ <button onclick="startGame()">START GAME</button>
+ <button class="stop" onclick="stopGame()">STOP</button>
 </div>
 
-<footer>AI FACE MOTION TRACKING SYSTEM • MEDIAPIPE</footer>
+<div class="message" id="message">
+ Gerakkan tangan untuk mulai bertarung!
+</div>
 
 </div>
 
 <script type="module">
 
 import {
-  FaceLandmarker,
-  FilesetResolver
+ HandLandmarker,
+ FilesetResolver
 } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14";
 
-const video = document.getElementById("video");
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
+const video=document.getElementById("video");
+const canvas=document.getElementById("canvas");
+const ctx=canvas.getContext("2d");
 
-const statusText = document.getElementById("status");
-const faceText = document.getElementById("face");
-const motionText = document.getElementById("motion");
-const posX = document.getElementById("posX");
-const posY = document.getElementById("posY");
+let tracker,stream,running=false;
+let previous=[];
+let cooldown=[0,0];
+let player=100,enemy=100;
+let score=0,combo=0;
+let lastHit=0,lastEnemyAttack=0;
+let lastFrame=-1;
+let gameEnded=false;
 
-let landmarker;
-let stream;
-let running = false;
-let previousX = null;
-let previousY = null;
-let smoothX = 0;
-let smoothY = 0;
-let lastFrame = -1;
+const $=id=>document.getElementById(id);
 
-async function initializeAI() {
+async function setupAI(){
 
-  statusText.textContent = "● LOADING AI";
+ $("status").textContent="● LOADING AI";
 
-  const vision = await FilesetResolver.forVisionTasks(
-    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm"
-  );
+ const vision=await FilesetResolver.forVisionTasks(
+ "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm"
+ );
 
-  landmarker = await FaceLandmarker.createFromOptions(
-    vision,
-    {
-      baseOptions: {
-        modelAssetPath:
-        "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
-        delegate: "GPU"
-      },
-      runningMode: "VIDEO",
-      numFaces: 1,
-      minFaceDetectionConfidence: 0.5,
-      minTrackingConfidence: 0.5,
-      minFacePresenceConfidence: 0.5
-    }
-  );
+ tracker=await HandLandmarker.createFromOptions(vision,{
+  baseOptions:{
+   modelAssetPath:
+   "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
+   delegate:"CPU"
+  },
+  runningMode:"VIDEO",
+  numHands:2,
+  minHandDetectionConfidence:.55,
+  minHandPresenceConfidence:.5,
+  minTrackingConfidence:.5
+ });
+}
+
+async function startGame(){
+
+ try{
+  if(!tracker)await setupAI();
+
+  stream=await navigator.mediaDevices.getUserMedia({
+   audio:false,
+   video:{
+    facingMode:"user",
+    width:{ideal:640},
+    height:{ideal:480}
+   }
+  });
+
+  video.srcObject=stream;
+  await video.play();
+
+  canvas.width=video.videoWidth;
+  canvas.height=video.videoHeight;
+
+  player=100;
+  enemy=100;
+  score=0;
+  combo=0;
+  previous=[];
+  cooldown=[0,0];
+  gameEnded=false;
+  lastHit=0;
+  lastEnemyAttack=Date.now();
+
+  updateHUD();
+
+  running=true;
+  $("status").textContent="● SYSTEM ACTIVE";
+  $("message").textContent="AYO! GERAKKAN TANGAN KAKA!";
+  requestAnimationFrame(loop);
+
+ }catch(e){
+  console.error(e);
+  $("status").textContent="● CAMERA ERROR";
+  alert("Kamera tidak dapat dibuka. Gunakan HTTPS dan izinkan kamera.");
+ }
+}
+
+function drawHand(points){
+
+ const w=canvas.width;
+ const h=canvas.height;
+
+ // Kotak neon mengikuti tangan
+
+ let minX=1,minY=1,maxX=0,maxY=0;
+
+ points.forEach(p=>{
+  minX=Math.min(minX,p.x);
+  minY=Math.min(minY,p.y);
+  maxX=Math.max(maxX,p.x);
+  maxY=Math.max(maxY,p.y);
+ });
+
+ const pad=.035;
+ minX=Math.max(0,minX-pad);
+ minY=Math.max(0,minY-pad);
+ maxX=Math.min(1,maxX+pad);
+ maxY=Math.min(1,maxY+pad);
+
+ ctx.strokeStyle="#bd5cff";
+ ctx.lineWidth=3;
+ ctx.shadowColor="#ad43ff";
+ ctx.shadowBlur=18;
+ ctx.strokeRect(
+  minX*w,minY*h,
+  (maxX-minX)*w,(maxY-minY)*h
+ );
+
+ // Titik tangan
+
+ ctx.fillStyle="#00f6ff";
+ ctx.shadowColor="#00f6ff";
+
+ points.forEach(p=>{
+  ctx.beginPath();
+  ctx.arc(p.x*w,p.y*h,3,0,Math.PI*2);
+  ctx.fill();
+ });
+
+ ctx.shadowBlur=0;
 
 }
 
-async function startCamera() {
+function loop(){
 
-  try {
+ if(!running)return;
 
-    if (!landmarker) await initializeAI();
+ if(video.currentTime!==lastFrame&&video.readyState>=2){
 
-    stream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        facingMode: "user",
-        width: { ideal: 640 },
-        height: { ideal: 480 }
-      },
-      audio: false
-    });
+  lastFrame=video.currentTime;
 
-    video.srcObject = stream;
-    await video.play();
+  const result=tracker.detectForVideo(video,performance.now());
 
-    running = true;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
 
-    statusText.textContent = "● SYSTEM ACTIVE";
+  const hands=result.landmarks;
 
-    resizeCanvas();
-    requestAnimationFrame(trackFace);
-
-  } catch(error) {
-
-    statusText.textContent = "● CAMERA ERROR";
-    console.error(error);
-    alert("Kamera gagal dibuka. Pastikan izin kamera aktif dan halaman menggunakan HTTPS.");
-
+  if(hands.length===0){
+   $("move").textContent="SEARCH";
+   previous=[];
   }
 
-}
+  hands.forEach((points,i)=>{
 
-function resizeCanvas() {
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-}
+   drawHand(points);
 
-function trackFace() {
+   const wrist=points[0];
+   const now=Date.now();
 
-  if (!running) return;
+   if(!previous[i]){
+    previous[i]={z:wrist.z,x:wrist.x,y:wrist.y};
+    return;
+   }
 
-  if (video.readyState >= 2 && video.currentTime !== lastFrame) {
+   const old=previous[i];
 
-    lastFrame = video.currentTime;
+   // Deteksi gerakan tangan ke arah kamera
+   const dz=wrist.z-old.z;
 
-    const result = landmarker.detectForVideo(
-      video,
-      performance.now()
-    );
+   // Deteksi pukulan dengan perubahan kedalaman
+   if(dz<-.035 && now-cooldown[i]>550 && !gameEnded){
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    cooldown[i]=now;
+    punch(i);
+   }
 
-    if (result.faceLandmarks.length > 0) {
+   previous[i]={
+    z:old.z*.35+wrist.z*.65,
+    x:wrist.x,
+    y:wrist.y
+   };
 
-      const points = result.faceLandmarks[0];
+  });
 
-      let minX = 1, minY = 1;
-      let maxX = 0, maxY = 0;
-
-      points.forEach(p => {
-        minX = Math.min(minX, p.x);
-        minY = Math.min(minY, p.y);
-        maxX = Math.max(maxX, p.x);
-        maxY = Math.max(maxY, p.y);
-      });
-
-      const x = (minX + maxX) / 2;
-      const y = (minY + maxY) / 2;
-
-      smoothX += (x - smoothX) * 0.3;
-      smoothY += (y - smoothY) * 0.3;
-
-      const boxX = minX * canvas.width;
-      const boxY = minY * canvas.height;
-      const boxW = (maxX - minX) * canvas.width;
-      const boxH = (maxY - minY) * canvas.height;
-
-      // FACE TRACKING BOX
-
-      ctx.strokeStyle = "#c084fc";
-      ctx.lineWidth = 3;
-      ctx.shadowColor = "#a855f7";
-      ctx.shadowBlur = 15;
-
-      ctx.strokeRect(boxX, boxY, boxW, boxH);
-
-      // LANDMARK DOTS
-
-      ctx.fillStyle = "#00eaff";
-      ctx.shadowColor = "#00eaff";
-
-      for (let i = 0; i < points.length; i += 5) {
-
-        ctx.beginPath();
-        ctx.arc(
-          points[i].x * canvas.width,
-          points[i].y * canvas.height,
-          2,
-          0,
-          Math.PI * 2
-        );
-        ctx.fill();
-
-      }
-
-      // CENTER TARGET
-
-      ctx.beginPath();
-      ctx.arc(
-        smoothX * canvas.width,
-        smoothY * canvas.height,
-        7,
-        0,
-        Math.PI * 2
-      );
-
-      ctx.fillStyle = "#ffffff";
-      ctx.fill();
-
-      ctx.shadowBlur = 0;
-
-      // MOTION ANALYSIS
-
-      let direction = "STABLE";
-
-      if (previousX !== null) {
-
-        const dx = smoothX - previousX;
-        const dy = smoothY - previousY;
-
-        if (Math.abs(dx) > 0.004 || Math.abs(dy) > 0.004) {
-
-          if (Math.abs(dx) > Math.abs(dy)) {
-            direction = dx > 0 ? "RIGHT" : "LEFT";
-          } else {
-            direction = dy > 0 ? "DOWN" : "UP";
-          }
-
-        }
-
-      }
-
-      previousX = smoothX;
-      previousY = smoothY;
-
-      faceText.textContent = "DETECTED";
-      motionText.textContent = direction;
-
-      posX.textContent = smoothX.toFixed(3);
-      posY.textContent = smoothY.toFixed(3);
-
-    } else {
-
-      faceText.textContent = "NOT DETECTED";
-      motionText.textContent = "SEARCHING";
-      previousX = null;
-      previousY = null;
-
-    }
-
+  // Posisi bertahan: dua tangan berada di bagian bawah wajah
+  if(hands.length>=2){
+   const guarded=hands.every(p=>
+    p[0].y<.75
+   );
+   if(guarded)$("move").textContent="GUARD";
   }
 
-  requestAnimationFrame(trackFace);
+  enemyAttack();
+ }
+
+ requestAnimationFrame(loop);
+}
+
+function punch(hand){
+
+ const now=Date.now();
+
+ if(now-lastHit<1100)combo++;
+ else combo=1;
+
+ lastHit=now;
+
+ const damage=8+Math.min(combo,5)*2;
+
+ enemy=Math.max(0,enemy-damage);
+ score+=100+combo*20;
+
+ $("move").textContent=hand===0?"PUNCH 1":"PUNCH 2";
+
+ $("enemyIcon").textContent="💥";
+
+ setTimeout(()=>{
+  if(!gameEnded)$("enemyIcon").textContent="🥊";
+ },180);
+
+ updateHUD();
+
+ if(enemy<=0)endGame(true);
 
 }
 
-function stopCamera() {
+function enemyAttack(){
 
-  running = false;
+ const now=Date.now();
 
-  if (stream) {
-    stream.getTracks().forEach(track => track.stop());
-    stream = null;
-  }
+ if(now-lastEnemyAttack>3500&&!gameEnded){
 
-  video.srcObject = null;
+  lastEnemyAttack=now;
 
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  player=Math.max(0,player-8);
 
-  statusText.textContent = "● OFFLINE";
-  faceText.textContent = "NOT DETECTED";
-  motionText.textContent = "STANDBY";
+  $("message").textContent="CYBER BOT MENYERANG!";
 
-  previousX = null;
-  previousY = null;
+  updateHUD();
+
+  if(player<=0)endGame(false);
+ }
+}
+
+function updateHUD(){
+
+ $("playerHP").style.width=player+"%";
+ $("enemyHP").style.width=enemy+"%";
+ $("score").textContent=score;
+ $("combo").textContent=combo;
 
 }
 
-window.startCamera = startCamera;
-window.stopCamera = stopCamera;
+function endGame(win){
+
+ gameEnded=true;
+
+ $("message").textContent=win?
+ "🏆 KAKA MENANG! CYBER BOT KALAH!":
+ "GAME OVER! COBA LAGI!";
+
+ $("move").textContent=win?"WIN":"LOSE";
+ $("enemyIcon").textContent=win?"🏆":"🤖";
+
+}
+
+function stopGame(){
+
+ running=false;
+
+ if(stream){
+  stream.getTracks().forEach(t=>t.stop());
+  stream=null;
+ }
+
+ video.srcObject=null;
+ ctx.clearRect(0,0,canvas.width,canvas.height);
+
+ $("status").textContent="● OFFLINE";
+ $("message").textContent="GAME STOPPED";
+ $("move").textContent="READY";
+
+}
+
+window.startGame=startGame;
+window.stopGame=stopGame;
 
 </script>
-
 </body>
 </html>

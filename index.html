@@ -4,125 +4,230 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>NEON BOXING 2.0</title>
+<title>Senko Hand Universe V3</title>
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{
- background:#070711;color:white;
- font-family:Arial,sans-serif;overflow:hidden;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
-.app{
- height:100dvh;padding:12px;
- display:flex;flex-direction:column;gap:10px;
+
+body {
+  background: #03030b;
+  color: white;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+  height: 100dvh;
+  touch-action: manipulation;
 }
-header{display:flex;justify-content:space-between;align-items:center}
-.logo{font-size:19px;font-weight:900;letter-spacing:2px;color:#c084fc}
-.status{font-size:10px;color:#00ffc3}
-.arena{
- flex:1;min-height:0;position:relative;
- overflow:hidden;border:1px solid #7837ad;
- border-radius:17px;
- background:radial-gradient(ellipse,#25103e,#080914 75%);
+
+#scene {
+  position: fixed;
+  inset: 0;
 }
-#camera{
- position:absolute;inset:0;width:100%;height:100%;
- object-fit:cover;opacity:.15;transform:scaleX(-1);
+
+canvas {
+  display: block;
 }
-#game{
- position:absolute;inset:0;width:100%;height:100%;
+
+header {
+  position: absolute;
+  z-index: 3;
+  top: 17px;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  pointer-events: none;
 }
-.hud{
- position:absolute;z-index:4;top:12px;left:10px;right:10px;
- display:flex;justify-content:space-between;gap:12px;
- pointer-events:none;
+
+header h1 {
+  font-size: 19px;
+  letter-spacing: 4px;
+  color: #e5d5ff;
+  text-shadow: 0 0 15px #a34dff;
 }
-.health{width:47%}
-.health small{font-size:10px;font-weight:bold}
-.bar{
- margin-top:5px;height:9px;background:#29243a;
- border-radius:20px;overflow:hidden;
+
+header p {
+  font-size: 9px;
+  letter-spacing: 3px;
+  margin-top: 6px;
+  color: #8980ac;
 }
-.fill{height:100%;width:100%;background:#a855f7;transition:width .2s}
-.enemy-fill{background:#ff386c}
-.round{
- position:absolute;top:60px;left:50%;
- transform:translateX(-50%);z-index:4;
- font-size:11px;color:#e6b5ff;
- letter-spacing:2px;white-space:nowrap;
+
+#status {
+  position: absolute;
+  top: 85px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4;
+  padding: 9px 16px;
+  border: 1px solid #7545b7;
+  border-radius: 30px;
+  background: #110b24dd;
+  color: #d5baff;
+  font-size: 10px;
+  white-space: nowrap;
 }
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
-.stat{
- background:#151322;border:1px solid #342348;
- padding:10px 4px;border-radius:11px;text-align:center;
+
+#cameraBox {
+  position: absolute;
+  z-index: 4;
+  top: 15px;
+  right: 12px;
+  width: 92px;
+  height: 115px;
+  border: 1px solid #995aff;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #111;
+  box-shadow: 0 0 15px #843aff44;
 }
-.stat small{font-size:9px;color:#999}
-.stat b{display:block;color:#d8a0ff;margin-top:5px;font-size:16px}
-.controls{display:flex;gap:9px}
-button{
- border:0;border-radius:11px;padding:14px;
- background:#9333ea;color:white;font-weight:bold;
- flex:1;
+
+#camera {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
 }
-.stop{background:#29263a}
-#message{
- font-size:11px;text-align:center;color:#aaa;
- min-height:15px;
+
+#camLabel {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 5px;
+  text-align: center;
+  font-size: 8px;
+  background: #080613cc;
+  color: #d7bdff;
 }
-#flash{
- position:absolute;inset:0;z-index:3;
- background:#bd45ff;opacity:0;pointer-events:none;
+
+#panel {
+  position: absolute;
+  z-index: 5;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(94%, 440px);
+  padding: 13px;
+  border-radius: 18px;
+  background: #0b0919e8;
+  border: 1px solid #513778;
+  box-shadow: 0 0 30px #853cff22;
+  backdrop-filter: blur(15px);
+}
+
+#gesture {
+  text-align: center;
+  font-size: 11px;
+  color: #d6baff;
+  margin-bottom: 11px;
+}
+
+.buttons {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 7px;
+}
+
+button {
+  color: white;
+  background: #19132b;
+  border: 1px solid #493368;
+  padding: 11px 3px;
+  border-radius: 10px;
+  font-size: 10px;
+}
+
+button.active {
+  background: linear-gradient(135deg,#7138bb,#a14cff);
+  border-color: #d3a8ff;
+  box-shadow: 0 0 14px #934cff66;
+}
+
+#start {
+  width: 100%;
+  margin-top: 10px;
+  padding: 13px;
+  background: linear-gradient(90deg,#6431bd,#a64cff);
+  border: none;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+#quality {
+  width: 100%;
+  margin-top: 8px;
+  padding: 9px;
+  border-radius: 9px;
+  background: #171126;
+  border: 1px solid #45335d;
+  color: #cdb7ff;
+}
+
+#hint {
+  text-align: center;
+  font-size: 9px;
+  color: #77718e;
+  margin-top: 9px;
+}
+
+@media(max-height:620px) {
+  header { top: 7px; }
+  #status { top: 48px; }
+  #panel { bottom: 5px; padding: 8px; }
+  #cameraBox { width: 65px; height: 80px; }
+  button { padding: 8px 2px; }
 }
 </style>
 </head>
 
 <body>
-<div class="app">
+
+<div id="scene"></div>
 
 <header>
- <div class="logo">NEON BOXING 2.0</div>
- <div class="status" id="status">● OFFLINE</div>
+  <h1>SENKO UNIVERSE</h1>
+  <p>HAND INTERACTIVE EXPERIENCE</p>
 </header>
 
-<div class="arena">
- <video id="camera" autoplay muted playsinline></video>
- <div id="game"></div>
- <div id="flash"></div>
+<div id="status">✦ UNIVERSE READY</div>
 
- <div class="hud">
-  <div class="health">
-   <small>PLAYER</small>
-   <div class="bar"><div class="fill" id="playerHP"></div></div>
+<div id="cameraBox">
+  <video id="camera" autoplay playsinline muted></video>
+  <div id="camLabel">HAND CAMERA</div>
+</div>
+
+<div id="panel">
+
+  <div id="gesture">✋ Siap mendeteksi tangan</div>
+
+  <div class="buttons">
+    <button data-mode="1" class="active">🌌 SPACE</button>
+    <button data-mode="2">🪐 SATURN</button>
+    <button data-mode="3">💙 LOVE</button>
+    <button data-mode="4">💗 HEART</button>
   </div>
-  <div class="health">
-   <small>CYBER BOT</small>
-   <div class="bar"><div class="fill enemy-fill" id="enemyHP"></div></div>
+
+  <button id="start">✦ AKTIFKAN KAMERA</button>
+
+  <select id="quality">
+    <option value="low">PERFORMA: HEMAT</option>
+    <option value="medium" selected>PERFORMA: SEIMBANG</option>
+    <option value="high">PERFORMA: TINGGI</option>
+  </select>
+
+  <div id="hint">
+    Telapak: Space · Telunjuk: Saturn · Peace: Love · Genggam: Heart
   </div>
- </div>
-
- <div class="round" id="round">ROUND 01</div>
-</div>
-
-<div class="stats">
- <div class="stat"><small>SCORE</small><b id="score">0</b></div>
- <div class="stat"><small>COMBO</small><b id="combo">0</b></div>
- <div class="stat"><small>MOVE</small><b id="move">READY</b></div>
-</div>
-
-<div class="controls">
- <button onclick="startGame()">START FIGHT</button>
- <button class="stop" onclick="stopGame()">STOP</button>
-</div>
-
-<div id="message">Siapkan tangan kaka untuk bertarung!</div>
 
 </div>
 
 <script type="importmap">
 {
- "imports":{
-  "three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
- }
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+  }
 }
 </script>
 
@@ -130,551 +235,707 @@ button{
 
 import * as THREE from "three";
 
-import {
- HandLandmarker,
- FilesetResolver
-} from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14";
+const $ = id => document.getElementById(id);
 
-const $=id=>document.getElementById(id);
-const video=$("camera");
-const game=$("game");
+const video = $("camera");
+const status = $("status");
+const gesture = $("gesture");
 
-let scene,camera,renderer;
-let player,enemy;
-let tracker,stream;
-let running=false;
-let gameOver=false;
+const QUALITY = {
+  low: 500,
+  medium: 900,
+  high: 1300
+};
 
-let playerHP=100;
-let enemyHP=100;
-let score=0;
-let combo=0;
-let lastPunch=0;
-let lastEnemyAttack=0;
-let lastTime=0;
-let lastVideoTime=-1;
+let COUNT = QUALITY.medium;
+let mode = 1;
+let tracking = false;
+let landmarker = null;
+let stream = null;
 
-let handData=[];
-let punchAnimations=[];
-let enemyAnimation=0;
-let round=1;
+let handX = 0;
+let handY = 0;
+let handScale = 1;
 
-const clock=new THREE.Clock();
+let lastDetection = 0;
+let candidateMode = 1;
+let candidateCount = 0;
+let lastVideoTime = -1;
 
-function material(color,metalness=0.3,roughness=0.4){
- return new THREE.MeshStandardMaterial({
-  color,metalness,roughness,
-  emissive:color,
-  emissiveIntensity:0.16
- });
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x03030b);
+
+const camera = new THREE.PerspectiveCamera(
+  55,
+  innerWidth / innerHeight,
+  0.1,
+  100
+);
+
+camera.position.z = 11;
+
+const renderer = new THREE.WebGLRenderer({
+  antialias: false,
+  alpha: false,
+  powerPreference: "high-performance"
+});
+
+renderer.setSize(innerWidth,innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio,1));
+
+$("scene").appendChild(renderer.domElement);
+
+const universe = new THREE.Group();
+scene.add(universe);
+
+// ===============================
+// PARTICLE DATA
+// ===============================
+
+let positions;
+let colors;
+let geometry;
+let particles;
+let targets = {};
+
+const palette = {
+  1: new THREE.Color(0x428aff),
+  2: new THREE.Color(0xffa63b),
+  3: new THREE.Color(0x16dfff),
+  4: new THREE.Color(0xff267b)
+};
+
+function spherePoint(radius) {
+  const theta = Math.random()*Math.PI*2;
+  const z = Math.random()*2-1;
+  const r = radius*Math.cbrt(Math.random());
+  const s = Math.sqrt(1-z*z);
+
+  return [
+    r*s*Math.cos(theta),
+    r*s*Math.sin(theta),
+    r*z
+  ];
 }
 
-const purple=material(0x9b35ff);
-const cyan=material(0x00dfff);
-const dark=material(0x17172c);
-const white=material(0xe5e5ff);
-const red=material(0xff315f);
+function generateTargets() {
 
-function makeBox(parent,geo,mat,pos){
- const mesh=new THREE.Mesh(geo,mat);
- mesh.position.set(...pos);
- mesh.castShadow=true;
- parent.add(mesh);
- return mesh;
-}
+  const space = new Float32Array(COUNT*3);
+  const saturn = new Float32Array(COUNT*3);
+  const heart = new Float32Array(COUNT*3);
+  const love = new Float32Array(COUNT*3);
 
-function createFighter(isEnemy=false){
+  const textCanvas = document.createElement("canvas");
+  textCanvas.width = 1000;
+  textCanvas.height = 250;
 
- const root=new THREE.Group();
+  const ctx = textCanvas.getContext("2d");
 
- const bodyMat=isEnemy?red:purple;
- const gloveMat=isEnemy?red:cyan;
+  ctx.fillStyle = "white";
+  ctx.font = "bold 135px Arial";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("I LOVE YOU",500,125);
 
- const torso=makeBox(
-  root,new THREE.BoxGeometry(.8,1.05,.43),
-  bodyMat,[0,1.65,0]
- );
+  const pixels = ctx.getImageData(0,0,1000,250).data;
+  const points = [];
 
- torso.scale.set(1,1,1);
-
- const head=makeBox(
-  root,new THREE.SphereGeometry(.34,20,16),
-  white,[0,2.48,0]
- );
-
- const helmet=makeBox(
-  root,new THREE.BoxGeometry(.65,.2,.48),
-  dark,[0,2.69,0]
- );
-
- // neon eyes
- for(let side of [-1,1]){
-  makeBox(root,new THREE.BoxGeometry(.13,.07,.04),
-   cyan,[side*.13,2.48,.28]);
- }
-
- const legs=[];
-
- for(let side of [-1,1]){
-  const leg=new THREE.Group();
-  leg.position.set(side*.22,1.1,0);
-  root.add(leg);
-
-  makeBox(leg,new THREE.CylinderGeometry(.13,.17,.7,12),
-   dark,[0,-.35,0]);
-
-  makeBox(leg,new THREE.BoxGeometry(.28,.18,.43),
-   bodyMat,[0,-.72,.1]);
-
-  legs.push(leg);
- }
-
- const arms=[];
-
- for(let side of [-1,1]){
-
-  const arm=new THREE.Group();
-  arm.position.set(side*.48,2.02,0);
-  root.add(arm);
-
-  makeBox(arm,new THREE.CylinderGeometry(.13,.16,.55,12),
-   bodyMat,[0,-.28,0]);
-
-  makeBox(arm,new THREE.CylinderGeometry(.12,.14,.48,12),
-   white,[0,-.72,0]);
-
-  const glove=makeBox(
-   arm,new THREE.SphereGeometry(.22,16,12),
-   gloveMat,[0,-1.02,.02]
-  );
-
-  arms.push(arm);
- }
-
- // glowing chest
- makeBox(root,new THREE.BoxGeometry(.25,.12,.04),
-  cyan,[0,1.72,.23]);
-
- root.userData={
-  arms,legs,torso,head,
-  baseRot:isEnemy?-Math.PI/2:Math.PI/2
- };
-
- return root;
-}
-
-function init3D(){
-
- scene=new THREE.Scene();
- scene.fog=new THREE.Fog(0x090817,8,19);
-
- camera=new THREE.PerspectiveCamera(
-  43,1,.1,100
- );
-
- camera.position.set(0,3.2,9);
- camera.lookAt(0,1.45,0);
-
- renderer=new THREE.WebGLRenderer({
-  alpha:true,antialias:true
- });
-
- renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
- renderer.shadowMap.enabled=true;
- renderer.setSize(game.clientWidth,game.clientHeight);
-
- game.innerHTML="";
- game.appendChild(renderer.domElement);
-
- scene.add(new THREE.HemisphereLight(0xb9aaff,0x161020,2));
-
- const light=new THREE.DirectionalLight(0xffffff,2.5);
- light.position.set(2,7,5);
- scene.add(light);
-
- const floor=new THREE.Mesh(
-  new THREE.CircleGeometry(5,64),
-  new THREE.MeshStandardMaterial({
-   color:0x111026,metalness:.7,roughness:.3
-  })
- );
-
- floor.rotation.x=-Math.PI/2;
- floor.position.y=-.02;
- scene.add(floor);
-
- // arena rings
- for(let r of [2.5,3.5,4.5]){
-  const ring=new THREE.Mesh(
-   new THREE.TorusGeometry(r,.018,8,100),
-   r===3.5?cyan:purple
-  );
-  ring.rotation.x=Math.PI/2;
-  ring.position.y=.02;
-  scene.add(ring);
- }
-
- // arena pillars
- for(let x of [-4.5,4.5]){
-  const pillar=new THREE.Mesh(
-   new THREE.BoxGeometry(.12,3,.12),purple
-  );
-  pillar.position.set(x,1.5,-1);
-  scene.add(pillar);
- }
-
- player=createFighter(false);
- enemy=createFighter(true);
-
- player.position.set(-1.45,0,0);
- enemy.position.set(1.45,0,-.4);
-
- player.rotation.y=0;
- enemy.rotation.y=Math.PI;
-
- scene.add(player);
- scene.add(enemy);
-
- window.addEventListener("resize",resize3D);
-
-}
-
-function resize3D(){
-
- if(!renderer)return;
-
- const w=game.clientWidth;
- const h=game.clientHeight;
-
- camera.aspect=w/h;
- camera.updateProjectionMatrix();
- renderer.setSize(w,h);
-
-}
-
-async function initAI(){
-
- $("status").textContent="● LOADING AI";
-
- const vision=await FilesetResolver.forVisionTasks(
-  "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm"
- );
-
- tracker=await HandLandmarker.createFromOptions(
-  vision,{
-   baseOptions:{
-    modelAssetPath:
-    "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
-    delegate:"CPU"
-   },
-   runningMode:"VIDEO",
-   numHands:2,
-   minHandDetectionConfidence:.55,
-   minHandPresenceConfidence:.5,
-   minTrackingConfidence:.5
+  for(let y=0;y<250;y+=2) {
+    for(let x=0;x<1000;x+=2) {
+      if(pixels[(y*1000+x)*4+3]>100) {
+        points.push([x,y]);
+      }
+    }
   }
- );
 
+  for(let i=0;i<COUNT;i++) {
+
+    let p = spherePoint(3.6);
+    space.set(p,i*3);
+
+    if(i<COUNT*0.65) {
+      p = spherePoint(1.25);
+    } else {
+      const a = Math.random()*Math.PI*2;
+      const r = 1.7+Math.random()*1.6;
+
+      p = [
+        Math.cos(a)*r,
+        (Math.random()-0.5)*0.07,
+        Math.sin(a)*r
+      ];
+    }
+
+    saturn.set(p,i*3);
+
+    const t = Math.random()*Math.PI*2;
+    const scale = Math.sqrt(Math.random());
+
+    const hx = 16*Math.pow(Math.sin(t),3);
+    const hy =
+      13*Math.cos(t)
+      -5*Math.cos(2*t)
+      -2*Math.cos(3*t)
+      -Math.cos(4*t);
+
+    heart.set([
+      hx*scale*0.15,
+      hy*scale*0.15,
+      (Math.random()-0.5)*0.6
+    ],i*3);
+
+    const textPoint = points[
+      Math.floor(Math.random()*points.length)
+    ];
+
+    love.set([
+      (textPoint[0]-500)*0.008,
+      (125-textPoint[1])*0.008,
+      (Math.random()-0.5)*0.12
+    ],i*3);
+  }
+
+  targets = {space,saturn,heart,love};
+
+  return space;
 }
 
-async function startGame(){
+// ===============================
+// CREATE PARTICLES
+// ===============================
 
- try{
+function createParticles() {
 
-  if(!renderer)init3D();
-  if(!tracker)await initAI();
+  targets = {};
+  const initial = generateTargets();
 
-  stream=await navigator.mediaDevices.getUserMedia({
-   audio:false,
-   video:{
-    facingMode:"user",
-    width:{ideal:480},
-    height:{ideal:360},
-    frameRate:{ideal:24,max:30}
-   }
+  positions = new Float32Array(initial);
+  colors = new Float32Array(COUNT*3);
+
+  geometry = new THREE.BufferGeometry();
+
+  geometry.setAttribute(
+    "position",
+    new THREE.BufferAttribute(positions,3)
+  );
+
+  geometry.setAttribute(
+    "color",
+    new THREE.BufferAttribute(colors,3)
+  );
+
+  material = new THREE.PointsMaterial({
+    size: 0.065,
+    vertexColors: true,
+    transparent: true,
+    opacity: 0.95,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+    sizeAttenuation: true
   });
 
-  video.srcObject=stream;
-  await video.play();
+  particles = new THREE.Points(geometry,material);
+  universe.add(particles);
 
-  playerHP=100;
-  enemyHP=100;
-  score=0;
-  combo=0;
-  round=1;
-  gameOver=false;
-  handData=[];
-  punchAnimations=[];
-
-  player.visible=true;
-  enemy.visible=true;
-
-  updateHUD();
-
-  running=true;
-  lastEnemyAttack=performance.now();
-  lastVideoTime=-1;
-
-  $("round").textContent="ROUND 01";
-  $("status").textContent="● FIGHTING";
-  $("message").textContent="GERAKKAN TANGAN KAKA!";
-
-  clock.start();
-  requestAnimationFrame(loop);
-
- }catch(e){
-
-  console.error(e);
-  $("status").textContent="● ERROR";
-  $("message").textContent="Gagal membuka kamera atau memuat AI.";
-
-  alert("Pastikan menggunakan HTTPS dan izin kamera sudah diberikan.");
-
- }
-
+  updateColors();
 }
 
-function updateHUD(){
+let material;
 
- $("playerHP").style.width=playerHP+"%";
- $("enemyHP").style.width=enemyHP+"%";
- $("score").textContent=score;
- $("combo").textContent=combo;
+// ===============================
+// BACKGROUND STARS
+// ===============================
 
-}
+const starPositions = [];
 
-function punch(index){
-
- if(gameOver)return;
-
- const now=performance.now();
-
- if(now-lastPunch<850){
-  combo++;
- }else{
-  combo=1;
- }
-
- lastPunch=now;
-
- const damage=8+Math.min(combo,5)*2;
-
- enemyHP=Math.max(0,enemyHP-damage);
- score+=100+combo*25;
-
- const arm=player.userData.arms[index%2];
-
- punchAnimations.push({
-  arm,
-  start:now,
-  duration:350,
-  direction:1
- });
-
- enemyAnimation=1;
-
- $("move").textContent=index===0?"RIGHT HIT":"LEFT HIT";
- $("message").textContent="POW! COMBO x"+combo;
-
- flash();
-
- updateHUD();
-
- if(enemyHP<=0)finish(true);
-
-}
-
-function flash(){
-
- $("flash").style.opacity=".2";
-
- setTimeout(()=>{
-  $("flash").style.opacity="0";
- },90);
-
-}
-
-function enemyAttack(now){
-
- if(now-lastEnemyAttack<4200||gameOver)return;
-
- lastEnemyAttack=now;
-
- playerHP=Math.max(0,playerHP-7);
-
- $("message").textContent="CYBER BOT MENYERANG!";
-
- updateHUD();
-
- if(playerHP<=0)finish(false);
-
-}
-
-function finish(win){
-
- gameOver=true;
-
- $("message").textContent=win?
- "🏆 KAKA MENANG! BOSS DIKALAHKAN!":
- "GAME OVER! COBA LAGI!";
-
- $("move").textContent=win?"WIN":"LOSE";
-
-}
-
-function detectHands(now){
-
- if(!tracker||video.readyState<2)return;
-
- if(video.currentTime===lastVideoTime)return;
-
- lastVideoTime=video.currentTime;
-
- const result=tracker.detectForVideo(video,now);
- const hands=result.landmarks;
-
- const next=[];
-
- hands.forEach((points,i)=>{
-
-  const wrist=points[0];
-  const indexTip=points[8];
-  const middleTip=points[12];
-
-  const old=handData[i];
-
-  const current={
-   x:wrist.x,
-   y:wrist.y,
-   z:wrist.z
-  };
-
-  if(old){
-
-   const dz=current.z-old.z;
-
-   // Gerakan tangan mendekati kamera
-   if(dz<-.025 && now-old.hit>650){
-
-    current.hit=now;
-    punch(i);
-
-   }else{
-    current.hit=old.hit;
-   }
-
-  }else{
-   current.hit=0;
-  }
-
-  next[i]=current;
-
-  // Mapping gerakan tangan untuk pose bertahan
-  const raised=wrist.y<.72;
-
-  if(raised){
-   const arm=player.userData.arms[i%2];
-   arm.rotation.z=THREE.MathUtils.lerp(
-    arm.rotation.z,.25,.18
-   );
-  }
-
- });
-
- handData=next;
-
- if(hands.length===0){
-  $("move").textContent="SEARCHING";
- }
-
-}
-
-function animateFighters(now){
-
- // Reset pose secara smooth
- for(const arm of player.userData.arms){
-  arm.rotation.z=THREE.MathUtils.lerp(
-   arm.rotation.z,0,.12
+for(let i=0;i<350;i++) {
+  starPositions.push(
+    (Math.random()-0.5)*35,
+    (Math.random()-0.5)*25,
+    -5-Math.random()*15
   );
- }
+}
 
- // Punch animation
- punchAnimations=punchAnimations.filter(anim=>{
+const starGeometry = new THREE.BufferGeometry();
 
-  const progress=(now-anim.start)/anim.duration;
+starGeometry.setAttribute(
+  "position",
+  new THREE.Float32BufferAttribute(starPositions,3)
+);
 
-  if(progress>=1){
-   return false;
+const starMaterial = new THREE.PointsMaterial({
+  color: 0x8a6dff,
+  size: 0.045,
+  transparent: true,
+  opacity: 0.7
+});
+
+const stars = new THREE.Points(starGeometry,starMaterial);
+scene.add(stars);
+
+// ===============================
+// COLOR SYSTEM
+// ===============================
+
+function updateColors() {
+
+  const base = palette[mode];
+
+  for(let i=0;i<COUNT;i++) {
+
+    const factor = 0.65+Math.random()*0.35;
+
+    let color = base;
+
+    if(mode===2 && i>=COUNT*0.65) {
+      color = new THREE.Color(0xffc06a);
+    }
+
+    colors[i*3] = color.r*factor;
+    colors[i*3+1] = color.g*factor;
+    colors[i*3+2] = color.b*factor;
   }
 
-  const wave=Math.sin(progress*Math.PI);
+  geometry.attributes.color.needsUpdate = true;
+}
 
-  anim.arm.rotation.z=wave*1.25;
+// ===============================
+// PARTICLE EXPLOSION
+// ===============================
 
-  return true;
+const BURST_COUNT = 180;
 
- });
+const burstPositions = new Float32Array(BURST_COUNT*3);
+const burstVelocity = new Float32Array(BURST_COUNT*3);
 
- // Enemy reaction
- if(enemyAnimation>0){
-  enemy.position.x=1.45+enemyAnimation*.18;
-  enemy.rotation.z=enemyAnimation*.12;
-  enemyAnimation*=.84;
+const burstGeometry = new THREE.BufferGeometry();
 
-  if(enemyAnimation<.02){
-   enemyAnimation=0;
-   enemy.position.x=1.45;
-   enemy.rotation.z=0;
+burstGeometry.setAttribute(
+  "position",
+  new THREE.BufferAttribute(burstPositions,3)
+);
+
+const burstMaterial = new THREE.PointsMaterial({
+  color: 0xd5a1ff,
+  size: 0.085,
+  transparent: true,
+  opacity: 0,
+  blending: THREE.AdditiveBlending,
+  depthWrite: false
+});
+
+const burst = new THREE.Points(burstGeometry,burstMaterial);
+universe.add(burst);
+
+let burstLife = 0;
+
+function explode() {
+
+  burstLife = 1;
+
+  for(let i=0;i<BURST_COUNT;i++) {
+
+    const a = Math.random()*Math.PI*2;
+    const z = Math.random()*2-1;
+    const r = Math.sqrt(1-z*z);
+
+    burstPositions[i*3] = 0;
+    burstPositions[i*3+1] = 0;
+    burstPositions[i*3+2] = 0;
+
+    const speed = 2+Math.random()*5;
+
+    burstVelocity[i*3] = Math.cos(a)*r*speed;
+    burstVelocity[i*3+1] = Math.sin(a)*r*speed;
+    burstVelocity[i*3+2] = z*speed;
   }
- }
 
- // Idle movement
- player.userData.legs.forEach((leg,i)=>{
-  leg.rotation.x=Math.sin(now*.002+i)*.025;
- });
-
- enemy.userData.legs.forEach((leg,i)=>{
-  leg.rotation.x=Math.sin(now*.002+i)*.025;
- });
-
+  burstGeometry.attributes.position.needsUpdate = true;
 }
 
-function loop(){
+// ===============================
+// MODE CONTROL
+// ===============================
 
- if(!running)return;
+const targetNames = {
+  1: "COSMIC UNIVERSE",
+  2: "SATURN 3D",
+  3: "I LOVE YOU",
+  4: "HEART 3D"
+};
 
- const now=performance.now();
+const targetData = {
+  1: "space",
+  2: "saturn",
+  3: "love",
+  4: "heart"
+};
 
- detectHands(now);
- animateFighters(now);
+function setMode(next) {
 
- if(!gameOver)enemyAttack(now);
+  if(next===mode) return;
 
- renderer.render(scene,camera);
+  mode = next;
 
- requestAnimationFrame(loop);
+  updateColors();
+  explode();
 
+  status.textContent = "✦ "+targetNames[mode];
+
+  document.querySelectorAll("[data-mode]").forEach(btn=>{
+    btn.classList.toggle(
+      "active",
+      Number(btn.dataset.mode)===mode
+    );
+  });
 }
 
-function stopGame(){
+document.querySelectorAll("[data-mode]").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    setMode(Number(btn.dataset.mode));
+  });
+});
 
- running=false;
+// ===============================
+// GESTURE DETECTION
+// ===============================
 
- if(stream){
-  stream.getTracks().forEach(t=>t.stop());
-  stream=null;
- }
+function detectGesture(lm) {
 
- video.srcObject=null;
+  const tips = [8,12,16,20];
+  const pips = [6,10,14,18];
 
- $("status").textContent="● OFFLINE";
- $("message").textContent="GAME STOPPED";
- $("move").textContent="READY";
+  const fingers = tips.map((tip,i)=>{
+    return lm[tip].y < lm[pips[i]].y;
+  });
 
+  if(fingers.every(v=>!v)) return 4;
+
+  if(fingers[0] && !fingers[1] &&
+     !fingers[2] && !fingers[3]) return 2;
+
+  if(fingers[0] && fingers[1] &&
+     !fingers[2] && !fingers[3]) return 3;
+
+  if(fingers.every(v=>v)) return 1;
+
+  return mode;
 }
 
-window.startGame=startGame;
-window.stopGame=stopGame;
+// ===============================
+// CAMERA + MEDIAPIPE
+// ===============================
+
+async function startTracking() {
+
+  if(!navigator.mediaDevices?.getUserMedia) {
+    status.textContent = "BUKA WEBSITE MELALUI HTTPS";
+    return;
+  }
+
+  $("start").disabled = true;
+  $("start").textContent = "MEMUAT KAMERA...";
+
+  try {
+
+    stream = await navigator.mediaDevices.getUserMedia({
+      audio: false,
+      video: {
+        facingMode: "user",
+        width: {ideal:320},
+        height: {ideal:240},
+        frameRate: {ideal:20,max:20}
+      }
+    });
+
+    video.srcObject = stream;
+    await video.play();
+
+    const vision = await import(
+      "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14"
+    );
+
+    const fileset = await vision.FilesetResolver.forVisionTasks(
+      "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm"
+    );
+
+    const options = {
+      baseOptions: {
+        modelAssetPath:
+        "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
+        delegate: "GPU"
+      },
+      runningMode: "VIDEO",
+      numHands: 1,
+      minHandDetectionConfidence: 0.55,
+      minHandPresenceConfidence: 0.55,
+      minTrackingConfidence: 0.55
+    };
+
+    try {
+      landmarker = await vision.HandLandmarker.createFromOptions(
+        fileset,options
+      );
+    } catch(gpuError) {
+
+      console.warn("GPU tidak tersedia, mencoba CPU",gpuError);
+
+      options.baseOptions.delegate = "CPU";
+
+      landmarker = await vision.HandLandmarker.createFromOptions(
+        fileset,options
+      );
+    }
+
+    tracking = true;
+
+    status.textContent = "✦ HAND TRACKING ACTIVE";
+    $("camLabel").textContent = "CAMERA ACTIVE";
+    $("start").textContent = "KAMERA AKTIF";
+
+    requestAnimationFrame(trackHands);
+
+  } catch(error) {
+
+    console.error(error);
+
+    status.textContent = "GAGAL MEMUAT KAMERA / AI";
+    gesture.textContent = "Periksa izin kamera dan koneksi internet";
+
+    $("start").disabled = false;
+    $("start").textContent = "COBA LAGI";
+
+    if(stream) {
+      stream.getTracks().forEach(track=>track.stop());
+      stream = null;
+    }
+  }
+}
+
+function trackHands(now) {
+
+  if(!tracking) return;
+
+  requestAnimationFrame(trackHands);
+
+  if(now-lastDetection<50) return;
+  if(video.readyState<2) return;
+  if(video.currentTime===lastVideoTime) return;
+
+  lastDetection = now;
+  lastVideoTime = video.currentTime;
+
+  try {
+
+    const result = landmarker.detectForVideo(video,now);
+
+    if(result.landmarks?.length) {
+
+      const lm = result.landmarks[0];
+
+      const detected = detectGesture(lm);
+
+      if(detected===candidateMode) {
+        candidateCount++;
+      } else {
+        candidateMode = detected;
+        candidateCount = 0;
+      }
+
+      if(candidateCount>=3) {
+        setMode(detected);
+      }
+
+      const wrist = lm[0];
+
+      const targetX = (0.5-wrist.x)*5;
+      const targetY = (0.5-wrist.y)*3.7;
+
+      handX += (targetX-handX)*0.2;
+      handY += (targetY-handY)*0.2;
+
+      const palm = Math.hypot(
+        lm[5].x-lm[17].x,
+        lm[5].y-lm[17].y
+      );
+
+      const targetScale = THREE.MathUtils.clamp(
+        0.07/(palm+0.001),
+        0.75,
+        1.5
+      );
+
+      handScale += (targetScale-handScale)*0.12;
+
+      const names = {
+        1:"✋ TELAPAK TERBUKA | SPACE",
+        2:"☝️ TELUNJUK | SATURN",
+        3:"✌️ PEACE | LOVE",
+        4:"✊ GENGGAM | HEART"
+      };
+
+      gesture.textContent = names[detected];
+      status.textContent = "✦ HAND DETECTED";
+
+    } else {
+
+      candidateCount = 0;
+      gesture.textContent = "TANGAN TIDAK TERDETEKSI";
+      status.textContent = "MENUNGGU TANGAN...";
+    }
+
+  } catch(error) {
+    console.warn("Hand detection error",error);
+  }
+}
+
+$("start").addEventListener("click",startTracking);
+
+// ===============================
+// QUALITY SETTINGS
+// ===============================
+
+$("quality").addEventListener("change",e=>{
+
+  const newCount = QUALITY[e.target.value];
+
+  if(newCount===COUNT) return;
+
+  COUNT = newCount;
+
+  universe.remove(particles);
+
+  geometry.dispose();
+  material.dispose();
+
+  createParticles();
+
+  status.textContent = "QUALITY UPDATED";
+
+});
+
+// ===============================
+// ANIMATION
+// ===============================
+
+const clock = new THREE.Clock();
+
+function animate() {
+
+  requestAnimationFrame(animate);
+
+  const dt = Math.min(clock.getDelta(),0.04);
+  const elapsed = clock.elapsedTime;
+
+  const current = geometry.attributes.position.array;
+  const target = targets[targetData[mode]];
+
+  const smooth = 1-Math.pow(0.001,dt);
+
+  for(let i=0;i<COUNT;i++) {
+
+    const j=i*3;
+
+    current[j] += (target[j]-current[j])*smooth;
+    current[j+1] += (target[j+1]-current[j+1])*smooth;
+    current[j+2] += (target[j+2]-current[j+2])*smooth;
+  }
+
+  geometry.attributes.position.needsUpdate = true;
+
+  if(mode===1) {
+
+    universe.position.x += (0-universe.position.x)*0.05;
+    universe.position.y += (0-universe.position.y)*0.05;
+
+    universe.scale.setScalar(1);
+
+    universe.rotation.y += dt*0.3;
+    universe.rotation.x = Math.sin(elapsed*0.3)*0.1;
+
+  } else {
+
+    universe.position.x += (handX-universe.position.x)*0.09;
+    universe.position.y += (handY-universe.position.y)*0.09;
+
+    universe.scale.setScalar(handScale);
+
+    universe.rotation.y += dt*(mode===2?1.3:0.25);
+
+    if(mode===2) {
+      universe.rotation.x = 0.35;
+      universe.rotation.z = 0.1;
+    }
+
+    if(mode===3) {
+      universe.rotation.x = 0;
+      universe.rotation.z = 0;
+    }
+
+    if(mode===4) {
+      universe.rotation.x = Math.sin(elapsed*0.6)*0.12;
+    }
+  }
+
+  // Particle burst
+  if(burstLife>0) {
+
+    burstLife -= dt*1.5;
+
+    for(let i=0;i<BURST_COUNT;i++) {
+
+      const j=i*3;
+
+      burstPositions[j] += burstVelocity[j]*dt;
+      burstPositions[j+1] += burstVelocity[j+1]*dt;
+      burstPositions[j+2] += burstVelocity[j+2]*dt;
+    }
+
+    burstGeometry.attributes.position.needsUpdate = true;
+
+    burstMaterial.opacity = Math.max(0,burstLife);
+
+  } else {
+    burstMaterial.opacity = 0;
+  }
+
+  stars.rotation.y += dt*0.015;
+
+  renderer.render(scene,camera);
+}
+
+createParticles();
+animate();
+
+// ===============================
+// RESIZE
+// ===============================
+
+window.addEventListener("resize",()=>{
+
+  camera.aspect = innerWidth/innerHeight;
+  camera.updateProjectionMatrix();
+
+  renderer.setSize(innerWidth,innerHeight);
+  renderer.setPixelRatio(Math.min(devicePixelRatio,1));
+
+});
+
+// ===============================
+// CLEANUP
+// ===============================
+
+window.addEventListener("pagehide",()=>{
+
+  tracking = false;
+
+  if(stream) {
+    stream.getTracks().forEach(track=>track.stop());
+  }
+
+  if(landmarker) landmarker.close();
+
+});
 
 </script>
 </body>

@@ -4,120 +4,121 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Senko Universe V4</title>
+<title>Senko Particle Universe</title>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-
-body{
-  background:#03030b;
-  color:white;
-  font-family:Arial,sans-serif;
-  overflow:hidden;
-  height:100dvh;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-#scene{position:fixed;inset:0}
-canvas{display:block}
-
-header{
-  position:absolute;
-  top:18px;
-  width:100%;
-  text-align:center;
-  z-index:3;
-  pointer-events:none;
+body {
+  background: #03030b;
+  color: white;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+  height: 100dvh;
+  touch-action: none;
 }
 
-h1{
-  font-size:18px;
-  letter-spacing:5px;
-  color:#e5d5ff;
-  text-shadow:0 0 18px #a34dff;
+#scene {
+  position: fixed;
+  inset: 0;
 }
 
-header p{
-  font-size:9px;
-  letter-spacing:3px;
-  margin-top:7px;
-  color:#82749f;
+canvas {
+  display: block;
 }
 
-#cameraBox{
-  position:absolute;
-  top:15px;
-  right:12px;
-  width:85px;
-  height:110px;
-  overflow:hidden;
-  border:1px solid #9250dc;
-  border-radius:13px;
-  background:#111;
-  z-index:5;
-  box-shadow:0 0 15px #843aff44;
+#cameraBox {
+  position: fixed;
+  z-index: 5;
+  top: 15px;
+  right: 12px;
+  width: 95px;
+  height: 120px;
+  border: 1px solid #995aff;
+  border-radius: 13px;
+  overflow: hidden;
+  background: #080613;
+  box-shadow: 0 0 18px #843aff44;
 }
 
-#camera{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  transform:scaleX(-1);
+#camera {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
 }
 
-#camLabel{
-  position:absolute;
-  bottom:0;
-  width:100%;
-  text-align:center;
-  padding:5px;
-  font-size:8px;
-  background:#080613cc;
-  color:#d9c2ff;
+#camLabel {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 5px;
+  text-align: center;
+  font-size: 8px;
+  background: #080613cc;
+  color: #d7bdff;
 }
 
-#info{
-  position:absolute;
-  bottom:22px;
-  left:50%;
-  transform:translateX(-50%);
-  width:max-content;
-  max-width:90%;
-  padding:12px 22px;
-  border:1px solid #653a99;
-  background:#0b0719dd;
-  border-radius:30px;
-  text-align:center;
-  box-shadow:0 0 20px #8c3cff33;
-  z-index:5;
+#status {
+  position: fixed;
+  z-index: 5;
+  top: 20px;
+  left: 14px;
+  padding: 10px 14px;
+  background: #100a20dd;
+  border: 1px solid #7545b7;
+  border-radius: 30px;
+  color: #d9c3ff;
+  font-size: 10px;
 }
 
-#status{
-  font-size:11px;
-  color:#d9baff;
+#control {
+  position: fixed;
+  z-index: 5;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(90%,350px);
+  padding: 12px;
+  border-radius: 15px;
+  background: #0b0919dd;
+  border: 1px solid #513778;
+  backdrop-filter: blur(15px);
 }
 
-#start{
-  position:absolute;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  z-index:8;
-  border:1px solid #bd91ff;
-  border-radius:30px;
-  padding:16px 27px;
-  color:white;
-  background:linear-gradient(120deg,#6024ad,#a34bff);
-  font-weight:bold;
-  letter-spacing:1px;
-  box-shadow:0 0 30px #9b48ff77;
+#start {
+  width: 100%;
+  padding: 14px;
+  border: 0;
+  border-radius: 10px;
+  background: linear-gradient(100deg,#6431bd,#a64cff);
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 1px;
 }
 
-#start:disabled{opacity:.6}
+#info {
+  text-align: center;
+  font-size: 9px;
+  color: #88809e;
+  margin-top: 9px;
+}
 
-@media(max-height:600px){
-  header{top:7px}
-  #cameraBox{width:65px;height:80px}
-  #info{bottom:8px}
+@media(max-height:600px) {
+  #control {
+    bottom: 8px;
+    padding: 8px;
+  }
+
+  #cameraBox {
+    width: 70px;
+    height: 85px;
+  }
 }
 </style>
 </head>
@@ -126,26 +127,22 @@ header p{
 
 <div id="scene"></div>
 
-<header>
-  <h1>SENKO UNIVERSE</h1>
-  <p>INTERACTIVE COSMIC WORLD</p>
-</header>
+<div id="status">● UNIVERSE READY</div>
 
 <div id="cameraBox">
   <video id="camera" autoplay playsinline muted></video>
-  <div id="camLabel">CAMERA OFF</div>
+  <div id="camLabel">CAMERA</div>
 </div>
 
-<button id="start">✦ ACTIVATE UNIVERSE</button>
-
-<div id="info">
-  <div id="status">✦ UNIVERSE STANDBY</div>
+<div id="control">
+  <button id="start">AKTIFKAN HAND TRACKING</button>
+  <div id="info">Gerakkan tangan untuk mengendalikan universe</div>
 </div>
 
 <script type="importmap">
 {
-  "imports":{
-    "three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
   }
 }
 </script>
@@ -154,534 +151,656 @@ header p{
 
 import * as THREE from "three";
 
-const $=id=>document.getElementById(id);
+// =================================
+// ELEMENTS
+// =================================
 
-const video=$("camera");
-const status=$("status");
-const start=$("start");
+const $ = id => document.getElementById(id);
 
-let tracking=false;
-let landmarker=null;
-let stream=null;
+const video = $("camera");
+const status = $("status");
+const startButton = $("start");
 
-let handX=0;
-let handY=0;
-let targetX=0;
-let targetY=0;
+// =================================
+// THREE JS
+// =================================
 
-let lastSeen=0;
-let lastVideoTime=-1;
-let lastDetection=0;
+const scene = new THREE.Scene();
 
-const scene=new THREE.Scene();
-scene.background=new THREE.Color(0x03030b);
+scene.background = new THREE.Color(0x03030b);
 
-const camera=new THREE.PerspectiveCamera(
+const camera = new THREE.PerspectiveCamera(
   55,
-  innerWidth/innerHeight,
-  .1,
+  innerWidth / innerHeight,
+  0.1,
   100
 );
 
-camera.position.z=12;
+camera.position.z = 12;
 
-const renderer=new THREE.WebGLRenderer({
-  antialias:false,
-  powerPreference:"high-performance"
+const renderer = new THREE.WebGLRenderer({
+  antialias: false,
+  alpha: false,
+  powerPreference: "high-performance"
 });
 
+renderer.setPixelRatio(
+  Math.min(devicePixelRatio,1)
+);
+
 renderer.setSize(innerWidth,innerHeight);
-renderer.setPixelRatio(Math.min(devicePixelRatio,.85));
 
 $("scene").appendChild(renderer.domElement);
-
-// =================================
-// LIGHTING
-// =================================
-
-scene.add(new THREE.AmbientLight(0xffffff,.8));
-
-const light=new THREE.PointLight(0x9c58ff,35,30);
-light.position.set(2,4,8);
-scene.add(light);
-
-const blueLight=new THREE.PointLight(0x277bff,25,25);
-blueLight.position.set(-5,-3,5);
-scene.add(blueLight);
 
 // =================================
 // UNIVERSE GROUP
 // =================================
 
-const universe=new THREE.Group();
+const universe = new THREE.Group();
+
 scene.add(universe);
 
 // =================================
-// PLANET MATERIALS
+// PARTICLE SYSTEM
 // =================================
 
-function planet(radius,color,roughness=.8){
+const COUNT = 950;
 
-  const mesh=new THREE.Mesh(
-    new THREE.SphereGeometry(radius,20,16),
-    new THREE.MeshStandardMaterial({
-      color,
-      roughness,
-      metalness:.15
-    })
-  );
+const positions = new Float32Array(COUNT*3);
+const colors = new Float32Array(COUNT*3);
 
-  return mesh;
-}
+const geometry = new THREE.BufferGeometry();
 
-// CENTRAL PLANET
-
-const central=planet(.9,0x5732b9);
-universe.add(central);
-
-// Central glow
-
-const glow=new THREE.Mesh(
-  new THREE.SphereGeometry(1.02,16,12),
-  new THREE.MeshBasicMaterial({
-    color:0x9b43ff,
-    wireframe:true,
-    transparent:true,
-    opacity:.12
-  })
+geometry.setAttribute(
+  "position",
+  new THREE.BufferAttribute(positions,3)
 );
 
-universe.add(glow);
-
-// =================================
-// RING PLANET
-// =================================
-
-const saturnGroup=new THREE.Group();
-
-const saturn=planet(.48,0xe2a65f);
-saturn.position.set(2.0,.5,0);
-
-saturnGroup.add(saturn);
-
-const ring=new THREE.Mesh(
-  new THREE.TorusGeometry(.78,.09,6,48),
-  new THREE.MeshStandardMaterial({
-    color:0xcba3ff,
-    metalness:.6,
-    roughness:.4
-  })
+geometry.setAttribute(
+  "color",
+  new THREE.BufferAttribute(colors,3)
 );
 
-ring.rotation.x=1.1;
-saturn.add(ring);
+const material = new THREE.PointsMaterial({
+  size: 0.075,
+  vertexColors: true,
+  transparent: true,
+  opacity: 0.95,
+  blending: THREE.AdditiveBlending,
+  depthWrite: false,
+  sizeAttenuation: true
+});
 
-universe.add(saturnGroup);
+const particleSystem = new THREE.Points(
+  geometry,
+  material
+);
 
-// =================================
-// BLUE PLANET
-// =================================
-
-const blue=planet(.34,0x188bff);
-blue.position.set(-2,-1,0);
-universe.add(blue);
-
-// =================================
-// PINK PLANET
-// =================================
-
-const pink=planet(.25,0xff398c);
-pink.position.set(-1.7,1.6,1);
-universe.add(pink);
+universe.add(particleSystem);
 
 // =================================
-// GREEN PLANET
+// RANDOM SPHERE
 // =================================
 
-const green=planet(.22,0x37d9a0);
-green.position.set(1.4,-1.7,0);
-universe.add(green);
+function randomSphere(radius) {
 
-// =================================
-// SMALL MOONS
-// =================================
+  const theta = Math.random()*Math.PI*2;
+  const z = Math.random()*2-1;
 
-const moons=[];
+  const r = radius*Math.cbrt(Math.random());
 
-for(let i=0;i<5;i++){
+  const s = Math.sqrt(1-z*z);
 
-  const moon=planet(
-    .09+Math.random()*.07,
-    [0xffffff,0x8bcaff,0xffb9e8][i%3]
-  );
-
-  universe.add(moon);
-  moons.push(moon);
+  return [
+    r*s*Math.cos(theta),
+    r*s*Math.sin(theta),
+    r*z
+  ];
 }
 
 // =================================
-// ORBIT LINES
+// COLOR
 // =================================
 
-function orbit(radius,color){
+const colorA = new THREE.Color(0x8546ff);
+const colorB = new THREE.Color(0x32caff);
+const colorC = new THREE.Color(0xffb44a);
+const colorD = new THREE.Color(0xff4cba);
 
-  const points=[];
+function putColor(index,color) {
 
-  for(let i=0;i<=100;i++){
+  const factor = 0.65+Math.random()*0.35;
 
-    const a=i/100*Math.PI*2;
+  colors[index*3] = color.r*factor;
+  colors[index*3+1] = color.g*factor;
+  colors[index*3+2] = color.b*factor;
+}
 
-    points.push(
-      new THREE.Vector3(
-        Math.cos(a)*radius,
-        Math.sin(a)*radius*.65,
-        0
-      )
-    );
+// =================================
+// PLANET GENERATOR
+// =================================
+
+function addPlanet(index,center,radius,color) {
+
+  const p = randomSphere(radius);
+
+  positions[index*3] = p[0]+center[0];
+  positions[index*3+1] = p[1]+center[1];
+  positions[index*3+2] = p[2]+center[2];
+
+  putColor(index,color);
+}
+
+// =================================
+// RING GENERATOR
+// =================================
+
+function addRing(index,center,inner,outer,color,tilt=0) {
+
+  const angle = Math.random()*Math.PI*2;
+
+  const r = inner+Math.random()*(outer-inner);
+
+  const y = (Math.random()-0.5)*0.12;
+
+  const x = Math.cos(angle)*r;
+  const z = Math.sin(angle)*r;
+
+  positions[index*3] = center[0]+x;
+  positions[index*3+1] = center[1]+y*Math.cos(tilt)-z*Math.sin(tilt);
+  positions[index*3+2] = center[2]+y*Math.sin(tilt)+z*Math.cos(tilt);
+
+  putColor(index,color);
+}
+
+// =================================
+// BUILD UNIVERSE
+// =================================
+
+function buildUniverse() {
+
+  for(let i=0;i<COUNT;i++) {
+
+    const ratio = i/COUNT;
+
+    // PLANET 1
+    if(ratio<0.34) {
+
+      addPlanet(
+        i,
+        [0,0,0],
+        1.05,
+        colorA
+      );
+
+    }
+
+    // RING 1
+    else if(ratio<0.53) {
+
+      addRing(
+        i,
+        [0,0,0],
+        1.35,
+        2.05,
+        colorB,
+        0.15
+      );
+
+    }
+
+    // PLANET 2
+    else if(ratio<0.66) {
+
+      addPlanet(
+        i,
+        [2.35,0.8,0],
+        0.48,
+        colorC
+      );
+
+    }
+
+    // PLANET 3
+    else if(ratio<0.77) {
+
+      addPlanet(
+        i,
+        [-2.3,-0.7,0],
+        0.38,
+        colorD
+      );
+
+    }
+
+    // PLANET 4
+    else if(ratio<0.86) {
+
+      addPlanet(
+        i,
+        [0.7,-2.1,0],
+        0.32,
+        colorB
+      );
+
+    }
+
+    // RING 2
+    else if(ratio<0.94) {
+
+      addRing(
+        i,
+        [2.35,0.8,0],
+        0.55,
+        0.85,
+        colorD,
+        0.5
+      );
+
+    }
+
+    // SMALL COSMIC PARTICLES
+    else {
+
+      const p = randomSphere(3.0);
+
+      positions[i*3] = p[0];
+      positions[i*3+1] = p[1];
+      positions[i*3+2] = p[2];
+
+      putColor(i,colorB);
+    }
   }
 
-  const geo=new THREE.BufferGeometry().setFromPoints(points);
-
-  const line=new THREE.LineLoop(
-    geo,
-    new THREE.LineBasicMaterial({
-      color,
-      transparent:true,
-      opacity:.35
-    })
-  );
-
-  universe.add(line);
-  return line;
+  geometry.attributes.position.needsUpdate = true;
+  geometry.attributes.color.needsUpdate = true;
 }
 
-const orbit1=orbit(2.2,0x8d55ff);
-const orbit2=orbit(2.8,0x297dff);
-const orbit3=orbit(3.1,0xb54cff);
-
-orbit1.rotation.x=.5;
-orbit2.rotation.y=.7;
-orbit3.rotation.x=1.1;
+buildUniverse();
 
 // =================================
 // BACKGROUND STARS
 // =================================
 
-const STAR_COUNT=650;
-const starPositions=new Float32Array(STAR_COUNT*3);
+const starPositions = [];
 
-for(let i=0;i<STAR_COUNT;i++){
+for(let i=0;i<350;i++) {
 
-  starPositions[i*3]=(Math.random()-.5)*35;
-  starPositions[i*3+1]=(Math.random()-.5)*25;
-  starPositions[i*3+2]=-5-Math.random()*15;
+  starPositions.push(
+    (Math.random()-0.5)*35,
+    (Math.random()-0.5)*25,
+    -5-Math.random()*15
+  );
 }
 
-const starGeometry=new THREE.BufferGeometry();
+const starGeometry = new THREE.BufferGeometry();
 
 starGeometry.setAttribute(
   "position",
-  new THREE.BufferAttribute(starPositions,3)
+  new THREE.Float32BufferAttribute(starPositions,3)
 );
 
-const starMaterial=new THREE.PointsMaterial({
-  color:0x9b7aff,
-  size:.045,
-  transparent:true,
-  opacity:.8
+const starMaterial = new THREE.PointsMaterial({
+  color: 0x8d76ff,
+  size: 0.045,
+  transparent: true,
+  opacity: 0.65
 });
 
-const stars=new THREE.Points(starGeometry,starMaterial);
+const stars = new THREE.Points(
+  starGeometry,
+  starMaterial
+);
+
 scene.add(stars);
 
 // =================================
-// COSMIC PARTICLES
+// HAND TRACKING STATE
 // =================================
 
-const PARTICLE_COUNT=350;
-const particlePositions=new Float32Array(PARTICLE_COUNT*3);
+let landmarker = null;
+let stream = null;
+let tracking = false;
 
-for(let i=0;i<PARTICLE_COUNT;i++){
+let handDetected = false;
 
-  const angle=Math.random()*Math.PI*2;
-  const radius=2+Math.random()*3;
+let targetX = 0;
+let targetY = 0;
 
-  particlePositions[i*3]=Math.cos(angle)*radius;
-  particlePositions[i*3+1]=Math.sin(angle)*radius;
-  particlePositions[i*3+2]=(Math.random()-.5)*2;
+let currentX = 0;
+let currentY = 0;
+
+let targetScale = 1;
+let currentScale = 1;
+
+let lastDetection = 0;
+let lastVideoTime = -1;
+
+// =================================
+// SCREEN BOUNDS
+// =================================
+
+function getScreenBounds() {
+
+  const distance = camera.position.z;
+
+  const visibleHeight =
+    2*Math.tan(THREE.MathUtils.degToRad(camera.fov/2))*distance;
+
+  const visibleWidth =
+    visibleHeight*camera.aspect;
+
+  return {
+    x: Math.max(0,visibleWidth/2-3.0),
+    y: Math.max(0,visibleHeight/2-3.0)
+  };
 }
 
-const particleGeometry=new THREE.BufferGeometry();
-
-particleGeometry.setAttribute(
-  "position",
-  new THREE.BufferAttribute(particlePositions,3)
-);
-
-const particleMaterial=new THREE.PointsMaterial({
-  color:0x9d6aff,
-  size:.035,
-  transparent:true,
-  opacity:.7,
-  blending:THREE.AdditiveBlending
-});
-
-const particles=new THREE.Points(
-  particleGeometry,
-  particleMaterial
-);
-
-universe.add(particles);
-
 // =================================
-// HAND TRACKING
+// HAND POSITION
 // =================================
 
-async function startTracking(){
+function updateHand(lm) {
 
-  start.disabled=true;
-  start.textContent="MEMUAT KAMERA...";
+  // palm center, more stable than wrist alone
 
-  try{
+  const palmX = (
+    lm[0].x+
+    lm[5].x+
+    lm[9].x+
+    lm[13].x+
+    lm[17].x
+  )/5;
 
-    if(!navigator.mediaDevices?.getUserMedia){
-      throw new Error("Gunakan HTTPS untuk membuka kamera");
-    }
+  const palmY = (
+    lm[0].y+
+    lm[5].y+
+    lm[9].y+
+    lm[13].y+
+    lm[17].y
+  )/5;
 
-    stream=await navigator.mediaDevices.getUserMedia({
-      audio:false,
-      video:{
-        facingMode:"user",
-        width:{ideal:320},
-        height:{ideal:240},
-        frameRate:{ideal:20,max:20}
+  const bounds = getScreenBounds();
+
+  // mirrored camera coordinates
+
+  const normalizedX = (0.5-palmX)*2;
+  const normalizedY = (0.5-palmY)*2;
+
+  // limit movement so the object stays visible
+
+  targetX = THREE.MathUtils.clamp(
+    normalizedX*bounds.x,
+    -bounds.x,
+    bounds.x
+  );
+
+  targetY = THREE.MathUtils.clamp(
+    normalizedY*bounds.y,
+    -bounds.y,
+    bounds.y
+  );
+
+  // palm size controls scale gently
+
+  const palmWidth = Math.hypot(
+    lm[5].x-lm[17].x,
+    lm[5].y-lm[17].y
+  );
+
+  targetScale = THREE.MathUtils.clamp(
+    0.8+(palmWidth-0.12)*0.8,
+    0.78,
+    1.08
+  );
+
+  handDetected = true;
+}
+
+// =================================
+// MEDIAPIPE
+// =================================
+
+async function startTracking() {
+
+  if(!navigator.mediaDevices?.getUserMedia) {
+
+    status.textContent = "HTTPS DIPERLUKAN";
+    return;
+  }
+
+  startButton.disabled = true;
+  startButton.textContent = "MEMUAT KAMERA...";
+
+  try {
+
+    stream = await navigator.mediaDevices.getUserMedia({
+
+      audio: false,
+
+      video: {
+        facingMode: "user",
+        width: {ideal:320},
+        height: {ideal:240},
+        frameRate: {ideal:15,max:20}
       }
     });
 
-    video.srcObject=stream;
+    video.srcObject = stream;
+
     await video.play();
 
-    const vision=await import(
+    const vision = await import(
       "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14"
     );
 
-    const fileset=await vision.FilesetResolver.forVisionTasks(
-      "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm"
-    );
+    const fileset =
+      await vision.FilesetResolver.forVisionTasks(
+        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm"
+      );
 
-    const options={
-      baseOptions:{
+    const options = {
+
+      baseOptions: {
         modelAssetPath:
         "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
-        delegate:"CPU"
+        delegate: "GPU"
       },
-      runningMode:"VIDEO",
-      numHands:1,
-      minHandDetectionConfidence:.55,
-      minHandPresenceConfidence:.55,
-      minTrackingConfidence:.55
+
+      runningMode: "VIDEO",
+      numHands: 1,
+
+      minHandDetectionConfidence: 0.55,
+      minHandPresenceConfidence: 0.55,
+      minTrackingConfidence: 0.55
     };
 
-    landmarker=await vision.HandLandmarker.createFromOptions(
-      fileset,
-      options
-    );
+    try {
 
-    tracking=true;
+      landmarker =
+        await vision.HandLandmarker.createFromOptions(
+          fileset,
+          options
+        );
 
-    $("camLabel").textContent="CAMERA ACTIVE";
-    status.textContent="✦ TUNJUKKAN TANGANMU";
+    } catch(error) {
 
-    start.style.display="none";
+      console.warn("GPU tidak tersedia, mencoba CPU");
+
+      options.baseOptions.delegate = "CPU";
+
+      landmarker =
+        await vision.HandLandmarker.createFromOptions(
+          fileset,
+          options
+        );
+    }
+
+    tracking = true;
+
+    status.textContent = "● HAND TRACKING ACTIVE";
+
+    $("camLabel").textContent = "ACTIVE";
+
+    startButton.textContent = "KAMERA AKTIF";
 
     requestAnimationFrame(trackHands);
 
-  }catch(error){
+  } catch(error) {
 
     console.error(error);
 
-    status.textContent="KAMERA GAGAL: "+error.message;
+    status.textContent = "GAGAL MEMUAT KAMERA";
 
-    start.disabled=false;
-    start.textContent="COBA LAGI";
+    startButton.disabled = false;
+    startButton.textContent = "COBA LAGI";
 
-    if(stream){
+    if(stream) {
       stream.getTracks().forEach(t=>t.stop());
-      stream=null;
+      stream = null;
     }
   }
 }
 
 // =================================
-// STABLE HAND POSITION
+// DETECTION LOOP
 // =================================
 
-function clamp(value,min,max){
-  return Math.max(min,Math.min(max,value));
-}
+function trackHands(now) {
 
-function trackHands(now){
-
-  if(!tracking)return;
+  if(!tracking) return;
 
   requestAnimationFrame(trackHands);
 
-  // maksimal 15-20 kali deteksi per detik
+  // detection limited to 10 FPS
 
-  if(now-lastDetection<65)return;
+  if(now-lastDetection<100) return;
 
-  if(video.readyState<2)return;
+  if(video.readyState<2) return;
 
-  if(video.currentTime===lastVideoTime)return;
+  if(video.currentTime===lastVideoTime) return;
 
-  lastDetection=now;
-  lastVideoTime=video.currentTime;
+  lastDetection = now;
+  lastVideoTime = video.currentTime;
 
-  try{
+  try {
 
-    const result=landmarker.detectForVideo(video,now);
+    const result = landmarker.detectForVideo(
+      video,
+      now
+    );
 
-    if(result.landmarks?.length){
+    if(result.landmarks?.length) {
 
-      const lm=result.landmarks[0];
+      const lm = result.landmarks[0];
 
-      // titik tengah telapak, bukan pergelangan saja
+      updateHand(lm);
 
-      const palmX=(
-        lm[0].x+
-        lm[5].x+
-        lm[9].x+
-        lm[13].x+
-        lm[17].x
-      )/5;
+      status.textContent = "● TANGAN TERDETEKSI";
 
-      const palmY=(
-        lm[0].y+
-        lm[5].y+
-        lm[9].y+
-        lm[13].y+
-        lm[17].y
-      )/5;
+    } else {
 
-      // Batasi pergerakan agar seluruh planet tetap terlihat
+      handDetected = false;
 
-      const aspect=innerWidth/innerHeight;
-      const viewHeight=2*Math.tan(THREE.MathUtils.degToRad(55/2))*12;
-      const viewWidth=viewHeight*aspect;
+      // keep the last known position
+      // do not reset universe to zero
 
-      const safeX=Math.max(.3,viewWidth/2-3.4);
-      const safeY=Math.max(.3,viewHeight/2-3.4);
-
-      const rawX=(.5-palmX)*viewWidth*1.25;
-      const rawY=(.5-palmY)*viewHeight*1.25;
-
-      targetX=clamp(rawX,-safeX,safeX);
-      targetY=clamp(rawY,-safeY,safeY);
-
-      lastSeen=now;
-
-      status.textContent="✦ HAND TRACKING ACTIVE";
-
-    }else{
-
-      status.textContent="✦ MENUNGGU TANGAN...";
+      status.textContent = "● MENUNGGU TANGAN...";
     }
 
-  }catch(error){
+  } catch(error) {
+
     console.warn(error);
+
   }
 }
+
+startButton.addEventListener(
+  "click",
+  startTracking
+);
 
 // =================================
 // ANIMATION
 // =================================
 
-const clock=new THREE.Clock();
+const clock = new THREE.Clock();
 
-function animate(){
+function animate() {
 
   requestAnimationFrame(animate);
 
-  const dt=Math.min(clock.getDelta(),.04);
-  const time=clock.elapsedTime;
+  const dt = Math.min(clock.getDelta(),0.04);
 
-  // Tracking smoothing
+  const elapsed = clock.elapsedTime;
 
-  const seen=performance.now()-lastSeen;
+  // frame-rate independent smoothing
 
-  if(seen>1200){
+  const follow = 1-Math.exp(-dt*5);
 
-    // Jika tangan hilang, kembali perlahan ke tengah
+  currentX += (targetX-currentX)*follow;
+  currentY += (targetY-currentY)*follow;
 
-    targetX*=.985;
-    targetY*=.985;
-  }
+  currentScale +=
+    (targetScale-currentScale)*follow;
 
-  const smooth=1-Math.pow(.001,dt);
+  // move universe smoothly
 
-  handX+=(targetX-handX)*smooth;
-  handY+=(targetY-handY)*smooth;
+  universe.position.x = currentX;
+  universe.position.y = currentY;
 
-  // Posisi universe dibatasi
+  universe.scale.setScalar(currentScale);
 
-  universe.position.x=clamp(handX,-4,4);
-  universe.position.y=clamp(handY,-4,4);
+  // stable rotation, no random tilting
 
-  // Rotasi lembut, bukan mengikuti sudut tangan
+  universe.rotation.y = elapsed*0.12;
 
-  central.rotation.y+=dt*.15;
-  central.rotation.x=Math.sin(time*.3)*.08;
+  universe.rotation.x = 0.08;
 
-  glow.rotation.y-=dt*.12;
-  glow.rotation.x+=dt*.1;
+  universe.rotation.z = 0;
 
-  saturnGroup.rotation.y+=dt*.35;
-  saturn.rotation.y+=dt*.3;
+  // background movement
 
-  blue.rotation.y+=dt*.45;
-  pink.rotation.y+=dt*.5;
-  green.rotation.y+=dt*.4;
+  stars.rotation.y += dt*0.012;
 
-  // Planet kecil mengorbit
-
-  moons.forEach((moon,i)=>{
-
-    const angle=time*(.35+i*.08)+i*1.25;
-    const radius=1.2+i*.36;
-
-    moon.position.x=Math.cos(angle)*radius;
-    moon.position.y=Math.sin(angle)*radius*.7;
-    moon.position.z=Math.sin(angle*1.3)*.7;
-  });
-
-  // Efek kosmik
-
-  stars.rotation.y+=dt*.008;
-  particles.rotation.y+=dt*.035;
-  particles.rotation.x=Math.sin(time*.2)*.08;
+  stars.rotation.x =
+    Math.sin(elapsed*0.1)*0.015;
 
   renderer.render(scene,camera);
 }
 
-// =================================
-// START
-// =================================
-
-$("start").addEventListener("click",startTracking);
-
 animate();
 
 // =================================
-// RESPONSIVE
+// RESIZE
 // =================================
 
 window.addEventListener("resize",()=>{
 
-  camera.aspect=innerWidth/innerHeight;
+  camera.aspect = innerWidth/innerHeight;
+
   camera.updateProjectionMatrix();
 
-  renderer.setSize(innerWidth,innerHeight);
-  renderer.setPixelRatio(Math.min(devicePixelRatio,.85));
+  renderer.setSize(
+    innerWidth,
+    innerHeight
+  );
+
+  renderer.setPixelRatio(
+    Math.min(devicePixelRatio,1)
+  );
+
+  // clamp the existing position after resize
+
+  const bounds = getScreenBounds();
+
+  targetX = THREE.MathUtils.clamp(
+    targetX,-bounds.x,bounds.x
+  );
+
+  targetY = THREE.MathUtils.clamp(
+    targetY,-bounds.y,bounds.y
+  );
 
 });
 
@@ -691,18 +810,26 @@ window.addEventListener("resize",()=>{
 
 window.addEventListener("pagehide",()=>{
 
-  tracking=false;
+  tracking = false;
 
-  if(stream){
+  if(stream) {
     stream.getTracks().forEach(t=>t.stop());
   }
 
-  if(landmarker){
+  if(landmarker) {
     landmarker.close();
   }
+
+  geometry.dispose();
+  material.dispose();
+  starGeometry.dispose();
+  starMaterial.dispose();
+
+  renderer.dispose();
 
 });
 
 </script>
+
 </body>
 </html>

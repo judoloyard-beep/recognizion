@@ -4,180 +4,120 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Senko Hand Universe V3</title>
+<title>Senko Universe V4</title>
 
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+  background:#03030b;
+  color:white;
+  font-family:Arial,sans-serif;
+  overflow:hidden;
+  height:100dvh;
 }
 
-body {
-  background: #03030b;
-  color: white;
-  font-family: Arial, sans-serif;
-  overflow: hidden;
-  height: 100dvh;
-  touch-action: manipulation;
+#scene{position:fixed;inset:0}
+canvas{display:block}
+
+header{
+  position:absolute;
+  top:18px;
+  width:100%;
+  text-align:center;
+  z-index:3;
+  pointer-events:none;
 }
 
-#scene {
-  position: fixed;
-  inset: 0;
+h1{
+  font-size:18px;
+  letter-spacing:5px;
+  color:#e5d5ff;
+  text-shadow:0 0 18px #a34dff;
 }
 
-canvas {
-  display: block;
+header p{
+  font-size:9px;
+  letter-spacing:3px;
+  margin-top:7px;
+  color:#82749f;
 }
 
-header {
-  position: absolute;
-  z-index: 3;
-  top: 17px;
-  left: 0;
-  width: 100%;
-  text-align: center;
-  pointer-events: none;
+#cameraBox{
+  position:absolute;
+  top:15px;
+  right:12px;
+  width:85px;
+  height:110px;
+  overflow:hidden;
+  border:1px solid #9250dc;
+  border-radius:13px;
+  background:#111;
+  z-index:5;
+  box-shadow:0 0 15px #843aff44;
 }
 
-header h1 {
-  font-size: 19px;
-  letter-spacing: 4px;
-  color: #e5d5ff;
-  text-shadow: 0 0 15px #a34dff;
+#camera{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  transform:scaleX(-1);
 }
 
-header p {
-  font-size: 9px;
-  letter-spacing: 3px;
-  margin-top: 6px;
-  color: #8980ac;
+#camLabel{
+  position:absolute;
+  bottom:0;
+  width:100%;
+  text-align:center;
+  padding:5px;
+  font-size:8px;
+  background:#080613cc;
+  color:#d9c2ff;
 }
 
-#status {
-  position: absolute;
-  top: 85px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 4;
-  padding: 9px 16px;
-  border: 1px solid #7545b7;
-  border-radius: 30px;
-  background: #110b24dd;
-  color: #d5baff;
-  font-size: 10px;
-  white-space: nowrap;
+#info{
+  position:absolute;
+  bottom:22px;
+  left:50%;
+  transform:translateX(-50%);
+  width:max-content;
+  max-width:90%;
+  padding:12px 22px;
+  border:1px solid #653a99;
+  background:#0b0719dd;
+  border-radius:30px;
+  text-align:center;
+  box-shadow:0 0 20px #8c3cff33;
+  z-index:5;
 }
 
-#cameraBox {
-  position: absolute;
-  z-index: 4;
-  top: 15px;
-  right: 12px;
-  width: 92px;
-  height: 115px;
-  border: 1px solid #995aff;
-  border-radius: 12px;
-  overflow: hidden;
-  background: #111;
-  box-shadow: 0 0 15px #843aff44;
+#status{
+  font-size:11px;
+  color:#d9baff;
 }
 
-#camera {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transform: scaleX(-1);
+#start{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  z-index:8;
+  border:1px solid #bd91ff;
+  border-radius:30px;
+  padding:16px 27px;
+  color:white;
+  background:linear-gradient(120deg,#6024ad,#a34bff);
+  font-weight:bold;
+  letter-spacing:1px;
+  box-shadow:0 0 30px #9b48ff77;
 }
 
-#camLabel {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  padding: 5px;
-  text-align: center;
-  font-size: 8px;
-  background: #080613cc;
-  color: #d7bdff;
-}
+#start:disabled{opacity:.6}
 
-#panel {
-  position: absolute;
-  z-index: 5;
-  bottom: 14px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(94%, 440px);
-  padding: 13px;
-  border-radius: 18px;
-  background: #0b0919e8;
-  border: 1px solid #513778;
-  box-shadow: 0 0 30px #853cff22;
-  backdrop-filter: blur(15px);
-}
-
-#gesture {
-  text-align: center;
-  font-size: 11px;
-  color: #d6baff;
-  margin-bottom: 11px;
-}
-
-.buttons {
-  display: grid;
-  grid-template-columns: repeat(4,1fr);
-  gap: 7px;
-}
-
-button {
-  color: white;
-  background: #19132b;
-  border: 1px solid #493368;
-  padding: 11px 3px;
-  border-radius: 10px;
-  font-size: 10px;
-}
-
-button.active {
-  background: linear-gradient(135deg,#7138bb,#a14cff);
-  border-color: #d3a8ff;
-  box-shadow: 0 0 14px #934cff66;
-}
-
-#start {
-  width: 100%;
-  margin-top: 10px;
-  padding: 13px;
-  background: linear-gradient(90deg,#6431bd,#a64cff);
-  border: none;
-  font-weight: bold;
-  letter-spacing: 1px;
-}
-
-#quality {
-  width: 100%;
-  margin-top: 8px;
-  padding: 9px;
-  border-radius: 9px;
-  background: #171126;
-  border: 1px solid #45335d;
-  color: #cdb7ff;
-}
-
-#hint {
-  text-align: center;
-  font-size: 9px;
-  color: #77718e;
-  margin-top: 9px;
-}
-
-@media(max-height:620px) {
-  header { top: 7px; }
-  #status { top: 48px; }
-  #panel { bottom: 5px; padding: 8px; }
-  #cameraBox { width: 65px; height: 80px; }
-  button { padding: 8px 2px; }
+@media(max-height:600px){
+  header{top:7px}
+  #cameraBox{width:65px;height:80px}
+  #info{bottom:8px}
 }
 </style>
 </head>
@@ -188,45 +128,24 @@ button.active {
 
 <header>
   <h1>SENKO UNIVERSE</h1>
-  <p>HAND INTERACTIVE EXPERIENCE</p>
+  <p>INTERACTIVE COSMIC WORLD</p>
 </header>
-
-<div id="status">✦ UNIVERSE READY</div>
 
 <div id="cameraBox">
   <video id="camera" autoplay playsinline muted></video>
-  <div id="camLabel">HAND CAMERA</div>
+  <div id="camLabel">CAMERA OFF</div>
 </div>
 
-<div id="panel">
+<button id="start">✦ ACTIVATE UNIVERSE</button>
 
-  <div id="gesture">✋ Siap mendeteksi tangan</div>
-
-  <div class="buttons">
-    <button data-mode="1" class="active">🌌 SPACE</button>
-    <button data-mode="2">🪐 SATURN</button>
-    <button data-mode="3">💙 LOVE</button>
-    <button data-mode="4">💗 HEART</button>
-  </div>
-
-  <button id="start">✦ AKTIFKAN KAMERA</button>
-
-  <select id="quality">
-    <option value="low">PERFORMA: HEMAT</option>
-    <option value="medium" selected>PERFORMA: SEIMBANG</option>
-    <option value="high">PERFORMA: TINGGI</option>
-  </select>
-
-  <div id="hint">
-    Telapak: Space · Telunjuk: Saturn · Peace: Love · Genggam: Heart
-  </div>
-
+<div id="info">
+  <div id="status">✦ UNIVERSE STANDBY</div>
 </div>
 
 <script type="importmap">
 {
-  "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+  "imports":{
+    "three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
   }
 }
 </script>
@@ -235,705 +154,552 @@ button.active {
 
 import * as THREE from "three";
 
-const $ = id => document.getElementById(id);
+const $=id=>document.getElementById(id);
 
-const video = $("camera");
-const status = $("status");
-const gesture = $("gesture");
+const video=$("camera");
+const status=$("status");
+const start=$("start");
 
-const QUALITY = {
-  low: 500,
-  medium: 900,
-  high: 1300
-};
+let tracking=false;
+let landmarker=null;
+let stream=null;
 
-let COUNT = QUALITY.medium;
-let mode = 1;
-let tracking = false;
-let landmarker = null;
-let stream = null;
+let handX=0;
+let handY=0;
+let targetX=0;
+let targetY=0;
 
-let handX = 0;
-let handY = 0;
-let handScale = 1;
+let lastSeen=0;
+let lastVideoTime=-1;
+let lastDetection=0;
 
-let lastDetection = 0;
-let candidateMode = 1;
-let candidateCount = 0;
-let lastVideoTime = -1;
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0x03030b);
 
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x03030b);
-
-const camera = new THREE.PerspectiveCamera(
+const camera=new THREE.PerspectiveCamera(
   55,
-  innerWidth / innerHeight,
-  0.1,
+  innerWidth/innerHeight,
+  .1,
   100
 );
 
-camera.position.z = 11;
+camera.position.z=12;
 
-const renderer = new THREE.WebGLRenderer({
-  antialias: false,
-  alpha: false,
-  powerPreference: "high-performance"
+const renderer=new THREE.WebGLRenderer({
+  antialias:false,
+  powerPreference:"high-performance"
 });
 
 renderer.setSize(innerWidth,innerHeight);
-renderer.setPixelRatio(Math.min(devicePixelRatio,1));
+renderer.setPixelRatio(Math.min(devicePixelRatio,.85));
 
 $("scene").appendChild(renderer.domElement);
 
-const universe = new THREE.Group();
+// =================================
+// LIGHTING
+// =================================
+
+scene.add(new THREE.AmbientLight(0xffffff,.8));
+
+const light=new THREE.PointLight(0x9c58ff,35,30);
+light.position.set(2,4,8);
+scene.add(light);
+
+const blueLight=new THREE.PointLight(0x277bff,25,25);
+blueLight.position.set(-5,-3,5);
+scene.add(blueLight);
+
+// =================================
+// UNIVERSE GROUP
+// =================================
+
+const universe=new THREE.Group();
 scene.add(universe);
 
-// ===============================
-// PARTICLE DATA
-// ===============================
+// =================================
+// PLANET MATERIALS
+// =================================
 
-let positions;
-let colors;
-let geometry;
-let particles;
-let targets = {};
+function planet(radius,color,roughness=.8){
 
-const palette = {
-  1: new THREE.Color(0x428aff),
-  2: new THREE.Color(0xffa63b),
-  3: new THREE.Color(0x16dfff),
-  4: new THREE.Color(0xff267b)
-};
-
-function spherePoint(radius) {
-  const theta = Math.random()*Math.PI*2;
-  const z = Math.random()*2-1;
-  const r = radius*Math.cbrt(Math.random());
-  const s = Math.sqrt(1-z*z);
-
-  return [
-    r*s*Math.cos(theta),
-    r*s*Math.sin(theta),
-    r*z
-  ];
-}
-
-function generateTargets() {
-
-  const space = new Float32Array(COUNT*3);
-  const saturn = new Float32Array(COUNT*3);
-  const heart = new Float32Array(COUNT*3);
-  const love = new Float32Array(COUNT*3);
-
-  const textCanvas = document.createElement("canvas");
-  textCanvas.width = 1000;
-  textCanvas.height = 250;
-
-  const ctx = textCanvas.getContext("2d");
-
-  ctx.fillStyle = "white";
-  ctx.font = "bold 135px Arial";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText("I LOVE YOU",500,125);
-
-  const pixels = ctx.getImageData(0,0,1000,250).data;
-  const points = [];
-
-  for(let y=0;y<250;y+=2) {
-    for(let x=0;x<1000;x+=2) {
-      if(pixels[(y*1000+x)*4+3]>100) {
-        points.push([x,y]);
-      }
-    }
-  }
-
-  for(let i=0;i<COUNT;i++) {
-
-    let p = spherePoint(3.6);
-    space.set(p,i*3);
-
-    if(i<COUNT*0.65) {
-      p = spherePoint(1.25);
-    } else {
-      const a = Math.random()*Math.PI*2;
-      const r = 1.7+Math.random()*1.6;
-
-      p = [
-        Math.cos(a)*r,
-        (Math.random()-0.5)*0.07,
-        Math.sin(a)*r
-      ];
-    }
-
-    saturn.set(p,i*3);
-
-    const t = Math.random()*Math.PI*2;
-    const scale = Math.sqrt(Math.random());
-
-    const hx = 16*Math.pow(Math.sin(t),3);
-    const hy =
-      13*Math.cos(t)
-      -5*Math.cos(2*t)
-      -2*Math.cos(3*t)
-      -Math.cos(4*t);
-
-    heart.set([
-      hx*scale*0.15,
-      hy*scale*0.15,
-      (Math.random()-0.5)*0.6
-    ],i*3);
-
-    const textPoint = points[
-      Math.floor(Math.random()*points.length)
-    ];
-
-    love.set([
-      (textPoint[0]-500)*0.008,
-      (125-textPoint[1])*0.008,
-      (Math.random()-0.5)*0.12
-    ],i*3);
-  }
-
-  targets = {space,saturn,heart,love};
-
-  return space;
-}
-
-// ===============================
-// CREATE PARTICLES
-// ===============================
-
-function createParticles() {
-
-  targets = {};
-  const initial = generateTargets();
-
-  positions = new Float32Array(initial);
-  colors = new Float32Array(COUNT*3);
-
-  geometry = new THREE.BufferGeometry();
-
-  geometry.setAttribute(
-    "position",
-    new THREE.BufferAttribute(positions,3)
+  const mesh=new THREE.Mesh(
+    new THREE.SphereGeometry(radius,20,16),
+    new THREE.MeshStandardMaterial({
+      color,
+      roughness,
+      metalness:.15
+    })
   );
 
-  geometry.setAttribute(
-    "color",
-    new THREE.BufferAttribute(colors,3)
-  );
-
-  material = new THREE.PointsMaterial({
-    size: 0.065,
-    vertexColors: true,
-    transparent: true,
-    opacity: 0.95,
-    blending: THREE.AdditiveBlending,
-    depthWrite: false,
-    sizeAttenuation: true
-  });
-
-  particles = new THREE.Points(geometry,material);
-  universe.add(particles);
-
-  updateColors();
+  return mesh;
 }
 
-let material;
+// CENTRAL PLANET
 
-// ===============================
+const central=planet(.9,0x5732b9);
+universe.add(central);
+
+// Central glow
+
+const glow=new THREE.Mesh(
+  new THREE.SphereGeometry(1.02,16,12),
+  new THREE.MeshBasicMaterial({
+    color:0x9b43ff,
+    wireframe:true,
+    transparent:true,
+    opacity:.12
+  })
+);
+
+universe.add(glow);
+
+// =================================
+// RING PLANET
+// =================================
+
+const saturnGroup=new THREE.Group();
+
+const saturn=planet(.48,0xe2a65f);
+saturn.position.set(2.0,.5,0);
+
+saturnGroup.add(saturn);
+
+const ring=new THREE.Mesh(
+  new THREE.TorusGeometry(.78,.09,6,48),
+  new THREE.MeshStandardMaterial({
+    color:0xcba3ff,
+    metalness:.6,
+    roughness:.4
+  })
+);
+
+ring.rotation.x=1.1;
+saturn.add(ring);
+
+universe.add(saturnGroup);
+
+// =================================
+// BLUE PLANET
+// =================================
+
+const blue=planet(.34,0x188bff);
+blue.position.set(-2,-1,0);
+universe.add(blue);
+
+// =================================
+// PINK PLANET
+// =================================
+
+const pink=planet(.25,0xff398c);
+pink.position.set(-1.7,1.6,1);
+universe.add(pink);
+
+// =================================
+// GREEN PLANET
+// =================================
+
+const green=planet(.22,0x37d9a0);
+green.position.set(1.4,-1.7,0);
+universe.add(green);
+
+// =================================
+// SMALL MOONS
+// =================================
+
+const moons=[];
+
+for(let i=0;i<5;i++){
+
+  const moon=planet(
+    .09+Math.random()*.07,
+    [0xffffff,0x8bcaff,0xffb9e8][i%3]
+  );
+
+  universe.add(moon);
+  moons.push(moon);
+}
+
+// =================================
+// ORBIT LINES
+// =================================
+
+function orbit(radius,color){
+
+  const points=[];
+
+  for(let i=0;i<=100;i++){
+
+    const a=i/100*Math.PI*2;
+
+    points.push(
+      new THREE.Vector3(
+        Math.cos(a)*radius,
+        Math.sin(a)*radius*.65,
+        0
+      )
+    );
+  }
+
+  const geo=new THREE.BufferGeometry().setFromPoints(points);
+
+  const line=new THREE.LineLoop(
+    geo,
+    new THREE.LineBasicMaterial({
+      color,
+      transparent:true,
+      opacity:.35
+    })
+  );
+
+  universe.add(line);
+  return line;
+}
+
+const orbit1=orbit(2.2,0x8d55ff);
+const orbit2=orbit(2.8,0x297dff);
+const orbit3=orbit(3.1,0xb54cff);
+
+orbit1.rotation.x=.5;
+orbit2.rotation.y=.7;
+orbit3.rotation.x=1.1;
+
+// =================================
 // BACKGROUND STARS
-// ===============================
+// =================================
 
-const starPositions = [];
+const STAR_COUNT=650;
+const starPositions=new Float32Array(STAR_COUNT*3);
 
-for(let i=0;i<350;i++) {
-  starPositions.push(
-    (Math.random()-0.5)*35,
-    (Math.random()-0.5)*25,
-    -5-Math.random()*15
-  );
+for(let i=0;i<STAR_COUNT;i++){
+
+  starPositions[i*3]=(Math.random()-.5)*35;
+  starPositions[i*3+1]=(Math.random()-.5)*25;
+  starPositions[i*3+2]=-5-Math.random()*15;
 }
 
-const starGeometry = new THREE.BufferGeometry();
+const starGeometry=new THREE.BufferGeometry();
 
 starGeometry.setAttribute(
   "position",
-  new THREE.Float32BufferAttribute(starPositions,3)
+  new THREE.BufferAttribute(starPositions,3)
 );
 
-const starMaterial = new THREE.PointsMaterial({
-  color: 0x8a6dff,
-  size: 0.045,
-  transparent: true,
-  opacity: 0.7
+const starMaterial=new THREE.PointsMaterial({
+  color:0x9b7aff,
+  size:.045,
+  transparent:true,
+  opacity:.8
 });
 
-const stars = new THREE.Points(starGeometry,starMaterial);
+const stars=new THREE.Points(starGeometry,starMaterial);
 scene.add(stars);
 
-// ===============================
-// COLOR SYSTEM
-// ===============================
+// =================================
+// COSMIC PARTICLES
+// =================================
 
-function updateColors() {
+const PARTICLE_COUNT=350;
+const particlePositions=new Float32Array(PARTICLE_COUNT*3);
 
-  const base = palette[mode];
+for(let i=0;i<PARTICLE_COUNT;i++){
 
-  for(let i=0;i<COUNT;i++) {
+  const angle=Math.random()*Math.PI*2;
+  const radius=2+Math.random()*3;
 
-    const factor = 0.65+Math.random()*0.35;
-
-    let color = base;
-
-    if(mode===2 && i>=COUNT*0.65) {
-      color = new THREE.Color(0xffc06a);
-    }
-
-    colors[i*3] = color.r*factor;
-    colors[i*3+1] = color.g*factor;
-    colors[i*3+2] = color.b*factor;
-  }
-
-  geometry.attributes.color.needsUpdate = true;
+  particlePositions[i*3]=Math.cos(angle)*radius;
+  particlePositions[i*3+1]=Math.sin(angle)*radius;
+  particlePositions[i*3+2]=(Math.random()-.5)*2;
 }
 
-// ===============================
-// PARTICLE EXPLOSION
-// ===============================
+const particleGeometry=new THREE.BufferGeometry();
 
-const BURST_COUNT = 180;
-
-const burstPositions = new Float32Array(BURST_COUNT*3);
-const burstVelocity = new Float32Array(BURST_COUNT*3);
-
-const burstGeometry = new THREE.BufferGeometry();
-
-burstGeometry.setAttribute(
+particleGeometry.setAttribute(
   "position",
-  new THREE.BufferAttribute(burstPositions,3)
+  new THREE.BufferAttribute(particlePositions,3)
 );
 
-const burstMaterial = new THREE.PointsMaterial({
-  color: 0xd5a1ff,
-  size: 0.085,
-  transparent: true,
-  opacity: 0,
-  blending: THREE.AdditiveBlending,
-  depthWrite: false
+const particleMaterial=new THREE.PointsMaterial({
+  color:0x9d6aff,
+  size:.035,
+  transparent:true,
+  opacity:.7,
+  blending:THREE.AdditiveBlending
 });
 
-const burst = new THREE.Points(burstGeometry,burstMaterial);
-universe.add(burst);
+const particles=new THREE.Points(
+  particleGeometry,
+  particleMaterial
+);
 
-let burstLife = 0;
+universe.add(particles);
 
-function explode() {
+// =================================
+// HAND TRACKING
+// =================================
 
-  burstLife = 1;
+async function startTracking(){
 
-  for(let i=0;i<BURST_COUNT;i++) {
+  start.disabled=true;
+  start.textContent="MEMUAT KAMERA...";
 
-    const a = Math.random()*Math.PI*2;
-    const z = Math.random()*2-1;
-    const r = Math.sqrt(1-z*z);
+  try{
 
-    burstPositions[i*3] = 0;
-    burstPositions[i*3+1] = 0;
-    burstPositions[i*3+2] = 0;
+    if(!navigator.mediaDevices?.getUserMedia){
+      throw new Error("Gunakan HTTPS untuk membuka kamera");
+    }
 
-    const speed = 2+Math.random()*5;
-
-    burstVelocity[i*3] = Math.cos(a)*r*speed;
-    burstVelocity[i*3+1] = Math.sin(a)*r*speed;
-    burstVelocity[i*3+2] = z*speed;
-  }
-
-  burstGeometry.attributes.position.needsUpdate = true;
-}
-
-// ===============================
-// MODE CONTROL
-// ===============================
-
-const targetNames = {
-  1: "COSMIC UNIVERSE",
-  2: "SATURN 3D",
-  3: "I LOVE YOU",
-  4: "HEART 3D"
-};
-
-const targetData = {
-  1: "space",
-  2: "saturn",
-  3: "love",
-  4: "heart"
-};
-
-function setMode(next) {
-
-  if(next===mode) return;
-
-  mode = next;
-
-  updateColors();
-  explode();
-
-  status.textContent = "✦ "+targetNames[mode];
-
-  document.querySelectorAll("[data-mode]").forEach(btn=>{
-    btn.classList.toggle(
-      "active",
-      Number(btn.dataset.mode)===mode
-    );
-  });
-}
-
-document.querySelectorAll("[data-mode]").forEach(btn=>{
-  btn.addEventListener("click",()=>{
-    setMode(Number(btn.dataset.mode));
-  });
-});
-
-// ===============================
-// GESTURE DETECTION
-// ===============================
-
-function detectGesture(lm) {
-
-  const tips = [8,12,16,20];
-  const pips = [6,10,14,18];
-
-  const fingers = tips.map((tip,i)=>{
-    return lm[tip].y < lm[pips[i]].y;
-  });
-
-  if(fingers.every(v=>!v)) return 4;
-
-  if(fingers[0] && !fingers[1] &&
-     !fingers[2] && !fingers[3]) return 2;
-
-  if(fingers[0] && fingers[1] &&
-     !fingers[2] && !fingers[3]) return 3;
-
-  if(fingers.every(v=>v)) return 1;
-
-  return mode;
-}
-
-// ===============================
-// CAMERA + MEDIAPIPE
-// ===============================
-
-async function startTracking() {
-
-  if(!navigator.mediaDevices?.getUserMedia) {
-    status.textContent = "BUKA WEBSITE MELALUI HTTPS";
-    return;
-  }
-
-  $("start").disabled = true;
-  $("start").textContent = "MEMUAT KAMERA...";
-
-  try {
-
-    stream = await navigator.mediaDevices.getUserMedia({
-      audio: false,
-      video: {
-        facingMode: "user",
-        width: {ideal:320},
-        height: {ideal:240},
-        frameRate: {ideal:20,max:20}
+    stream=await navigator.mediaDevices.getUserMedia({
+      audio:false,
+      video:{
+        facingMode:"user",
+        width:{ideal:320},
+        height:{ideal:240},
+        frameRate:{ideal:20,max:20}
       }
     });
 
-    video.srcObject = stream;
+    video.srcObject=stream;
     await video.play();
 
-    const vision = await import(
+    const vision=await import(
       "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14"
     );
 
-    const fileset = await vision.FilesetResolver.forVisionTasks(
+    const fileset=await vision.FilesetResolver.forVisionTasks(
       "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm"
     );
 
-    const options = {
-      baseOptions: {
+    const options={
+      baseOptions:{
         modelAssetPath:
         "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
-        delegate: "GPU"
+        delegate:"CPU"
       },
-      runningMode: "VIDEO",
-      numHands: 1,
-      minHandDetectionConfidence: 0.55,
-      minHandPresenceConfidence: 0.55,
-      minTrackingConfidence: 0.55
+      runningMode:"VIDEO",
+      numHands:1,
+      minHandDetectionConfidence:.55,
+      minHandPresenceConfidence:.55,
+      minTrackingConfidence:.55
     };
 
-    try {
-      landmarker = await vision.HandLandmarker.createFromOptions(
-        fileset,options
-      );
-    } catch(gpuError) {
+    landmarker=await vision.HandLandmarker.createFromOptions(
+      fileset,
+      options
+    );
 
-      console.warn("GPU tidak tersedia, mencoba CPU",gpuError);
+    tracking=true;
 
-      options.baseOptions.delegate = "CPU";
+    $("camLabel").textContent="CAMERA ACTIVE";
+    status.textContent="✦ TUNJUKKAN TANGANMU";
 
-      landmarker = await vision.HandLandmarker.createFromOptions(
-        fileset,options
-      );
-    }
-
-    tracking = true;
-
-    status.textContent = "✦ HAND TRACKING ACTIVE";
-    $("camLabel").textContent = "CAMERA ACTIVE";
-    $("start").textContent = "KAMERA AKTIF";
+    start.style.display="none";
 
     requestAnimationFrame(trackHands);
 
-  } catch(error) {
+  }catch(error){
 
     console.error(error);
 
-    status.textContent = "GAGAL MEMUAT KAMERA / AI";
-    gesture.textContent = "Periksa izin kamera dan koneksi internet";
+    status.textContent="KAMERA GAGAL: "+error.message;
 
-    $("start").disabled = false;
-    $("start").textContent = "COBA LAGI";
+    start.disabled=false;
+    start.textContent="COBA LAGI";
 
-    if(stream) {
-      stream.getTracks().forEach(track=>track.stop());
-      stream = null;
+    if(stream){
+      stream.getTracks().forEach(t=>t.stop());
+      stream=null;
     }
   }
 }
 
-function trackHands(now) {
+// =================================
+// STABLE HAND POSITION
+// =================================
 
-  if(!tracking) return;
+function clamp(value,min,max){
+  return Math.max(min,Math.min(max,value));
+}
+
+function trackHands(now){
+
+  if(!tracking)return;
 
   requestAnimationFrame(trackHands);
 
-  if(now-lastDetection<50) return;
-  if(video.readyState<2) return;
-  if(video.currentTime===lastVideoTime) return;
+  // maksimal 15-20 kali deteksi per detik
 
-  lastDetection = now;
-  lastVideoTime = video.currentTime;
+  if(now-lastDetection<65)return;
 
-  try {
+  if(video.readyState<2)return;
 
-    const result = landmarker.detectForVideo(video,now);
+  if(video.currentTime===lastVideoTime)return;
 
-    if(result.landmarks?.length) {
+  lastDetection=now;
+  lastVideoTime=video.currentTime;
 
-      const lm = result.landmarks[0];
+  try{
 
-      const detected = detectGesture(lm);
+    const result=landmarker.detectForVideo(video,now);
 
-      if(detected===candidateMode) {
-        candidateCount++;
-      } else {
-        candidateMode = detected;
-        candidateCount = 0;
-      }
+    if(result.landmarks?.length){
 
-      if(candidateCount>=3) {
-        setMode(detected);
-      }
+      const lm=result.landmarks[0];
 
-      const wrist = lm[0];
+      // titik tengah telapak, bukan pergelangan saja
 
-      const targetX = (0.5-wrist.x)*5;
-      const targetY = (0.5-wrist.y)*3.7;
+      const palmX=(
+        lm[0].x+
+        lm[5].x+
+        lm[9].x+
+        lm[13].x+
+        lm[17].x
+      )/5;
 
-      handX += (targetX-handX)*0.2;
-      handY += (targetY-handY)*0.2;
+      const palmY=(
+        lm[0].y+
+        lm[5].y+
+        lm[9].y+
+        lm[13].y+
+        lm[17].y
+      )/5;
 
-      const palm = Math.hypot(
-        lm[5].x-lm[17].x,
-        lm[5].y-lm[17].y
-      );
+      // Batasi pergerakan agar seluruh planet tetap terlihat
 
-      const targetScale = THREE.MathUtils.clamp(
-        0.07/(palm+0.001),
-        0.75,
-        1.5
-      );
+      const aspect=innerWidth/innerHeight;
+      const viewHeight=2*Math.tan(THREE.MathUtils.degToRad(55/2))*12;
+      const viewWidth=viewHeight*aspect;
 
-      handScale += (targetScale-handScale)*0.12;
+      const safeX=Math.max(.3,viewWidth/2-3.4);
+      const safeY=Math.max(.3,viewHeight/2-3.4);
 
-      const names = {
-        1:"✋ TELAPAK TERBUKA | SPACE",
-        2:"☝️ TELUNJUK | SATURN",
-        3:"✌️ PEACE | LOVE",
-        4:"✊ GENGGAM | HEART"
-      };
+      const rawX=(.5-palmX)*viewWidth*1.25;
+      const rawY=(.5-palmY)*viewHeight*1.25;
 
-      gesture.textContent = names[detected];
-      status.textContent = "✦ HAND DETECTED";
+      targetX=clamp(rawX,-safeX,safeX);
+      targetY=clamp(rawY,-safeY,safeY);
 
-    } else {
+      lastSeen=now;
 
-      candidateCount = 0;
-      gesture.textContent = "TANGAN TIDAK TERDETEKSI";
-      status.textContent = "MENUNGGU TANGAN...";
+      status.textContent="✦ HAND TRACKING ACTIVE";
+
+    }else{
+
+      status.textContent="✦ MENUNGGU TANGAN...";
     }
 
-  } catch(error) {
-    console.warn("Hand detection error",error);
+  }catch(error){
+    console.warn(error);
   }
 }
 
-$("start").addEventListener("click",startTracking);
-
-// ===============================
-// QUALITY SETTINGS
-// ===============================
-
-$("quality").addEventListener("change",e=>{
-
-  const newCount = QUALITY[e.target.value];
-
-  if(newCount===COUNT) return;
-
-  COUNT = newCount;
-
-  universe.remove(particles);
-
-  geometry.dispose();
-  material.dispose();
-
-  createParticles();
-
-  status.textContent = "QUALITY UPDATED";
-
-});
-
-// ===============================
+// =================================
 // ANIMATION
-// ===============================
+// =================================
 
-const clock = new THREE.Clock();
+const clock=new THREE.Clock();
 
-function animate() {
+function animate(){
 
   requestAnimationFrame(animate);
 
-  const dt = Math.min(clock.getDelta(),0.04);
-  const elapsed = clock.elapsedTime;
+  const dt=Math.min(clock.getDelta(),.04);
+  const time=clock.elapsedTime;
 
-  const current = geometry.attributes.position.array;
-  const target = targets[targetData[mode]];
+  // Tracking smoothing
 
-  const smooth = 1-Math.pow(0.001,dt);
+  const seen=performance.now()-lastSeen;
 
-  for(let i=0;i<COUNT;i++) {
+  if(seen>1200){
 
-    const j=i*3;
+    // Jika tangan hilang, kembali perlahan ke tengah
 
-    current[j] += (target[j]-current[j])*smooth;
-    current[j+1] += (target[j+1]-current[j+1])*smooth;
-    current[j+2] += (target[j+2]-current[j+2])*smooth;
+    targetX*=.985;
+    targetY*=.985;
   }
 
-  geometry.attributes.position.needsUpdate = true;
+  const smooth=1-Math.pow(.001,dt);
 
-  if(mode===1) {
+  handX+=(targetX-handX)*smooth;
+  handY+=(targetY-handY)*smooth;
 
-    universe.position.x += (0-universe.position.x)*0.05;
-    universe.position.y += (0-universe.position.y)*0.05;
+  // Posisi universe dibatasi
 
-    universe.scale.setScalar(1);
+  universe.position.x=clamp(handX,-4,4);
+  universe.position.y=clamp(handY,-4,4);
 
-    universe.rotation.y += dt*0.3;
-    universe.rotation.x = Math.sin(elapsed*0.3)*0.1;
+  // Rotasi lembut, bukan mengikuti sudut tangan
 
-  } else {
+  central.rotation.y+=dt*.15;
+  central.rotation.x=Math.sin(time*.3)*.08;
 
-    universe.position.x += (handX-universe.position.x)*0.09;
-    universe.position.y += (handY-universe.position.y)*0.09;
+  glow.rotation.y-=dt*.12;
+  glow.rotation.x+=dt*.1;
 
-    universe.scale.setScalar(handScale);
+  saturnGroup.rotation.y+=dt*.35;
+  saturn.rotation.y+=dt*.3;
 
-    universe.rotation.y += dt*(mode===2?1.3:0.25);
+  blue.rotation.y+=dt*.45;
+  pink.rotation.y+=dt*.5;
+  green.rotation.y+=dt*.4;
 
-    if(mode===2) {
-      universe.rotation.x = 0.35;
-      universe.rotation.z = 0.1;
-    }
+  // Planet kecil mengorbit
 
-    if(mode===3) {
-      universe.rotation.x = 0;
-      universe.rotation.z = 0;
-    }
+  moons.forEach((moon,i)=>{
 
-    if(mode===4) {
-      universe.rotation.x = Math.sin(elapsed*0.6)*0.12;
-    }
-  }
+    const angle=time*(.35+i*.08)+i*1.25;
+    const radius=1.2+i*.36;
 
-  // Particle burst
-  if(burstLife>0) {
+    moon.position.x=Math.cos(angle)*radius;
+    moon.position.y=Math.sin(angle)*radius*.7;
+    moon.position.z=Math.sin(angle*1.3)*.7;
+  });
 
-    burstLife -= dt*1.5;
+  // Efek kosmik
 
-    for(let i=0;i<BURST_COUNT;i++) {
-
-      const j=i*3;
-
-      burstPositions[j] += burstVelocity[j]*dt;
-      burstPositions[j+1] += burstVelocity[j+1]*dt;
-      burstPositions[j+2] += burstVelocity[j+2]*dt;
-    }
-
-    burstGeometry.attributes.position.needsUpdate = true;
-
-    burstMaterial.opacity = Math.max(0,burstLife);
-
-  } else {
-    burstMaterial.opacity = 0;
-  }
-
-  stars.rotation.y += dt*0.015;
+  stars.rotation.y+=dt*.008;
+  particles.rotation.y+=dt*.035;
+  particles.rotation.x=Math.sin(time*.2)*.08;
 
   renderer.render(scene,camera);
 }
 
-createParticles();
+// =================================
+// START
+// =================================
+
+$("start").addEventListener("click",startTracking);
+
 animate();
 
-// ===============================
-// RESIZE
-// ===============================
+// =================================
+// RESPONSIVE
+// =================================
 
 window.addEventListener("resize",()=>{
 
-  camera.aspect = innerWidth/innerHeight;
+  camera.aspect=innerWidth/innerHeight;
   camera.updateProjectionMatrix();
 
   renderer.setSize(innerWidth,innerHeight);
-  renderer.setPixelRatio(Math.min(devicePixelRatio,1));
+  renderer.setPixelRatio(Math.min(devicePixelRatio,.85));
 
 });
 
-// ===============================
+// =================================
 // CLEANUP
-// ===============================
+// =================================
 
 window.addEventListener("pagehide",()=>{
 
-  tracking = false;
+  tracking=false;
 
-  if(stream) {
-    stream.getTracks().forEach(track=>track.stop());
+  if(stream){
+    stream.getTracks().forEach(t=>t.stop());
   }
 
-  if(landmarker) landmarker.close();
+  if(landmarker){
+    landmarker.close();
+  }
 
 });
 

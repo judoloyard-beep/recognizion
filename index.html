@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Senko Particle Universe</title>
+<title>SENKO UNIVERSE V4</title>
 
 <style>
 * {
@@ -19,7 +19,7 @@ body {
   font-family: Arial, sans-serif;
   overflow: hidden;
   height: 100dvh;
-  touch-action: none;
+  touch-action: manipulation;
 }
 
 #scene {
@@ -31,18 +31,56 @@ canvas {
   display: block;
 }
 
+header {
+  position: absolute;
+  z-index: 3;
+  top: 17px;
+  width: 100%;
+  text-align: center;
+  pointer-events: none;
+}
+
+header h1 {
+  font-size: 19px;
+  letter-spacing: 4px;
+  color: #e5d5ff;
+  text-shadow: 0 0 15px #a34dff;
+}
+
+header p {
+  font-size: 9px;
+  letter-spacing: 3px;
+  margin-top: 6px;
+  color: #8980ac;
+}
+
+#status {
+  position: absolute;
+  top: 85px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4;
+  padding: 9px 16px;
+  border: 1px solid #7545b7;
+  border-radius: 30px;
+  background: #110b24dd;
+  color: #d5baff;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
 #cameraBox {
-  position: fixed;
-  z-index: 5;
+  position: absolute;
+  z-index: 4;
   top: 15px;
   right: 12px;
-  width: 95px;
-  height: 120px;
+  width: 92px;
+  height: 115px;
   border: 1px solid #995aff;
-  border-radius: 13px;
+  border-radius: 12px;
   overflow: hidden;
-  background: #080613;
-  box-shadow: 0 0 18px #843aff44;
+  background: #111;
+  box-shadow: 0 0 15px #843aff44;
 }
 
 #camera {
@@ -63,62 +101,72 @@ canvas {
   color: #d7bdff;
 }
 
-#status {
-  position: fixed;
+#panel {
+  position: absolute;
   z-index: 5;
-  top: 20px;
-  left: 14px;
-  padding: 10px 14px;
-  background: #100a20dd;
-  border: 1px solid #7545b7;
-  border-radius: 30px;
-  color: #d9c3ff;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(94%,440px);
+  padding: 13px;
+  border-radius: 18px;
+  background: #0b0919e8;
+  border: 1px solid #513778;
+  box-shadow: 0 0 30px #853cff22;
+  backdrop-filter: blur(15px);
+}
+
+#gesture {
+  text-align: center;
+  font-size: 11px;
+  color: #d6baff;
+  margin-bottom: 11px;
+}
+
+.buttons {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 7px;
+}
+
+button {
+  color: white;
+  background: #19132b;
+  border: 1px solid #493368;
+  padding: 11px 3px;
+  border-radius: 10px;
   font-size: 10px;
 }
 
-#control {
-  position: fixed;
-  z-index: 5;
-  bottom: 22px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(90%,350px);
-  padding: 12px;
-  border-radius: 15px;
-  background: #0b0919dd;
-  border: 1px solid #513778;
-  backdrop-filter: blur(15px);
+button.active {
+  background: linear-gradient(135deg,#7138bb,#a14cff);
+  border-color: #d3a8ff;
+  box-shadow: 0 0 14px #934cff66;
 }
 
 #start {
   width: 100%;
-  padding: 14px;
-  border: 0;
-  border-radius: 10px;
-  background: linear-gradient(100deg,#6431bd,#a64cff);
-  color: white;
-  font-size: 12px;
+  margin-top: 10px;
+  padding: 13px;
+  background: linear-gradient(90deg,#6431bd,#a64cff);
+  border: none;
   font-weight: bold;
   letter-spacing: 1px;
 }
 
-#info {
+#hint {
   text-align: center;
   font-size: 9px;
-  color: #88809e;
+  color: #77718e;
   margin-top: 9px;
 }
 
-@media(max-height:600px) {
-  #control {
-    bottom: 8px;
-    padding: 8px;
-  }
-
-  #cameraBox {
-    width: 70px;
-    height: 85px;
-  }
+@media(max-height:620px) {
+  header { top: 7px; }
+  #status { top: 48px; }
+  #panel { bottom: 5px; padding: 8px; }
+  #cameraBox { width: 65px; height: 80px; }
+  button { padding: 8px 2px; }
 }
 </style>
 </head>
@@ -127,16 +175,35 @@ canvas {
 
 <div id="scene"></div>
 
-<div id="status">● UNIVERSE READY</div>
+<header>
+  <h1>SENKO UNIVERSE</h1>
+  <p>HAND INTERACTIVE EXPERIENCE V4</p>
+</header>
+
+<div id="status">✦ UNIVERSE READY</div>
 
 <div id="cameraBox">
   <video id="camera" autoplay playsinline muted></video>
-  <div id="camLabel">CAMERA</div>
+  <div id="camLabel">HAND CAMERA</div>
 </div>
 
-<div id="control">
-  <button id="start">AKTIFKAN HAND TRACKING</button>
-  <div id="info">Gerakkan tangan untuk mengendalikan universe</div>
+<div id="panel">
+
+  <div id="gesture">✋ Siap mendeteksi tangan</div>
+
+  <div class="buttons">
+    <button data-mode="1" class="active">🌌 SPACE</button>
+    <button data-mode="2">🪐 SATURN</button>
+    <button data-mode="3">💙 LOVE</button>
+    <button data-mode="4">💗 HEART</button>
+  </div>
+
+  <button id="start">✦ AKTIFKAN KAMERA</button>
+
+  <div id="hint">
+    Telapak: Space · Telunjuk: Saturn · Peace: Love · Genggam: Heart
+  </div>
+
 </div>
 
 <script type="importmap">
@@ -151,19 +218,55 @@ canvas {
 
 import * as THREE from "three";
 
-// =================================
+// ======================================
 // ELEMENTS
-// =================================
+// ======================================
 
 const $ = id => document.getElementById(id);
 
 const video = $("camera");
 const status = $("status");
+const gesture = $("gesture");
 const startButton = $("start");
 
-// =================================
+// ======================================
+// SETTINGS
+// ======================================
+
+const COUNT = 850;
+const BURST_COUNT = 180;
+const OBJECT_RADIUS = 3.8;
+
+let mode = 1;
+let tracking = false;
+let landmarker = null;
+let stream = null;
+
+let handDetected = false;
+
+let handX = 0;
+let handY = 0;
+let handScale = 1;
+
+let targetX = 0;
+let targetY = 0;
+
+let candidateMode = 1;
+let candidateCount = 0;
+
+let lastDetection = 0;
+let lastVideoTime = -1;
+
+const palette = {
+  1: new THREE.Color(0x428aff),
+  2: new THREE.Color(0xffa63b),
+  3: new THREE.Color(0x16dfff),
+  4: new THREE.Color(0xff267b)
+};
+
+// ======================================
 // THREE JS
-// =================================
+// ======================================
 
 const scene = new THREE.Scene();
 
@@ -176,7 +279,7 @@ const camera = new THREE.PerspectiveCamera(
   100
 );
 
-camera.position.z = 12;
+camera.position.z = 11;
 
 const renderer = new THREE.WebGLRenderer({
   antialias: false,
@@ -184,69 +287,31 @@ const renderer = new THREE.WebGLRenderer({
   powerPreference: "high-performance"
 });
 
-renderer.setPixelRatio(
-  Math.min(devicePixelRatio,1)
-);
-
 renderer.setSize(innerWidth,innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio,1));
 
 $("scene").appendChild(renderer.domElement);
 
-// =================================
-// UNIVERSE GROUP
-// =================================
-
 const universe = new THREE.Group();
-
 scene.add(universe);
 
-// =================================
+// ======================================
 // PARTICLE SYSTEM
-// =================================
+// ======================================
 
-const COUNT = 950;
+let geometry;
+let material;
+let particles;
 
-const positions = new Float32Array(COUNT*3);
-const colors = new Float32Array(COUNT*3);
+let positions;
+let colors;
 
-const geometry = new THREE.BufferGeometry();
+let targets = {};
 
-geometry.setAttribute(
-  "position",
-  new THREE.BufferAttribute(positions,3)
-);
-
-geometry.setAttribute(
-  "color",
-  new THREE.BufferAttribute(colors,3)
-);
-
-const material = new THREE.PointsMaterial({
-  size: 0.075,
-  vertexColors: true,
-  transparent: true,
-  opacity: 0.95,
-  blending: THREE.AdditiveBlending,
-  depthWrite: false,
-  sizeAttenuation: true
-});
-
-const particleSystem = new THREE.Points(
-  geometry,
-  material
-);
-
-universe.add(particleSystem);
-
-// =================================
-// RANDOM SPHERE
-// =================================
-
-function randomSphere(radius) {
+function spherePoint(radius) {
 
   const theta = Math.random()*Math.PI*2;
   const z = Math.random()*2-1;
-
   const r = radius*Math.cbrt(Math.random());
 
   const s = Math.sqrt(1-z*z);
@@ -258,169 +323,167 @@ function randomSphere(radius) {
   ];
 }
 
-// =================================
-// COLOR
-// =================================
+// ======================================
+// GENERATE SHAPES
+// ======================================
 
-const colorA = new THREE.Color(0x8546ff);
-const colorB = new THREE.Color(0x32caff);
-const colorC = new THREE.Color(0xffb44a);
-const colorD = new THREE.Color(0xff4cba);
+function generateTargets() {
 
-function putColor(index,color) {
+  const space = new Float32Array(COUNT*3);
+  const saturn = new Float32Array(COUNT*3);
+  const heart = new Float32Array(COUNT*3);
+  const love = new Float32Array(COUNT*3);
 
-  const factor = 0.65+Math.random()*0.35;
+  // LOVE TEXT
 
-  colors[index*3] = color.r*factor;
-  colors[index*3+1] = color.g*factor;
-  colors[index*3+2] = color.b*factor;
-}
+  const textCanvas = document.createElement("canvas");
 
-// =================================
-// PLANET GENERATOR
-// =================================
+  textCanvas.width = 1000;
+  textCanvas.height = 250;
 
-function addPlanet(index,center,radius,color) {
+  const ctx = textCanvas.getContext("2d");
 
-  const p = randomSphere(radius);
+  ctx.fillStyle = "white";
+  ctx.font = "bold 135px Arial";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
 
-  positions[index*3] = p[0]+center[0];
-  positions[index*3+1] = p[1]+center[1];
-  positions[index*3+2] = p[2]+center[2];
+  ctx.fillText("I LOVE YOU",500,125);
 
-  putColor(index,color);
-}
+  const pixels = ctx.getImageData(
+    0,0,1000,250
+  ).data;
 
-// =================================
-// RING GENERATOR
-// =================================
+  const points = [];
 
-function addRing(index,center,inner,outer,color,tilt=0) {
+  for(let y=0;y<250;y+=2) {
+    for(let x=0;x<1000;x+=2) {
 
-  const angle = Math.random()*Math.PI*2;
+      if(pixels[(y*1000+x)*4+3]>100) {
+        points.push([x,y]);
+      }
 
-  const r = inner+Math.random()*(outer-inner);
-
-  const y = (Math.random()-0.5)*0.12;
-
-  const x = Math.cos(angle)*r;
-  const z = Math.sin(angle)*r;
-
-  positions[index*3] = center[0]+x;
-  positions[index*3+1] = center[1]+y*Math.cos(tilt)-z*Math.sin(tilt);
-  positions[index*3+2] = center[2]+y*Math.sin(tilt)+z*Math.cos(tilt);
-
-  putColor(index,color);
-}
-
-// =================================
-// BUILD UNIVERSE
-// =================================
-
-function buildUniverse() {
-
-  for(let i=0;i<COUNT;i++) {
-
-    const ratio = i/COUNT;
-
-    // PLANET 1
-    if(ratio<0.34) {
-
-      addPlanet(
-        i,
-        [0,0,0],
-        1.05,
-        colorA
-      );
-
-    }
-
-    // RING 1
-    else if(ratio<0.53) {
-
-      addRing(
-        i,
-        [0,0,0],
-        1.35,
-        2.05,
-        colorB,
-        0.15
-      );
-
-    }
-
-    // PLANET 2
-    else if(ratio<0.66) {
-
-      addPlanet(
-        i,
-        [2.35,0.8,0],
-        0.48,
-        colorC
-      );
-
-    }
-
-    // PLANET 3
-    else if(ratio<0.77) {
-
-      addPlanet(
-        i,
-        [-2.3,-0.7,0],
-        0.38,
-        colorD
-      );
-
-    }
-
-    // PLANET 4
-    else if(ratio<0.86) {
-
-      addPlanet(
-        i,
-        [0.7,-2.1,0],
-        0.32,
-        colorB
-      );
-
-    }
-
-    // RING 2
-    else if(ratio<0.94) {
-
-      addRing(
-        i,
-        [2.35,0.8,0],
-        0.55,
-        0.85,
-        colorD,
-        0.5
-      );
-
-    }
-
-    // SMALL COSMIC PARTICLES
-    else {
-
-      const p = randomSphere(3.0);
-
-      positions[i*3] = p[0];
-      positions[i*3+1] = p[1];
-      positions[i*3+2] = p[2];
-
-      putColor(i,colorB);
     }
   }
 
-  geometry.attributes.position.needsUpdate = true;
-  geometry.attributes.color.needsUpdate = true;
+  // GENERATE
+
+  for(let i=0;i<COUNT;i++) {
+
+    let p = spherePoint(3.6);
+
+    space.set(p,i*3);
+
+    // SATURN
+
+    if(i<COUNT*0.65) {
+
+      p = spherePoint(1.25);
+
+    } else {
+
+      const a = Math.random()*Math.PI*2;
+      const r = 1.7+Math.random()*1.6;
+
+      p = [
+        Math.cos(a)*r,
+        (Math.random()-0.5)*0.07,
+        Math.sin(a)*r
+      ];
+
+    }
+
+    saturn.set(p,i*3);
+
+    // HEART
+
+    const t = Math.random()*Math.PI*2;
+    const scale = Math.sqrt(Math.random());
+
+    const hx = 16*Math.pow(Math.sin(t),3);
+
+    const hy =
+      13*Math.cos(t)
+      -5*Math.cos(2*t)
+      -2*Math.cos(3*t)
+      -Math.cos(4*t);
+
+    heart.set([
+      hx*scale*0.15,
+      hy*scale*0.15,
+      (Math.random()-0.5)*0.6
+    ],i*3);
+
+    // LOVE
+
+    const textPoint = points[
+      Math.floor(Math.random()*points.length)
+    ];
+
+    love.set([
+      (textPoint[0]-500)*0.008,
+      (125-textPoint[1])*0.008,
+      (Math.random()-0.5)*0.12
+    ],i*3);
+
+  }
+
+  targets = {
+    space,
+    saturn,
+    heart,
+    love
+  };
+
+  return space;
 }
 
-buildUniverse();
+// ======================================
+// CREATE PARTICLES
+// ======================================
 
-// =================================
+function createParticles() {
+
+  const initial = generateTargets();
+
+  positions = new Float32Array(initial);
+  colors = new Float32Array(COUNT*3);
+
+  geometry = new THREE.BufferGeometry();
+
+  geometry.setAttribute(
+    "position",
+    new THREE.BufferAttribute(positions,3)
+  );
+
+  geometry.setAttribute(
+    "color",
+    new THREE.BufferAttribute(colors,3)
+  );
+
+  material = new THREE.PointsMaterial({
+
+    size: 0.065,
+    vertexColors: true,
+    transparent: true,
+    opacity: 0.95,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+    sizeAttenuation: true
+
+  });
+
+  particles = new THREE.Points(geometry,material);
+
+  universe.add(particles);
+
+  updateColors();
+
+}
+
+// ======================================
 // BACKGROUND STARS
-// =================================
+// ======================================
 
 const starPositions = [];
 
@@ -431,6 +494,7 @@ for(let i=0;i<350;i++) {
     (Math.random()-0.5)*25,
     -5-Math.random()*15
   );
+
 }
 
 const starGeometry = new THREE.BufferGeometry();
@@ -441,10 +505,12 @@ starGeometry.setAttribute(
 );
 
 const starMaterial = new THREE.PointsMaterial({
-  color: 0x8d76ff,
+
+  color: 0x8a6dff,
   size: 0.045,
   transparent: true,
-  opacity: 0.65
+  opacity: 0.7
+
 });
 
 const stars = new THREE.Points(
@@ -454,119 +520,231 @@ const stars = new THREE.Points(
 
 scene.add(stars);
 
-// =================================
-// HAND TRACKING STATE
-// =================================
+// ======================================
+// COLORS
+// ======================================
 
-let landmarker = null;
-let stream = null;
-let tracking = false;
+function updateColors() {
 
-let handDetected = false;
+  const base = palette[mode];
 
-let targetX = 0;
-let targetY = 0;
+  for(let i=0;i<COUNT;i++) {
 
-let currentX = 0;
-let currentY = 0;
+    const factor = 0.65+Math.random()*0.35;
 
-let targetScale = 1;
-let currentScale = 1;
+    const color =
+      mode===2 && i>=COUNT*0.65
+      ? new THREE.Color(0xffc06a)
+      : base;
 
-let lastDetection = 0;
-let lastVideoTime = -1;
+    colors[i*3] = color.r*factor;
+    colors[i*3+1] = color.g*factor;
+    colors[i*3+2] = color.b*factor;
 
-// =================================
-// SCREEN BOUNDS
-// =================================
+  }
 
-function getScreenBounds() {
+  geometry.attributes.color.needsUpdate = true;
 
-  const distance = camera.position.z;
+}
 
-  const visibleHeight =
-    2*Math.tan(THREE.MathUtils.degToRad(camera.fov/2))*distance;
+// ======================================
+// PARTICLE EXPLOSION
+// ======================================
 
-  const visibleWidth =
-    visibleHeight*camera.aspect;
+const burstPositions = new Float32Array(BURST_COUNT*3);
+const burstVelocity = new Float32Array(BURST_COUNT*3);
+
+const burstGeometry = new THREE.BufferGeometry();
+
+burstGeometry.setAttribute(
+  "position",
+  new THREE.BufferAttribute(burstPositions,3)
+);
+
+const burstMaterial = new THREE.PointsMaterial({
+
+  color: 0xd5a1ff,
+  size: 0.085,
+  transparent: true,
+  opacity: 0,
+  blending: THREE.AdditiveBlending,
+  depthWrite: false
+
+});
+
+const burst = new THREE.Points(
+  burstGeometry,
+  burstMaterial
+);
+
+universe.add(burst);
+
+let burstLife = 0;
+
+function explode() {
+
+  burstLife = 1;
+
+  for(let i=0;i<BURST_COUNT;i++) {
+
+    const a = Math.random()*Math.PI*2;
+    const z = Math.random()*2-1;
+    const r = Math.sqrt(1-z*z);
+
+    burstPositions[i*3] = 0;
+    burstPositions[i*3+1] = 0;
+    burstPositions[i*3+2] = 0;
+
+    const speed = 2+Math.random()*5;
+
+    burstVelocity[i*3] = Math.cos(a)*r*speed;
+    burstVelocity[i*3+1] = Math.sin(a)*r*speed;
+    burstVelocity[i*3+2] = z*speed;
+
+  }
+
+  burstGeometry.attributes.position.needsUpdate = true;
+
+}
+
+// ======================================
+// MODE SYSTEM
+// ======================================
+
+const targetNames = {
+  1: "COSMIC UNIVERSE",
+  2: "SATURN 3D",
+  3: "I LOVE YOU",
+  4: "HEART 3D"
+};
+
+const targetData = {
+  1: "space",
+  2: "saturn",
+  3: "love",
+  4: "heart"
+};
+
+function setMode(next) {
+
+  if(next===mode) return;
+
+  mode = next;
+
+  updateColors();
+  explode();
+
+  status.textContent = "✦ "+targetNames[mode];
+
+  document.querySelectorAll("[data-mode]").forEach(btn=>{
+
+    btn.classList.toggle(
+      "active",
+      Number(btn.dataset.mode)===mode
+    );
+
+  });
+
+}
+
+document.querySelectorAll("[data-mode]").forEach(btn=>{
+
+  btn.addEventListener("click",()=>{
+
+    setMode(Number(btn.dataset.mode));
+
+  });
+
+});
+
+// ======================================
+// GESTURE DETECTION
+// ======================================
+
+function detectGesture(lm) {
+
+  const tips = [8,12,16,20];
+  const pips = [6,10,14,18];
+
+  const fingers = tips.map((tip,i)=>{
+
+    return lm[tip].y < lm[pips[i]].y;
+
+  });
+
+  if(fingers.every(v=>!v)) return 4;
+
+  if(
+    fingers[0] &&
+    !fingers[1] &&
+    !fingers[2] &&
+    !fingers[3]
+  ) return 2;
+
+  if(
+    fingers[0] &&
+    fingers[1] &&
+    !fingers[2] &&
+    !fingers[3]
+  ) return 3;
+
+  if(fingers.every(v=>v)) return 1;
+
+  return mode;
+
+}
+
+// ======================================
+// SCREEN BOUNDARY SYSTEM
+// ======================================
+
+function getScreenLimits(scale) {
+
+  const height = 2 * camera.position.z *
+    Math.tan(THREE.MathUtils.degToRad(55/2));
+
+  const width = height * camera.aspect;
+
+  const margin = OBJECT_RADIUS*scale+0.25;
 
   return {
-    x: Math.max(0,visibleWidth/2-3.0),
-    y: Math.max(0,visibleHeight/2-3.0)
+
+    x: Math.max(0,width/2-margin),
+    y: Math.max(0,height/2-margin)
+
   };
+
 }
 
-// =================================
-// HAND POSITION
-// =================================
+function getFitScale() {
 
-function updateHand(lm) {
+  const height = 2 * camera.position.z *
+    Math.tan(THREE.MathUtils.degToRad(55/2));
 
-  // palm center, more stable than wrist alone
+  const width = height * camera.aspect;
 
-  const palmX = (
-    lm[0].x+
-    lm[5].x+
-    lm[9].x+
-    lm[13].x+
-    lm[17].x
-  )/5;
+  const fitX = (width-0.5)/(OBJECT_RADIUS*2);
+  const fitY = (height-0.5)/(OBJECT_RADIUS*2);
 
-  const palmY = (
-    lm[0].y+
-    lm[5].y+
-    lm[9].y+
-    lm[13].y+
-    lm[17].y
-  )/5;
-
-  const bounds = getScreenBounds();
-
-  // mirrored camera coordinates
-
-  const normalizedX = (0.5-palmX)*2;
-  const normalizedY = (0.5-palmY)*2;
-
-  // limit movement so the object stays visible
-
-  targetX = THREE.MathUtils.clamp(
-    normalizedX*bounds.x,
-    -bounds.x,
-    bounds.x
+  return THREE.MathUtils.clamp(
+    Math.min(1,fitX,fitY),
+    0.35,
+    1
   );
 
-  targetY = THREE.MathUtils.clamp(
-    normalizedY*bounds.y,
-    -bounds.y,
-    bounds.y
-  );
-
-  // palm size controls scale gently
-
-  const palmWidth = Math.hypot(
-    lm[5].x-lm[17].x,
-    lm[5].y-lm[17].y
-  );
-
-  targetScale = THREE.MathUtils.clamp(
-    0.8+(palmWidth-0.12)*0.8,
-    0.78,
-    1.08
-  );
-
-  handDetected = true;
 }
 
-// =================================
-// MEDIAPIPE
-// =================================
+// ======================================
+// CAMERA + MEDIAPIPE
+// ======================================
 
 async function startTracking() {
 
   if(!navigator.mediaDevices?.getUserMedia) {
 
-    status.textContent = "HTTPS DIPERLUKAN";
+    status.textContent = "BUKA WEBSITE MELALUI HTTPS";
     return;
+
   }
 
   startButton.disabled = true;
@@ -579,11 +757,14 @@ async function startTracking() {
       audio: false,
 
       video: {
+
         facingMode: "user",
         width: {ideal:320},
         height: {ideal:240},
-        frameRate: {ideal:15,max:20}
+        frameRate: {ideal:20,max:20}
+
       }
+
     });
 
     video.srcObject = stream;
@@ -602,9 +783,12 @@ async function startTracking() {
     const options = {
 
       baseOptions: {
+
         modelAssetPath:
         "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
+
         delegate: "GPU"
+
       },
 
       runningMode: "VIDEO",
@@ -613,6 +797,7 @@ async function startTracking() {
       minHandDetectionConfidence: 0.55,
       minHandPresenceConfidence: 0.55,
       minTrackingConfidence: 0.55
+
     };
 
     try {
@@ -623,9 +808,9 @@ async function startTracking() {
           options
         );
 
-    } catch(error) {
+    } catch(gpuError) {
 
-      console.warn("GPU tidak tersedia, mencoba CPU");
+      console.warn("Mencoba CPU",gpuError);
 
       options.baseOptions.delegate = "CPU";
 
@@ -634,13 +819,16 @@ async function startTracking() {
           fileset,
           options
         );
+
     }
 
     tracking = true;
 
-    status.textContent = "● HAND TRACKING ACTIVE";
+    handDetected = false;
 
-    $("camLabel").textContent = "ACTIVE";
+    status.textContent = "✦ HAND TRACKING ACTIVE";
+
+    $("camLabel").textContent = "CAMERA ACTIVE";
 
     startButton.textContent = "KAMERA AKTIF";
 
@@ -652,19 +840,27 @@ async function startTracking() {
 
     status.textContent = "GAGAL MEMUAT KAMERA";
 
+    gesture.textContent =
+      "Periksa izin kamera dan koneksi internet";
+
     startButton.disabled = false;
     startButton.textContent = "COBA LAGI";
 
     if(stream) {
-      stream.getTracks().forEach(t=>t.stop());
+
+      stream.getTracks().forEach(track=>track.stop());
+
       stream = null;
+
     }
+
   }
+
 }
 
-// =================================
-// DETECTION LOOP
-// =================================
+// ======================================
+// HAND TRACKING LOOP
+// ======================================
 
 function trackHands(now) {
 
@@ -672,9 +868,9 @@ function trackHands(now) {
 
   requestAnimationFrame(trackHands);
 
-  // detection limited to 10 FPS
+  // 20 FPS DETECTION
 
-  if(now-lastDetection<100) return;
+  if(now-lastDetection<50) return;
 
   if(video.readyState<2) return;
 
@@ -685,44 +881,126 @@ function trackHands(now) {
 
   try {
 
-    const result = landmarker.detectForVideo(
-      video,
-      now
-    );
+    const result = landmarker.detectForVideo(video,now);
 
     if(result.landmarks?.length) {
 
       const lm = result.landmarks[0];
 
-      updateHand(lm);
+      handDetected = true;
 
-      status.textContent = "● TANGAN TERDETEKSI";
+      // GESTURE
+
+      const detected = detectGesture(lm);
+
+      if(detected===candidateMode) {
+
+        candidateCount++;
+
+      } else {
+
+        candidateMode = detected;
+        candidateCount = 0;
+
+      }
+
+      if(candidateCount>=3) {
+
+        setMode(detected);
+
+      }
+
+      // CENTER OF PALM
+
+      const palm = lm[9];
+
+      // NORMALIZED SCREEN COORDINATES
+
+      const rawX = (0.5-palm.x)*9;
+      const rawY = (0.5-palm.y)*7;
+
+      // PALM SIZE
+
+      const palmWidth = Math.hypot(
+        lm[5].x-lm[17].x,
+        lm[5].y-lm[17].y
+      );
+
+      const wantedScale = THREE.MathUtils.clamp(
+        0.11/(palmWidth+0.001),
+        0.65,
+        1.1
+      );
+
+      handScale +=
+        (wantedScale-handScale)*0.12;
+
+      // LIMIT OBJECT TO SCREEN
+
+      const fitScale = getFitScale();
+
+      const finalScale = Math.min(
+        handScale,
+        fitScale
+      );
+
+      const limits = getScreenLimits(finalScale);
+
+      targetX = THREE.MathUtils.clamp(
+        rawX,
+        -limits.x,
+        limits.x
+      );
+
+      targetY = THREE.MathUtils.clamp(
+        rawY,
+        -limits.y,
+        limits.y
+      );
+
+      // GESTURE LABEL
+
+      const names = {
+
+        1: "✋ TELAPAK TERBUKA | SPACE",
+        2: "☝️ TELUNJUK | SATURN",
+        3: "✌️ PEACE | LOVE",
+        4: "✊ GENGGAM | HEART"
+
+      };
+
+      gesture.textContent = names[detected];
+
+      status.textContent = "✦ HAND DETECTED";
 
     } else {
 
+      // IMPORTANT:
+      // JANGAN RESET POSISI SAAT TANGAN HILANG
+
       handDetected = false;
 
-      // keep the last known position
-      // do not reset universe to zero
+      candidateCount = 0;
 
-      status.textContent = "● MENUNGGU TANGAN...";
+      gesture.textContent = "MENUNGGU TANGAN...";
+
+      status.textContent = "✦ SEARCHING HAND";
+
     }
 
   } catch(error) {
 
-    console.warn(error);
+    console.warn("Tracking error",error);
 
   }
+
 }
 
-startButton.addEventListener(
-  "click",
-  startTracking
-);
+startButton.addEventListener("click",startTracking);
 
-// =================================
+// ======================================
 // ANIMATION
-// =================================
+// ======================================
 
 const clock = new THREE.Clock();
 
@@ -731,105 +1009,146 @@ function animate() {
   requestAnimationFrame(animate);
 
   const dt = Math.min(clock.getDelta(),0.04);
-
   const elapsed = clock.elapsedTime;
 
-  // frame-rate independent smoothing
+  // PARTICLE MORPHING
 
-  const follow = 1-Math.exp(-dt*5);
+  const current = geometry.attributes.position.array;
 
-  currentX += (targetX-currentX)*follow;
-  currentY += (targetY-currentY)*follow;
+  const target = targets[targetData[mode]];
 
-  currentScale +=
-    (targetScale-currentScale)*follow;
+  const smooth = 1-Math.pow(0.001,dt);
 
-  // move universe smoothly
+  for(let i=0;i<COUNT;i++) {
 
-  universe.position.x = currentX;
-  universe.position.y = currentY;
+    const j = i*3;
 
-  universe.scale.setScalar(currentScale);
+    current[j] +=
+      (target[j]-current[j])*smooth;
 
-  // stable rotation, no random tilting
+    current[j+1] +=
+      (target[j+1]-current[j+1])*smooth;
 
-  universe.rotation.y = elapsed*0.12;
+    current[j+2] +=
+      (target[j+2]-current[j+2])*smooth;
 
-  universe.rotation.x = 0.08;
+  }
 
-  universe.rotation.z = 0;
+  geometry.attributes.position.needsUpdate = true;
 
-  // background movement
+  // ==================================
+  // STABLE HAND FOLLOW
+  // ==================================
 
-  stars.rotation.y += dt*0.012;
+  const fitScale = getFitScale();
 
-  stars.rotation.x =
-    Math.sin(elapsed*0.1)*0.015;
+  const finalScale = Math.min(
+    handScale,
+    fitScale
+  );
+
+  universe.scale.setScalar(finalScale);
+
+  if(handDetected) {
+
+    const limits = getScreenLimits(finalScale);
+
+    const safeX = THREE.MathUtils.clamp(
+      targetX,
+      -limits.x,
+      limits.x
+    );
+
+    const safeY = THREE.MathUtils.clamp(
+      targetY,
+      -limits.y,
+      limits.y
+    );
+
+    // SMOOTH MOVEMENT
+
+    const follow = 1-Math.pow(0.001,dt);
+
+    handX += (safeX-handX)*follow;
+    handY += (safeY-handY)*follow;
+
+    universe.position.x = handX;
+    universe.position.y = handY;
+
+  }
+
+  // WHEN HAND DISAPPEARS:
+  // KEEP LAST POSITION
+
+  // ==================================
+  // ROTATION
+  // ==================================
+
+  universe.rotation.y += dt*0.3;
+
+  if(mode===2) {
+
+    universe.rotation.x = 0.35;
+    universe.rotation.z = 0.1;
+
+  } else {
+
+    universe.rotation.x =
+      Math.sin(elapsed*0.3)*0.08;
+
+    universe.rotation.z = 0;
+
+  }
+
+  // ==================================
+  // PARTICLE BURST
+  // ==================================
+
+  if(burstLife>0) {
+
+    burstLife -= dt*1.5;
+
+    for(let i=0;i<BURST_COUNT;i++) {
+
+      const j=i*3;
+
+      burstPositions[j] +=
+        burstVelocity[j]*dt;
+
+      burstPositions[j+1] +=
+        burstVelocity[j+1]*dt;
+
+      burstPositions[j+2] +=
+        burstVelocity[j+2]*dt;
+
+    }
+
+    burstGeometry.attributes.position.needsUpdate = true;
+
+    burstMaterial.opacity = Math.max(0,burstLife);
+
+  } else {
+
+    burstMaterial.opacity = 0;
+
+  }
+
+  // BACKGROUND
+
+  stars.rotation.y += dt*0.015;
 
   renderer.render(scene,camera);
+
 }
+
+// ======================================
+// INITIALIZE
+// ======================================
+
+createParticles();
 
 animate();
 
-// =================================
+// ======================================
 // RESIZE
-// =================================
-
-window.addEventListener("resize",()=>{
-
-  camera.aspect = innerWidth/innerHeight;
-
-  camera.updateProjectionMatrix();
-
-  renderer.setSize(
-    innerWidth,
-    innerHeight
-  );
-
-  renderer.setPixelRatio(
-    Math.min(devicePixelRatio,1)
-  );
-
-  // clamp the existing position after resize
-
-  const bounds = getScreenBounds();
-
-  targetX = THREE.MathUtils.clamp(
-    targetX,-bounds.x,bounds.x
-  );
-
-  targetY = THREE.MathUtils.clamp(
-    targetY,-bounds.y,bounds.y
-  );
-
-});
-
-// =================================
-// CLEANUP
-// =================================
-
-window.addEventListener("pagehide",()=>{
-
-  tracking = false;
-
-  if(stream) {
-    stream.getTracks().forEach(t=>t.stop());
-  }
-
-  if(landmarker) {
-    landmarker.close();
-  }
-
-  geometry.dispose();
-  material.dispose();
-  starGeometry.dispose();
-  starMaterial.dispose();
-
-  renderer.dispose();
-
-});
-
-</script>
-
-</body>
-</html>
+// =====================

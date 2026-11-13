@@ -3,148 +3,26 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>SENKO UNIVERSE V6</title>
 
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  overflow: hidden;
-  background: #02030a;
-  color: white;
-  font-family: Arial, sans-serif;
-}
-
-canvas {
-  display: block;
-}
-
-#ui {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 5;
-}
-
-.header {
-  position: absolute;
-  top: 18px;
-  left: 0;
-  width: 100%;
-  text-align: center;
-}
-
-.header h1 {
-  font-size: 21px;
-  letter-spacing: 5px;
-  color: #b9a4ff;
-  text-shadow: 0 0 15px #8b5cff;
-}
-
-.header p {
-  margin-top: 6px;
-  font-size: 10px;
-  letter-spacing: 3px;
-  color: #8d8da9;
-}
-
-#status {
-  position: absolute;
-  top: 85px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 7px 13px;
-  border: 1px solid #6d52b8;
-  border-radius: 30px;
-  background: #100d22cc;
-  color: #cbbaff;
-  font-size: 11px;
-  white-space: nowrap;
-}
-
-#controls {
-  position: absolute;
-  bottom: 20px;
-  left: 0;
-  width: 100%;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 7px;
-  padding: 0 12px;
-  pointer-events: auto;
-}
-
-button {
-  border: 1px solid #7253bd;
-  background: #100d24dd;
-  color: #d8caff;
-  padding: 10px 13px;
-  border-radius: 10px;
-  font-size: 10px;
-  letter-spacing: 1px;
-  cursor: pointer;
-}
-
-button.active {
-  background: #7046d9;
-  color: white;
-  box-shadow: 0 0 15px #7849ff;
-}
-
-#start {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  padding: 15px 25px;
-  font-size: 12px;
-  background: #7046d9;
-  color: white;
-  border: 1px solid #b9a4ff;
-  border-radius: 12px;
-  pointer-events: auto;
-  z-index: 10;
-}
-
-#cameraBox {
-  position: absolute;
-  right: 12px;
-  bottom: 115px;
-  width: 105px;
-  height: 80px;
-  border: 1px solid #7856c7;
-  border-radius: 10px;
-  overflow: hidden;
-  opacity: .65;
-  background: #080612;
-}
-
-#video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transform: scaleX(-1);
-}
-
-#help {
-  position: absolute;
-  left: 12px;
-  bottom: 120px;
-  font-size: 10px;
-  line-height: 1.8;
-  color: #aaa1c9;
-  text-shadow: 0 0 8px #000;
-}
-
-.hidden {
-  display: none !important;
-}
+*{margin:0;padding:0;box-sizing:border-box}
+body{overflow:hidden;background:#02030a;color:white;font-family:Arial,sans-serif}
+canvas{display:block}
+#ui{position:fixed;inset:0;z-index:5;pointer-events:none}
+.header{position:absolute;top:18px;width:100%;text-align:center}
+.header h1{font-size:21px;letter-spacing:5px;color:#c4adff;text-shadow:0 0 15px #895cff}
+.header p{font-size:10px;letter-spacing:3px;color:#999;margin-top:6px}
+#status{position:absolute;top:83px;left:50%;transform:translateX(-50%);background:#100d22dd;border:1px solid #7051bd;border-radius:30px;padding:8px 13px;font-size:10px;color:#d7c8ff;white-space:nowrap;max-width:90%;overflow:hidden}
+button{pointer-events:auto;border:1px solid #7654c2;background:#100d24ed;color:#e0d5ff;padding:10px 12px;border-radius:10px;font-size:10px;letter-spacing:.5px}
+button.active{background:#7046d9;color:white;box-shadow:0 0 12px #7849ff}
+#start{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);padding:16px 24px;background:#7046d9;color:white;border:1px solid #c5aaff;font-size:12px;z-index:10}
+#controls{position:absolute;bottom:18px;left:0;width:100%;display:flex;flex-wrap:wrap;justify-content:center;gap:7px;padding:0 9px;pointer-events:auto}
+#cameraBox{position:absolute;right:12px;bottom:125px;width:110px;height:82px;border:1px solid #805bd0;border-radius:10px;overflow:hidden;background:#080612}
+#video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+#help{position:absolute;bottom:128px;left:12px;font-size:9px;line-height:1.8;color:#c2b8e4;text-shadow:0 0 8px black}
+.hidden{display:none!important}
 </style>
 </head>
 
@@ -162,7 +40,7 @@ button.active {
 
   <div id="help">
     ✋ OPEN PALM : EXPLOSION<br>
-    ✊ FIST : ATTRACT PARTICLES<br>
+    ✊ FIST : ATTRACT<br>
     🤏 PINCH : ZOOM<br>
     ✌️ PEACE : CHANGE MODE
   </div>
@@ -184,719 +62,718 @@ button.active {
 
 <script type="importmap">
 {
-  "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+  "imports":{
+    "three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
   }
 }
 </script>
 
 <script type="module">
 import * as THREE from "three";
-import { FilesetResolver, HandLandmarker } from
+import {FilesetResolver,HandLandmarker} from
 "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14";
 
-const status = document.getElementById("status");
-const video = document.getElementById("video");
-const startButton = document.getElementById("start");
+const $=id=>document.getElementById(id);
+const status=$("status");
+const video=$("video");
+const startButton=$("start");
 
-let handLandmarker = null;
-let cameraStream = null;
-let cameraRunning = false;
-let lastVideoTime = -1;
+let landmarker=null;
+let stream=null;
+let cameraRunning=false;
+let cameraStarting=false;
+let lastVideoTime=-1;
 
-let currentMode = "space";
-let previousGesture = "";
-let lastModeChange = 0;
-let lastExplosion = 0;
+let mode="space";
+let gesture="normal";
+let previousGesture="";
+let handDetected=false;
+let handX=0,handY=0,handScale=1;
+let skeletonEnabled=true,holoEnabled=true;
+let lastModeChange=0,lastExplosion=0;
+let explosionPower=0;
 
-let skeletonEnabled = true;
-let hologramEnabled = true;
-let handDetected = false;
+// ===============================
+// THREE.JS
+// ===============================
 
-let handX = 0;
-let handY = 0;
-let handScale = 1;
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0x02030a);
 
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x02030a);
-
-const camera = new THREE.PerspectiveCamera(
-  60,
-  window.innerWidth / window.innerHeight,
-  0.1,
-  1000
+const camera=new THREE.PerspectiveCamera(
+  60,innerWidth/innerHeight,.1,1000
 );
-camera.position.set(0, 0, 11);
+camera.position.set(0,0,11);
 
-const renderer = new THREE.WebGLRenderer({
-  antialias: true,
-  alpha: false
+const renderer=new THREE.WebGLRenderer({
+  antialias:true,
+  alpha:false
 });
-
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
+renderer.setSize(innerWidth,innerHeight);
+renderer.outputColorSpace=THREE.SRGBColorSpace;
 document.body.appendChild(renderer.domElement);
 
-const clock = new THREE.Clock();
+scene.add(new THREE.AmbientLight(0xffffff,1.4));
 
-scene.add(new THREE.AmbientLight(0xffffff, 1.2));
+const light=new THREE.PointLight(0x9c72ff,4,30);
+light.position.set(0,3,7);
+scene.add(light);
 
-const mainLight = new THREE.PointLight(0x9c72ff, 4, 30);
-mainLight.position.set(0, 3, 7);
-scene.add(mainLight);
+// ===============================
+// STARS
+// ===============================
 
-// ================================
-// BACKGROUND STARS
-// ================================
+const starPos=new Float32Array(1200*3);
 
-const starGeometry = new THREE.BufferGeometry();
-const starPositions = [];
-
-for (let i = 0; i < 1500; i++) {
-  starPositions.push(
-    (Math.random() - 0.5) * 90,
-    (Math.random() - 0.5) * 70,
-    (Math.random() - 0.5) * 50
-  );
+for(let i=0;i<1200;i++){
+  starPos[i*3]=(Math.random()-.5)*90;
+  starPos[i*3+1]=(Math.random()-.5)*70;
+  starPos[i*3+2]=(Math.random()-.5)*50;
 }
 
-starGeometry.setAttribute(
-  "position",
-  new THREE.Float32BufferAttribute(starPositions, 3)
-);
+const starGeo=new THREE.BufferGeometry();
+starGeo.setAttribute("position",new THREE.BufferAttribute(starPos,3));
 
-const stars = new THREE.Points(
-  starGeometry,
+const stars=new THREE.Points(
+  starGeo,
   new THREE.PointsMaterial({
-    color: 0x9d8aff,
-    size: 0.055,
-    transparent: true,
-    opacity: 0.8
+    color:0x9d8aff,
+    size:.06,
+    transparent:true,
+    opacity:.8
   })
 );
-
 scene.add(stars);
 
-// ================================
-// PARTICLE UNIVERSE
-// ================================
+// ===============================
+// PARTICLES
+// ===============================
 
-const PARTICLE_COUNT = 1800;
+const COUNT=1400;
+const positions=new Float32Array(COUNT*3);
+const colors=new Float32Array(COUNT*3);
+const velocities=[];
+const seeds=[];
 
-const particleGeometry = new THREE.BufferGeometry();
-const particlePositions = new Float32Array(PARTICLE_COUNT * 3);
-const particleColors = new Float32Array(PARTICLE_COUNT * 3);
+for(let i=0;i<COUNT;i++){
+  positions[i*3]=(Math.random()-.5)*8;
+  positions[i*3+1]=(Math.random()-.5)*6;
+  positions[i*3+2]=(Math.random()-.5)*3;
 
-const originalPositions = [];
-const velocities = [];
+  colors[i*3]=.55+Math.random()*.4;
+  colors[i*3+1]=.3+Math.random()*.5;
+  colors[i*3+2]=1;
 
-for (let i = 0; i < PARTICLE_COUNT; i++) {
-  const x = (Math.random() - 0.5) * 8;
-  const y = (Math.random() - 0.5) * 6;
-  const z = (Math.random() - 0.5) * 4;
-
-  originalPositions.push(new THREE.Vector3(x, y, z));
   velocities.push(new THREE.Vector3());
-
-  particlePositions[i * 3] = x;
-  particlePositions[i * 3 + 1] = y;
-  particlePositions[i * 3 + 2] = z;
-
-  particleColors[i * 3] = 0.55 + Math.random() * 0.4;
-  particleColors[i * 3 + 1] = 0.3 + Math.random() * 0.5;
-  particleColors[i * 3 + 2] = 1;
+  seeds.push(Math.random()*Math.PI*2);
 }
 
-particleGeometry.setAttribute(
-  "position",
-  new THREE.BufferAttribute(particlePositions, 3)
+const particleGeo=new THREE.BufferGeometry();
+particleGeo.setAttribute("position",new THREE.BufferAttribute(positions,3));
+particleGeo.setAttribute("color",new THREE.BufferAttribute(colors,3));
+
+const particleSystem=new THREE.Points(
+  particleGeo,
+  new THREE.PointsMaterial({
+    size:.05,
+    vertexColors:true,
+    transparent:true,
+    opacity:.95,
+    blending:THREE.AdditiveBlending,
+    depthWrite:false
+  })
 );
-
-particleGeometry.setAttribute(
-  "color",
-  new THREE.BufferAttribute(particleColors, 3)
-);
-
-const particleMaterial = new THREE.PointsMaterial({
-  size: 0.045,
-  vertexColors: true,
-  transparent: true,
-  opacity: 0.95,
-  blending: THREE.AdditiveBlending,
-  depthWrite: false
-});
-
-const particleSystem = new THREE.Points(
-  particleGeometry,
-  particleMaterial
-);
-
 scene.add(particleSystem);
 
-// ================================
-// PARTICLE SHAPE FUNCTIONS
-// ================================
+// Stable target positions
+function targetPosition(i,t){
+  const a=i*2.399963+seeds[i];
+  const r=1.3+(i%100)/45;
 
-function getParticleTarget(i, time) {
-  const a = i * 2.399;
-  const r = Math.sqrt(Math.random());
-
-  if (currentMode === "space") {
-    const angle = a + time * 0.12;
-    const radius = 1.3 + (i % 100) / 45;
-
-    return new THREE.Vector3(
-      Math.cos(angle) * radius,
-      Math.sin(angle) * radius,
-      Math.sin(a * 0.7) * 1.8
-    );
+  if(mode==="space"){
+    return [
+      Math.cos(a+t*.12)*r,
+      Math.sin(a+t*.12)*r,
+      Math.sin(a*.7)*1.5
+    ];
   }
 
-  if (currentMode === "saturn") {
-    if (i < PARTICLE_COUNT * 0.45) {
-      const u = i / (PARTICLE_COUNT * 0.45);
-      const phi = Math.acos(2 * u - 1);
-      const theta = a;
-
-      return new THREE.Vector3(
-        1.1 * Math.sin(phi) * Math.cos(theta),
-        1.1 * Math.cos(phi),
-        1.1 * Math.sin(phi) * Math.sin(theta)
-      );
+  if(mode==="saturn"){
+    if(i<COUNT*.45){
+      const u=i/(COUNT*.45);
+      const phi=Math.acos(2*u-1);
+      return [
+        1.1*Math.sin(phi)*Math.cos(a),
+        1.1*Math.cos(phi),
+        1.1*Math.sin(phi)*Math.sin(a)
+      ];
     }
 
-    const angle = a + time * 0.25;
-    const radius = 1.6 + (i % 100) / 80;
-
-    return new THREE.Vector3(
-      Math.cos(angle) * radius,
-      Math.sin(angle) * radius * 0.3,
-      Math.sin(angle) * 0.4
-    );
+    const angle=a+t*.25;
+    const radius=1.6+(i%100)/80;
+    return [
+      Math.cos(angle)*radius,
+      Math.sin(angle)*radius*.3,
+      Math.sin(angle)*.4
+    ];
   }
 
-  if (currentMode === "love") {
-    const angle = a;
-    const radius = 1.4 + Math.sin(a * 3) * 0.15;
-
-    return new THREE.Vector3(
-      Math.cos(angle) * radius,
-      Math.sin(angle) * radius,
-      Math.sin(angle * 2) * 0.6
-    );
+  if(mode==="love"){
+    return [
+      Math.cos(a)*1.4,
+      Math.sin(a)*1.4,
+      Math.sin(a*2)*.6
+    ];
   }
 
-  if (currentMode === "heart") {
-    const t = a % (Math.PI * 2);
+  if(mode==="heart"){
+    const x=.16*Math.pow(Math.sin(a),3)*10;
+    const y=(
+      .13*Math.cos(a)-
+      .05*Math.cos(2*a)-
+      .02*Math.cos(3*a)-
+      .01*Math.cos(4*a)
+    )*10;
 
-    const x = 0.16 * Math.pow(Math.sin(t), 3) * 10;
-    const y = (
-      0.13 * Math.cos(t) -
-      0.05 * Math.cos(2 * t) -
-      0.02 * Math.cos(3 * t) -
-      0.01 * Math.cos(4 * t)
-    ) * 10;
-
-    return new THREE.Vector3(
-      x * 0.55 + (Math.random() - 0.5) * 0.2,
-      y * 0.55 + (Math.random() - 0.5) * 0.2,
-      (Math.random() - 0.5) * 1.1
-    );
+    return [x*.55,y*.55,Math.sin(a*3)*.5];
   }
 
-  return new THREE.Vector3(
-    Math.cos(a) * (1 + r),
-    Math.sin(a) * (1 + r),
-    (Math.random() - 0.5) * 2
-  );
+  return [Math.cos(a)*1.5,Math.sin(a)*1.5,0];
 }
 
-// ================================
-// 3D SOLAR SYSTEM
-// ================================
+// ===============================
+// SOLAR SYSTEM
+// ===============================
 
-const solarGroup = new THREE.Group();
-scene.add(solarGroup);
+const solar=new THREE.Group();
+scene.add(solar);
+solar.visible=false;
 
-const sun = new THREE.Mesh(
-  new THREE.SphereGeometry(0.55, 32, 32),
-  new THREE.MeshBasicMaterial({ color: 0xffb52e })
+const sun=new THREE.Mesh(
+  new THREE.SphereGeometry(.5,32,32),
+  new THREE.MeshBasicMaterial({color:0xffb52e})
 );
+solar.add(sun);
 
-solarGroup.add(sun);
+const sunLight=new THREE.PointLight(0xffa52e,5,15);
+solar.add(sunLight);
 
-const sunGlow = new THREE.PointLight(0xffa52e, 5, 15);
-solarGroup.add(sunGlow);
-
-const planets = [];
-
-const planetData = [
-  { name: "mercury", radius: 0.10, orbit: 0.95, speed: 1.8, color: 0xaaaaaa },
-  { name: "venus", radius: 0.17, orbit: 1.45, speed: 1.2, color: 0xffc28b },
-  { name: "earth", radius: 0.19, orbit: 2.05, speed: 0.9, color: 0x268aff },
-  { name: "mars", radius: 0.14, orbit: 2.65, speed: 0.7, color: 0xff5533 },
-  { name: "jupiter", radius: 0.34, orbit: 3.45, speed: 0.45, color: 0xd9a16f },
-  { name: "saturn", radius: 0.28, orbit: 4.2, speed: 0.32, color: 0xe6d19b }
+const planetData=[
+  [.10,.95,1.8,0xaaaaaa],
+  [.17,1.45,1.2,0xffc28b],
+  [.19,2.05,.9,0x268aff],
+  [.14,2.65,.7,0xff5533],
+  [.34,3.45,.45,0xd9a16f],
+  [.28,4.2,.32,0xe6d19b]
 ];
 
-planetData.forEach((data, index) => {
-  const planet = new THREE.Mesh(
-    new THREE.SphereGeometry(data.radius, 24, 24),
+const planets=[];
+
+planetData.forEach((d,index)=>{
+  const mesh=new THREE.Mesh(
+    new THREE.SphereGeometry(d[0],24,24),
     new THREE.MeshStandardMaterial({
-      color: data.color,
-      roughness: 0.65,
-      metalness: 0.15,
-      emissive: data.color,
-      emissiveIntensity: 0.12
+      color:d[3],
+      emissive:d[3],
+      emissiveIntensity:.12,
+      roughness:.6
     })
   );
+  solar.add(mesh);
 
-  solarGroup.add(planet);
-
-  const orbitPoints = [];
-
-  for (let i = 0; i <= 100; i++) {
-    const angle = (i / 100) * Math.PI * 2;
-
-    orbitPoints.push(
-      new THREE.Vector3(
-        Math.cos(angle) * data.orbit,
-        0,
-        Math.sin(angle) * data.orbit
-      )
-    );
+  const points=[];
+  for(let j=0;j<=100;j++){
+    const a=j/100*Math.PI*2;
+    points.push(new THREE.Vector3(
+      Math.cos(a)*d[1],0,Math.sin(a)*d[1]
+    ));
   }
 
-  const orbit = new THREE.LineLoop(
-    new THREE.BufferGeometry().setFromPoints(orbitPoints),
+  solar.add(new THREE.LineLoop(
+    new THREE.BufferGeometry().setFromPoints(points),
     new THREE.LineBasicMaterial({
-      color: 0x6653a8,
-      transparent: true,
-      opacity: 0.55
+      color:0x6653a8,
+      transparent:true,
+      opacity:.5
     })
-  );
+  ));
 
-  solarGroup.add(orbit);
-
-  if (index === 5) {
-    const ring = new THREE.Mesh(
-      new THREE.TorusGeometry(0.42, 0.035, 8, 48),
-      new THREE.MeshBasicMaterial({ color: 0xd7c18b })
+  if(index===5){
+    const ring=new THREE.Mesh(
+      new THREE.TorusGeometry(.42,.035,8,48),
+      new THREE.MeshBasicMaterial({color:0xd7c18b})
     );
-
-    ring.rotation.x = Math.PI / 2.5;
-    planet.add(ring);
+    ring.rotation.x=Math.PI/2.5;
+    mesh.add(ring);
   }
 
-  planets.push({ mesh: planet, data });
+  planets.push({mesh,data:d});
 });
 
-solarGroup.visible = false;
-solarGroup.scale.setScalar(0.9);
+// ===============================
+// NEON HAND SKELETON
+// ===============================
 
-// ================================
-// HAND SKELETON NEON
-// ================================
+const skeleton=new THREE.Group();
+scene.add(skeleton);
+skeleton.visible=false;
 
-const skeletonGroup = new THREE.Group();
-scene.add(skeletonGroup);
+const joints=[];
 
-const handJoints = [];
-
-for (let i = 0; i < 21; i++) {
-  const joint = new THREE.Mesh(
-    new THREE.SphereGeometry(0.055, 12, 12),
-    new THREE.MeshBasicMaterial({
-      color: 0x54eaff
-    })
+for(let i=0;i<21;i++){
+  const joint=new THREE.Mesh(
+    new THREE.SphereGeometry(.055,12,12),
+    new THREE.MeshBasicMaterial({color:0x54eaff})
   );
-
-  skeletonGroup.add(joint);
-  handJoints.push(joint);
+  skeleton.add(joint);
+  joints.push(joint);
 }
 
-const connections = [
+const connections=[
   [0,1],[1,2],[2,3],[3,4],
   [0,5],[5,6],[6,7],[7,8],
   [5,9],[9,10],[10,11],[11,12],
   [9,13],[13,14],[14,15],[15,16],
-  [13,17],[17,18],[18,19],[19,20],
-  [0,17]
+  [13,17],[17,18],[18,19],[19,20],[0,17]
 ];
 
-const skeletonLines = [];
+const boneLines=[];
 
-connections.forEach(() => {
-  const geometry = new THREE.BufferGeometry();
-  const line = new THREE.Line(
-    geometry,
-    new THREE.LineBasicMaterial({
-      color: 0x00eaff,
-      transparent: true,
-      opacity: 0.9
-    })
-  );
-
-  skeletonGroup.add(line);
-  skeletonLines.push(line);
+connections.forEach(()=>{
+  const geometry=new THREE.BufferGeometry();
+  const material=new THREE.LineBasicMaterial({
+    color:0x00eaff,
+    transparent:true,
+    opacity:.9
+  });
+  const line=new THREE.Line(geometry,material);
+  skeleton.add(line);
+  boneLines.push(line);
 });
 
-// ================================
+// ===============================
 // PALM HOLOGRAM
-// ================================
+// ===============================
 
-const hologram = new THREE.Group();
+const hologram=new THREE.Group();
 scene.add(hologram);
+hologram.visible=false;
 
-const holoRing1 = new THREE.Mesh(
-  new THREE.TorusGeometry(0.65, 0.018, 8, 80),
+const ring1=new THREE.Mesh(
+  new THREE.TorusGeometry(.65,.018,8,80),
+  new THREE.MeshBasicMaterial({color:0x00eaff})
+);
+const ring2=new THREE.Mesh(
+  new THREE.TorusGeometry(.45,.012,8,80),
+  new THREE.MeshBasicMaterial({color:0x9c63ff})
+);
+const core=new THREE.Mesh(
+  new THREE.IcosahedronGeometry(.22,1),
   new THREE.MeshBasicMaterial({
-    color: 0x00eaff,
-    transparent: true,
-    opacity: 0.9
+    color:0x8dffff,
+    wireframe:true
   })
 );
-
-const holoRing2 = new THREE.Mesh(
-  new THREE.TorusGeometry(0.45, 0.012, 8, 80),
+const beam=new THREE.Mesh(
+  new THREE.CylinderGeometry(.025,.18,1.1,16,1,true),
   new THREE.MeshBasicMaterial({
-    color: 0x9c63ff,
-    transparent: true,
-    opacity: 0.9
+    color:0x32dfff,
+    transparent:true,
+    opacity:.2,
+    side:THREE.DoubleSide
   })
 );
+beam.position.y=-.55;
+hologram.add(ring1,ring2,core,beam);
 
-const holoCore = new THREE.Mesh(
-  new THREE.IcosahedronGeometry(0.22, 1),
-  new THREE.MeshBasicMaterial({
-    color: 0x8dffff,
-    wireframe: true
-  })
-);
+// ===============================
+// MODE
+// ===============================
 
-hologram.add(holoRing1, holoRing2, holoCore);
+function setMode(next){
+  mode=next;
+  particleSystem.visible=next!=="solar";
+  solar.visible=next==="solar";
 
-const holoBeam = new THREE.Mesh(
-  new THREE.CylinderGeometry(0.025, 0.18, 1.1, 16, 1, true),
-  new THREE.MeshBasicMaterial({
-    color: 0x32dfff,
-    transparent: true,
-    opacity: 0.2,
-    side: THREE.DoubleSide
-  })
-);
-
-holoBeam.position.y = -0.55;
-hologram.add(holoBeam);
-
-hologram.visible = false;
-
-// ================================
-// EXPLOSION EFFECT
-// ================================
-
-let explosionPower = 0;
-
-function triggerExplosion() {
-  const now = performance.now();
-
-  if (now - lastExplosion < 900) return;
-
-  lastExplosion = now;
-  explosionPower = 1;
-
-  for (let i = 0; i < PARTICLE_COUNT; i++) {
-    const direction = new THREE.Vector3(
-      Math.random() - 0.5,
-      Math.random() - 0.5,
-      Math.random() - 0.5
-    ).normalize();
-
-    velocities[i].copy(direction).multiplyScalar(
-      0.08 + Math.random() * 0.22
-    );
-  }
-}
-
-// ================================
-// MODE CONTROL
-// ================================
-
-function setMode(mode) {
-  currentMode = mode;
-
-  document.querySelectorAll("[data-mode]").forEach(btn => {
-    btn.classList.toggle(
-      "active",
-      btn.dataset.mode === mode
-    );
+  document.querySelectorAll("[data-mode]").forEach(button=>{
+    button.classList.toggle("active",button.dataset.mode===next);
   });
 
-  solarGroup.visible = mode === "solar";
-  particleSystem.visible = mode !== "solar";
-
-  status.textContent = "MODE: " + mode.toUpperCase();
+  status.textContent="MODE: "+next.toUpperCase();
 }
 
-document.querySelectorAll("[data-mode]").forEach(btn => {
-  btn.addEventListener("click", () => {
-    setMode(btn.dataset.mode);
+document.querySelectorAll("[data-mode]").forEach(button=>{
+  button.addEventListener("click",()=>{
+    setMode(button.dataset.mode);
   });
 });
 
-document.getElementById("skeletonBtn").onclick = function() {
-  skeletonEnabled = !skeletonEnabled;
-  skeletonGroup.visible = skeletonEnabled && handDetected;
-  this.classList.toggle("active", skeletonEnabled);
-  this.textContent = skeletonEnabled ? "SKELETON ON" : "SKELETON OFF";
-};
+$("skeletonBtn").addEventListener("click",()=>{
+  skeletonEnabled=!skeletonEnabled;
+  $("skeletonBtn").textContent=skeletonEnabled?"SKELETON ON":"SKELETON OFF";
+  $("skeletonBtn").classList.toggle("active",skeletonEnabled);
+  skeleton.visible=skeletonEnabled&&handDetected;
+});
 
-document.getElementById("holoBtn").onclick = function() {
-  hologramEnabled = !hologramEnabled;
-  hologram.visible = hologramEnabled && handDetected;
-  this.classList.toggle("active", hologramEnabled);
-  this.textContent = hologramEnabled ? "HOLOGRAM ON" : "HOLOGRAM OFF";
-};
+$("holoBtn").addEventListener("click",()=>{
+  holoEnabled=!holoEnabled;
+  $("holoBtn").textContent=holoEnabled?"HOLOGRAM ON":"HOLOGRAM OFF";
+  $("holoBtn").classList.toggle("active",holoEnabled);
+  hologram.visible=holoEnabled&&handDetected;
+});
 
-// ================================
-// HAND POSITION CONVERSION
-// ================================
+// ===============================
+// GESTURES
+// ===============================
 
-function landmarkToWorld(lm) {
-  const x = (0.5 - lm.x) * 10;
-  const y = (0.5 - lm.y) * 7;
-
-  return new THREE.Vector3(x, y, 0);
+function worldPoint(lm){
+  return new THREE.Vector3(
+    (0.5-lm.x)*10,
+    (0.5-lm.y)*7,
+    0
+  );
 }
 
-function isFingerUp(lm, tip, pip) {
-  return lm[tip].y < lm[pip].y;
+function fingerUp(lm,tip,pip){
+  return lm[tip].y<lm[pip].y;
 }
 
-function detectGesture(lm) {
-  const index = isFingerUp(lm, 8, 6);
-  const middle = isFingerUp(lm, 12, 10);
-  const ring = isFingerUp(lm, 16, 14);
-  const pinky = isFingerUp(lm, 20, 18);
+function detectGesture(lm){
+  const index=fingerUp(lm,8,6);
+  const middle=fingerUp(lm,12,10);
+  const ring=fingerUp(lm,16,14);
+  const pinky=fingerUp(lm,20,18);
 
-  const thumbTip = lm[4];
-  const indexTip = lm[8];
-
-  const pinchDistance = Math.hypot(
-    thumbTip.x - indexTip.x,
-    thumbTip.y - indexTip.y
+  const pinch=Math.hypot(
+    lm[4].x-lm[8].x,
+    lm[4].y-lm[8].y
   );
 
-  if (pinchDistance < 0.055) return "pinch";
-
-  if (index && middle && ring && pinky) return "open";
-  if (!index && !middle && !ring && !pinky) return "fist";
-  if (index && middle && !ring && !pinky) return "peace";
-  if (index && !middle && !ring && !pinky) return "point";
-
+  if(pinch<.055)return "pinch";
+  if(index&&middle&&ring&&pinky)return "open";
+  if(!index&&!middle&&!ring&&!pinky)return "fist";
+  if(index&&middle&&!ring&&!pinky)return "peace";
   return "normal";
 }
 
-// ================================
-// HAND TRACKING UPDATE
-// ================================
+function explode(){
+  const now=performance.now();
+  if(now-lastExplosion<1000)return;
 
-function updateHand(lm) {
-  handDetected = true;
+  lastExplosion=now;
+  explosionPower=1;
 
-  const palm = landmarkToWorld(lm[9]);
+  for(let i=0;i<COUNT;i++){
+    const v=new THREE.Vector3(
+      Math.random()-.5,
+      Math.random()-.5,
+      Math.random()-.5
+    ).normalize();
 
-  handX = THREE.MathUtils.clamp(palm.x, -4.5, 4.5);
-  handY = THREE.MathUtils.clamp(palm.y, -3, 3);
+    velocities[i].copy(v).multiplyScalar(
+      .1+Math.random()*.25
+    );
+  }
+}
 
-  const palmWidth = Math.hypot(
-    lm[5].x - lm[17].x,
-    lm[5].y - lm[17].y
+function updateHand(lm){
+  handDetected=true;
+
+  const palm=worldPoint(lm[9]);
+  handX=THREE.MathUtils.clamp(palm.x,-4.5,4.5);
+  handY=THREE.MathUtils.clamp(palm.y,-3,3);
+
+  const width=Math.hypot(
+    lm[5].x-lm[17].x,
+    lm[5].y-lm[17].y
   );
 
-  handScale = THREE.MathUtils.clamp(
-    palmWidth * 8,
-    0.65,
-    1.6
-  );
+  handScale=THREE.MathUtils.clamp(width*8,.65,1.6);
 
-  const gesture = detectGesture(lm);
+  gesture=detectGesture(lm);
 
-  if (gesture === "open" && previousGesture !== "open") {
-    triggerExplosion();
+  if(gesture==="open"&&previousGesture!=="open"){
+    explode();
   }
 
-  if (
-    gesture === "peace" &&
-    previousGesture !== "peace" &&
-    performance.now() - lastModeChange > 1200
-  ) {
-    const modes = ["space", "saturn", "love", "heart", "solar"];
-    const next = (modes.indexOf(currentMode) + 1) % modes.length;
-
+  if(
+    gesture==="peace"&&previousGesture!=="peace"&&
+    performance.now()-lastModeChange>1200
+  ){
+    const modes=["space","saturn","love","heart","solar"];
+    const next=(modes.indexOf(mode)+1)%modes.length;
     setMode(modes[next]);
-    lastModeChange = performance.now();
+    lastModeChange=performance.now();
   }
 
-  previousGesture = gesture;
+  previousGesture=gesture;
 
-  if (gesture === "pinch") {
-    status.textContent = "PINCH: ZOOM CONTROL";
-  } else if (gesture === "fist") {
-    status.textContent = "FIST: PARTICLE ATTRACT";
-  } else if (gesture === "open") {
-    status.textContent = "OPEN PALM: ENERGY EXPLOSION";
-  } else {
-    status.textContent = "HAND TRACKING ACTIVE";
-  }
+  if(gesture==="open")status.textContent="✋ ENERGY EXPLOSION";
+  else if(gesture==="fist")status.textContent="✊ PARTICLE ATTRACT";
+  else if(gesture==="pinch")status.textContent="🤏 ZOOM CONTROL";
+  else status.textContent="HAND TRACKING ACTIVE";
 
-  // Skeleton
-  skeletonGroup.visible = skeletonEnabled;
+  // Skeleton positions
+  skeleton.visible=skeletonEnabled;
 
-  if (skeletonEnabled) {
-    const points = lm.map(landmarkToWorld);
+  if(skeletonEnabled){
+    const points=lm.map(worldPoint);
 
-    for (let i = 0; i < 21; i++) {
-      handJoints[i].position.copy(points[i]);
+    for(let i=0;i<21;i++){
+      joints[i].position.copy(points[i]);
     }
 
-    connections.forEach((pair, i) => {
-      const linePoints = [
-        points[pair[0]],
-        points[pair[1]]
-      ];
+    connections.forEach((pair,i)=>{
+      const arr=boneLines[i].geometry.attributes.position;
 
-      skeletonLines[i].geometry.dispose();
-      skeletonLines[i].geometry =
-        new THREE.BufferGeometry().setFromPoints(linePoints);
+      if(!arr||arr.count!==2){
+        boneLines[i].geometry.dispose();
+        boneLines[i].geometry=new THREE.BufferGeometry().setFromPoints([
+          points[pair[0]],points[pair[1]]
+        ]);
+      }else{
+        arr.setXYZ(0,points[pair[0]].x,points[pair[0]].y,points[pair[0]].z);
+        arr.setXYZ(1,points[pair[1]].x,points[pair[1]].y,points[pair[1]].z);
+        arr.needsUpdate=true;
+      }
     });
   }
 
-  // Hologram
-  hologram.visible = hologramEnabled;
-
-  if (hologramEnabled) {
-    hologram.position.set(handX, handY, 0.4);
+  // Palm hologram
+  hologram.visible=holoEnabled;
+  if(holoEnabled){
+    hologram.position.set(handX,handY,.4);
     hologram.scale.setScalar(handScale);
   }
 }
 
-// ================================
-// CAMERA START
-// ================================
+// ===============================
+// CAMERA
+// ===============================
 
-async function startCamera() {
-  if (cameraRunning) return;
+async function startCamera(){
+  if(cameraRunning||cameraStarting)return;
 
-  try {
-    if (!window.isSecureContext) {
-      throw new Error("Buka halaman melalui HTTPS, bukan file lokal.");
+  cameraStarting=true;
+  startButton.textContent="MEMUAT KAMERA...";
+  status.textContent="MEMINTA IZIN KAMERA...";
+
+  try{
+    if(!window.isSecureContext){
+      throw new Error("Gunakan HTTPS atau localhost.");
     }
 
-    if (!navigator.mediaDevices?.getUserMedia) {
-      throw new Error("Browser tidak mendukung akses kamera.");
+    if(!navigator.mediaDevices?.getUserMedia){
+      throw new Error("Browser tidak mendukung kamera.");
     }
 
-    status.textContent = "MEMINTA IZIN KAMERA...";
-    startButton.textContent = "MENYIAPKAN...";
-
-    cameraStream = await navigator.mediaDevices.getUserMedia({
-      audio: false,
-      video: {
-        facingMode: "user",
-        width: { ideal: 640 },
-        height: { ideal: 480 }
+    stream=await navigator.mediaDevices.getUserMedia({
+      audio:false,
+      video:{
+        facingMode:"user",
+        width:{ideal:480},
+        height:{ideal:360}
       }
     });
 
-    video.srcObject = cameraStream;
+    video.srcObject=stream;
     await video.play();
 
-    status.textContent = "MEMUAT AI HAND TRACKING...";
+    status.textContent="MEMUAT MEDIAPIPE...";
 
-    const vision = await FilesetResolver.forVisionTasks(
+    const vision=await FilesetResolver.forVisionTasks(
       "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm"
     );
 
-    try {
-      handLandmarker = await HandLandmarker.createFromOptions(
-        vision,
-        {
-          baseOptions: {
-            modelAssetPath:
-              "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
-            delegate: "GPU"
-          },
-          runningMode: "VIDEO",
-          numHands: 1
-        }
-      );
-    } catch (gpuError) {
-      console.warn("GPU tidak tersedia, mencoba CPU", gpuError);
+    const options={
+      baseOptions:{
+        modelAssetPath:
+        "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
+        delegate:"GPU"
+      },
+      runningMode:"VIDEO",
+      numHands:1
+    };
 
-      handLandmarker = await HandLandmarker.createFromOptions(
-        vision,
-        {
-          baseOptions: {
-            modelAssetPath:
-              "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
-            delegate: "CPU"
-          },
-          runningMode: "VIDEO",
-          numHands: 1
-        }
-      );
+    try{
+      landmarker=await HandLandmarker.createFromOptions(vision,options);
+    }catch(gpuError){
+      console.warn("GPU gagal, mencoba CPU",gpuError);
+      options.baseOptions.delegate="CPU";
+      landmarker=await HandLandmarker.createFromOptions(vision,options);
     }
 
-    cameraRunning = true;
+    cameraRunning=true;
     startButton.classList.add("hidden");
-    status.textContent = "SENKO AI ONLINE";
+    status.textContent="SENKO AI ONLINE";
 
     detectLoop();
 
-  } catch (error) {
+  }catch(error){
     console.error(error);
 
-    status.textContent = "ERROR: " + error.message;
-    startButton.textContent = "COBA LAGI";
+    status.textContent="ERROR: "+error.message;
+    startButton.textContent="COBA LAGI";
     startButton.classList.remove("hidden");
 
-    if (cameraStream) {
-      cameraStream.getTracks().forEach(track => track.stop());
-      cameraStream = null;
+    if(stream){
+      stream.getTracks().forEach(track=>track.stop());
+      stream=null;
     }
-
-    cameraRunning = false;
+  }finally{
+    cameraStarting=false;
   }
 }
 
-startButton.addEventListener("click", startCamera);
+startButton.addEventListener("click",startCamera);
 
-// ================================
-// AI DETECTION LOOP
-// ================================
+// ===============================
+// DETECTION LOOP
+// ===============================
 
-function detectLoop() {
-  if (!cameraRunning) return;
+function detectLoop(){
+  if(!cameraRunning)return;
 
-  if (
-    video.readyState >= 2 &&
-    video.currentTime !== lastVideoTime
-  ) {
-    lastVideoTime = video.currentTime;
+  if(
+    video.readyState>=2&&
+    video.currentTime!==lastVideoTime
+  ){
+    lastVideoTime=video.currentTime;
 
-    try {
-      const result = handLandmarker.detectForVideo(
-        video,
-        performance.now()
+    try{
+      const result=landmarker.detectForVideo(
+        video,performance.now()
       );
 
-      if (result.landmarks && result.landmarks.length > 0) {
+      if(result.landmarks&&result.landmarks.length){
         updateHand(result.landmarks[0]);
-      } else {
-        handDetected = false;
-        skeletonGroup.visible = false;
-        hologram.visible = false;
-        previousGesture = "";
-        status.text
+      }else{
+        handDetected=false;
+        previousGesture="";
+        skeleton.visible=false;
+        hologram.visible=false;
+        status.textContent="TANGAN TIDAK TERDETEKSI";
+      }
+    }catch(error){
+      console.warn("Detection:",error);
+    }
+  }
+
+  requestAnimationFrame(detectLoop);
+}
+
+// ===============================
+// ANIMATION
+// ===============================
+
+const clock=new THREE.Clock();
+
+function animate(){
+  requestAnimationFrame(animate);
+
+  const t=clock.getElapsedTime();
+
+  stars.rotation.y+=.0002;
+  stars.rotation.x+=.00005;
+
+  // Particles
+  if(particleSystem.visible){
+    for(let i=0;i<COUNT;i++){
+      const idx=i*3;
+      const target=targetPosition(i,t);
+
+      let tx=target[0];
+      let ty=target[1];
+      let tz=target[2];
+
+      if(handDetected){
+        tx+=handX*.35;
+        ty+=handY*.35;
+      }
+
+      if(gesture==="fist"&&handDetected){
+        tx=handX+(tx-handX)*.2;
+        ty=handY+(ty-handY)*.2;
+      }
+
+      if(gesture==="pinch"&&handDetected){
+        tx*=handScale;
+        ty*=handScale;
+        tz*=handScale;
+      }
+
+      const p=positions;
+
+      if(explosionPower>.01){
+        velocities[i].multiplyScalar(.965);
+        p[idx]+=velocities[i].x;
+        p[idx+1]+=velocities[i].y;
+        p[idx+2]+=velocities[i].z;
+
+        p[idx]+=(tx-p[idx])*.008;
+        p[idx+1]+=(ty-p[idx+1])*.008;
+        p[idx+2]+=(tz-p[idx+2])*.008;
+      }else{
+        p[idx]+=(tx-p[idx])*.045;
+        p[idx+1]+=(ty-p[idx+1])*.045;
+        p[idx+2]+=(tz-p[idx+2])*.045;
+      }
+    }
+
+    particleGeo.attributes.position.needsUpdate=true;
+    explosionPower*=.94;
+  }
+
+  // Solar system
+  if(solar.visible){
+    solar.rotation.x=-.25;
+    solar.rotation.y+=.002;
+
+    planets.forEach(({mesh,data})=>{
+      const angle=t*data[2];
+      mesh.position.set(
+        Math.cos(angle)*data[1],
+        Math.sin(angle*.5)*.12,
+        Math.sin(angle)*data[1]
+      );
+      mesh.rotation.y+=.01;
+    });
+  }
+
+  // Hologram
+  if(hologram.visible){
+    ring1.rotation.z+=.015;
+    ring2.rotation.z-=.02;
+    core.rotation.x+=.015;
+    core.rotation.y+=.02;
+    beam.material.opacity=.12+Math.sin(t*4)*.08;
+  }
+
+  // Skeleton pulse
+  if(skeleton.visible){
+    const pulse=.8+Math.sin(t*5)*.2;
+    joints.forEach(j=>j.scale.setScalar(pulse));
+  }
+
+  renderer.render(scene,camera);
+}
+
+animate();
+
+// ===============================
+// RESIZE
+// ===============================
+
+window.addEventListener("resize",()=>{
+  camera.aspect=innerWidth/innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth,innerHeight);
+  renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
+});
+
+setMode("space");
+
+</script>
+</body>
+</html>

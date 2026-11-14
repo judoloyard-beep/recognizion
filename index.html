@@ -1,4 +1,3 @@
-HTML
 
 <!DOCTYPE html>
 <html lang="id">
@@ -10,55 +9,55 @@ HTML
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{
-  background:#050510;color:white;
-  font-family:Arial,sans-serif;overflow:hidden;
+  overflow:hidden;background:#03030c;color:white;
+  font-family:Arial,sans-serif;
 }
 #scene{position:fixed;inset:0}
 video{display:none}
 .panel{
-  position:fixed;top:18px;left:50%;
+  position:fixed;top:17px;left:50%;
   transform:translateX(-50%);
-  width:92%;max-width:480px;text-align:center;
-  z-index:5;pointer-events:none;
+  width:92%;text-align:center;z-index:5;
+  pointer-events:none;
 }
 h1{
   font-size:22px;letter-spacing:4px;
-  color:#d9b5ff;
-  text-shadow:0 0 15px #9d42ff;
+  color:#dfc5ff;
+  text-shadow:0 0 16px #9e42ff;
 }
-#status{font-size:12px;color:#b9a6d8;margin-top:8px}
+#status{font-size:11px;color:#bba5dc;margin-top:8px}
 #gesture{
-  margin-top:13px;font-size:17px;
-  font-weight:bold;color:#fff;
-  text-shadow:0 0 12px #b44aff;
-}
-#hint{
-  position:fixed;bottom:95px;left:50%;
-  transform:translateX(-50%);
-  width:90%;text-align:center;
-  font-size:12px;color:#c8b9e8;
-  line-height:1.7;z-index:5;
-  pointer-events:none;
-}
-.controls{
-  position:fixed;bottom:20px;left:0;right:0;
-  display:flex;justify-content:center;z-index:10;
-}
-button{
-  border:1px solid #a44cff;
-  background:#170d2c;color:white;
-  padding:13px 25px;border-radius:30px;
-  font-weight:bold;box-shadow:0 0 18px #852dca66;
+  margin-top:12px;font-size:16px;
+  font-weight:bold;text-shadow:0 0 14px #a54bff;
 }
 #cameraPreview{
   position:fixed;right:12px;top:12px;
-  width:90px;height:68px;object-fit:cover;
-  border:1px solid #a44cff;border-radius:12px;
-  transform:scaleX(-1);opacity:.55;z-index:4;
+  width:82px;height:62px;object-fit:cover;
+  border-radius:10px;border:1px solid #a65aff;
+  transform:scaleX(-1);opacity:.5;z-index:6;
+}
+#hint{
+  position:fixed;bottom:88px;left:50%;
+  transform:translateX(-50%);
+  width:94%;text-align:center;
+  color:#c5b3df;font-size:10px;
+  line-height:1.8;z-index:5;pointer-events:none;
+}
+.controls{
+  position:fixed;bottom:19px;left:0;right:0;
+  display:flex;justify-content:center;z-index:10;
+}
+button{
+  padding:13px 25px;border-radius:30px;
+  border:1px solid #a45aff;
+  background:#160b2b;color:white;
+  font-weight:bold;letter-spacing:1px;
+  box-shadow:0 0 20px #8d3bca66;
 }
 #flash{
-  position:fixed;inset:0;pointer-events:none;
-  background:#b45aff;opacity:0;z-index:3;
+  position:fixed;inset:0;z-index:4;
+  background:#c18aff;opacity:0;
+  pointer-events:none;
 }
 </style>
 </head>
@@ -71,16 +70,17 @@ button{
 
 <div class="panel">
   <h1>SENKO UNIVERSE</h1>
-  <div id="status">KAMERA BELUM AKTIF</div>
-  <div id="gesture">✦ SIAPKAN TANGANMU ✦</div>
+  <div id="status">SYSTEM STANDBY</div>
+  <div id="gesture">✦ UNIVERSE MODE ✦</div>
 </div>
 
 <div id="hint">
-  🤙 SHAKA: PORTAL<br>
-  🤘 ROCK: PETIR<br>
-  👍 THUMBS UP: ENERGY ORB<br>
+  ✋ OPEN PALM: PARTICLE EXPLOSION |
+  ✊ FIST: ENERGY SHIELD<br>
+  🤙 SHAKA: DIMENSIONAL PORTAL |
   ✌️ PEACE: HEART<br>
-  ✊ FIST: COLLAPSE
+  👍 THUMBS UP: ENERGY ORB |
+  🤘 ROCK: LIGHTNING
 </div>
 
 <div class="controls">
@@ -97,44 +97,78 @@ button{
 
 <script type="module">
 import * as THREE from "three";
-import {FilesetResolver,HandLandmarker}
-from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14";
+import {
+  FilesetResolver,
+  HandLandmarker
+} from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14";
 
-const sceneEl=document.getElementById("scene");
-const video=document.getElementById("video");
-const preview=document.getElementById("cameraPreview");
-const statusEl=document.getElementById("status");
-const gestureEl=document.getElementById("gesture");
-const flash=document.getElementById("flash");
+const $=id=>document.getElementById(id);
 
-let renderer,scene,camera,particles,geometry;
+const sceneEl=$("scene");
+const video=$("video");
+const preview=$("cameraPreview");
+const statusEl=$("status");
+const gestureEl=$("gesture");
+const flash=$("flash");
+
+let scene,camera,renderer;
+let particles,geometry,material;
 let handLandmarker=null,stream=null;
-let running=false,lastVideoTime=-1;
-let currentMode="universe";
-let targetMode="universe";
-let stableCount=0,lastCandidate="";
-let lastChange=0;
+let running=false;
+let lastVideoTime=-1;
 let frame=0;
 
-const COUNT=2200;
+const COUNT=1600;
 const positions=new Float32Array(COUNT*3);
 const targets=new Float32Array(COUNT*3);
+const velocities=new Float32Array(COUNT*3);
 
-const colors={
- universe:0xb66cff,
- portal:0x39eaff,
- lightning:0x9b75ff,
- orb:0xffc45e,
- heart:0xff4caa,
- fist:0x9c5bff
+let currentMode="universe";
+let lastCandidate="";
+let stableCount=0;
+let lastChange=0;
+let lastExplosion=0;
+let explosionActive=false;
+let handPosition=new THREE.Vector3(0,0,0);
+let effectPosition=new THREE.Vector3(0,0,0);
+
+const palette={
+ universe:0xa95aff,
+ explosion:0xffb34d,
+ shield:0x40dfff,
+ portal:0x9c4dff,
+ heart:0xff4baf,
+ orb:0xffd36a,
+ lightning:0x7d9cff
 };
 
-function initThree(){
+const names={
+ universe:"✦ UNIVERSE MODE",
+ explosion:"💥 PARTICLE EXPLOSION",
+ shield:"🛡️ ENERGY SHIELD",
+ portal:"🌀 DIMENSIONAL PORTAL",
+ heart:"💜 HEART PARTICLES",
+ orb:"🔥 ENERGY ORB",
+ lightning:"⚡ LIGHTNING MODE"
+};
+
+function randomSphere(r){
+  const u=Math.random()*2-1;
+  const a=Math.random()*Math.PI*2;
+  const radius=r*Math.cbrt(Math.random());
+  return new THREE.Vector3(
+    radius*Math.sqrt(1-u*u)*Math.cos(a),
+    radius*Math.sqrt(1-u*u)*Math.sin(a),
+    radius*u
+  );
+}
+
+function init(){
   scene=new THREE.Scene();
-  scene.fog=new THREE.FogExp2(0x050510,0.025);
+  scene.fog=new THREE.FogExp2(0x03030c,.025);
 
   camera=new THREE.PerspectiveCamera(
-    65,innerWidth/innerHeight,0.1,100
+    65,innerWidth/innerHeight,.1,100
   );
   camera.position.z=8;
 
@@ -146,7 +180,7 @@ function initThree(){
   sceneEl.appendChild(renderer.domElement);
 
   for(let i=0;i<COUNT;i++){
-    const p=randomSphere(2.1);
+    const p=randomSphere(2);
     positions[i*3]=p.x;
     positions[i*3+1]=p.y;
     positions[i*3+2]=p.z;
@@ -157,9 +191,11 @@ function initThree(){
     "position",new THREE.BufferAttribute(positions,3)
   );
 
-  const material=new THREE.PointsMaterial({
-    color:colors.universe,size:0.035,
-    transparent:true,opacity:.9,
+  material=new THREE.PointsMaterial({
+    color:palette.universe,
+    size:.035,
+    transparent:true,
+    opacity:.9,
     blending:THREE.AdditiveBlending,
     depthWrite:false
   });
@@ -167,140 +203,208 @@ function initThree(){
   particles=new THREE.Points(geometry,material);
   scene.add(particles);
 
-  // bintang latar
-  const starGeo=new THREE.BufferGeometry();
-  const starPos=[];
-  for(let i=0;i<700;i++){
-    starPos.push(
-      (Math.random()-.5)*35,
-      (Math.random()-.5)*25,
-      (Math.random()-.5)*18-5
-    );
-  }
-  starGeo.setAttribute(
-    "position",new THREE.Float32BufferAttribute(starPos,3)
-  );
-  const stars=new THREE.Points(
-    starGeo,
-    new THREE.PointsMaterial({
-      color:0x9e82ca,size:.025,transparent:true,opacity:.65
-    })
-  );
-  scene.add(stars);
-
-  createRing();
+  createBackground();
+  createPortal();
+  createShield();
+  createOrb();
   createLightning();
-  createCursor();
+  createHandMarker();
 
   animate();
 }
 
-let ring,ring2,orbMesh,lightning,cursor;
+function createBackground(){
+  const p=[];
+  for(let i=0;i<500;i++){
+    p.push(
+      (Math.random()-.5)*35,
+      (Math.random()-.5)*25,
+      (Math.random()-.5)*20-5
+    );
+  }
 
-function createRing(){
-  ring=new THREE.Mesh(
-    new THREE.TorusGeometry(1.7,.025,8,100),
+  const g=new THREE.BufferGeometry();
+  g.setAttribute(
+    "position",new THREE.Float32BufferAttribute(p,3)
+  );
+
+  scene.add(new THREE.Points(
+    g,new THREE.PointsMaterial({
+      color:0x8e75b8,size:.025,transparent:true,opacity:.7
+    })
+  ));
+}
+
+let portalGroup,portalRing1,portalRing2,portalRing3;
+let shieldGroup,shieldMesh,shieldWire;
+let orbMesh,lightningLine,handMarker;
+
+function createPortal(){
+  portalGroup=new THREE.Group();
+
+  portalRing1=new THREE.Mesh(
+    new THREE.TorusGeometry(1.5,.035,10,100),
     new THREE.MeshBasicMaterial({
-      color:0x55ddff,transparent:true,opacity:.9
+      color:0x5ceaff
     })
   );
-  ring2=new THREE.Mesh(
-    new THREE.TorusGeometry(1.35,.018,8,100),
+
+  portalRing2=new THREE.Mesh(
+    new THREE.TorusGeometry(1.2,.025,10,100),
     new THREE.MeshBasicMaterial({
-      color:0xc16aff,transparent:true,opacity:.7
+      color:0xb45aff
     })
   );
-  scene.add(ring,ring2);
 
+  portalRing3=new THREE.Mesh(
+    new THREE.TorusGeometry(.85,.014,8,100),
+    new THREE.MeshBasicMaterial({
+      color:0xffffff
+    })
+  );
+
+  const inner=new THREE.Mesh(
+    new THREE.CircleGeometry(.8,64),
+    new THREE.MeshBasicMaterial({
+      color:0x471477,
+      transparent:true,
+      opacity:.35,
+      side:THREE.DoubleSide
+    })
+  );
+
+  portalGroup.add(
+    portalRing1,portalRing2,portalRing3,inner
+  );
+  portalGroup.visible=false;
+  scene.add(portalGroup);
+}
+
+function createShield(){
+  shieldGroup=new THREE.Group();
+
+  const geo=new THREE.SphereGeometry(1.65,32,24,0,Math.PI*2,0,Math.PI*.65);
+
+  shieldMesh=new THREE.Mesh(
+    geo,new THREE.MeshBasicMaterial({
+      color:0x31dfff,
+      transparent:true,
+      opacity:.12,
+      side:THREE.DoubleSide
+    })
+  );
+
+  shieldWire=new THREE.Mesh(
+    geo,new THREE.MeshBasicMaterial({
+      color:0x54dfff,
+      wireframe:true,
+      transparent:true,
+      opacity:.45
+    })
+  );
+
+  shieldGroup.add(shieldMesh,shieldWire);
+  shieldGroup.visible=false;
+  scene.add(shieldGroup);
+}
+
+function createOrb(){
   orbMesh=new THREE.Mesh(
-    new THREE.SphereGeometry(.8,24,24),
+    new THREE.IcosahedronGeometry(.8,2),
     new THREE.MeshBasicMaterial({
-      color:0xffc45e,wireframe:true,
-      transparent:true,opacity:.5
+      color:palette.orb,
+      wireframe:true,
+      transparent:true,
+      opacity:.8
     })
   );
+  orbMesh.visible=false;
   scene.add(orbMesh);
 }
 
 function createLightning(){
-  const pts=[];
-  for(let i=0;i<60;i++){
-    pts.push(new THREE.Vector3(0,0,0));
+  const points=[];
+  for(let i=0;i<30;i++){
+    points.push(new THREE.Vector3(0,0,0));
   }
-  const geo=new THREE.BufferGeometry().setFromPoints(pts);
-  lightning=new THREE.Line(
-    geo,
-    new THREE.LineBasicMaterial({
-      color:0xc18aff,transparent:true,opacity:.9
+
+  const g=new THREE.BufferGeometry().setFromPoints(points);
+  lightningLine=new THREE.Line(
+    g,new THREE.LineBasicMaterial({
+      color:0x9e8bff,
+      transparent:true,
+      opacity:.9
     })
   );
-  scene.add(lightning);
+  lightningLine.visible=false;
+  scene.add(lightningLine);
 }
 
-function createCursor(){
-  cursor=new THREE.Mesh(
-    new THREE.TorusGeometry(.22,.018,8,40),
-    new THREE.MeshBasicMaterial({color:0x52eaff})
+function createHandMarker(){
+  handMarker=new THREE.Mesh(
+    new THREE.TorusGeometry(.18,.015,8,32),
+    new THREE.MeshBasicMaterial({color:0x5ceaff})
   );
-  cursor.visible=false;
-  scene.add(cursor);
-}
-
-function randomSphere(radius){
-  const u=Math.random()*2-1;
-  const a=Math.random()*Math.PI*2;
-  const r=radius*Math.cbrt(Math.random());
-  return new THREE.Vector3(
-    r*Math.sqrt(1-u*u)*Math.cos(a),
-    r*Math.sqrt(1-u*u)*Math.sin(a),
-    r*u
-  );
+  handMarker.visible=false;
+  scene.add(handMarker);
 }
 
 function heartPoint(t){
   return new THREE.Vector3(
-    .16*Math.pow(Math.sin(t),3)*7,
+    16*Math.pow(Math.sin(t),3)*.12,
     (13*Math.cos(t)-5*Math.cos(2*t)
-    -2*Math.cos(3*t)-Math.cos(4*t))*.16,
+    -2*Math.cos(3*t)-Math.cos(4*t))*.12,
     0
   );
 }
 
-function setTargets(mode){
+function setMode(mode){
+  currentMode=mode;
+  material.color.setHex(palette[mode]);
+
   for(let i=0;i<COUNT;i++){
     let p;
 
     if(mode==="portal"){
       const a=Math.random()*Math.PI*2;
-      const r=1.65+(Math.random()-.5)*.22;
+      const r=1.5+(Math.random()-.5)*.2;
       p=new THREE.Vector3(
         Math.cos(a)*r,
         Math.sin(a)*r,
-        (Math.random()-.5)*.45
+        (Math.random()-.5)*.4
       );
+    }
+    else if(mode==="shield"){
+      const a=Math.random()*Math.PI*2;
+      const y=Math.random()*1.6-.2;
+      const r=Math.sqrt(Math.max(.1,1-(y/1.65)**2));
+      p=new THREE.Vector3(
+        Math.cos(a)*r*1.6,
+        y,
+        Math.sin(a)*r*1.6
+      );
+    }
+    else if(mode==="heart"){
+      p=heartPoint(Math.random()*Math.PI*2);
+      p.multiplyScalar(.8+Math.random()*.2);
+      p.z+=(Math.random()-.5)*.5;
+    }
+    else if(mode==="orb"){
+      p=randomSphere(.85);
     }
     else if(mode==="lightning"){
       const t=Math.random();
       p=new THREE.Vector3(
-        (Math.random()-.5)*2.5,
-        (t-.5)*4,
-        (Math.random()-.5)*1.3
+        (Math.random()-.5)*.5,
+        (t-.5)*3.5,
+        (Math.random()-.5)*.5
       );
     }
-    else if(mode==="orb"){
-      p=randomSphere(1.05);
-    }
-    else if(mode==="heart"){
-      const t=Math.random()*Math.PI*2;
-      p=heartPoint(t);
-      p.multiplyScalar(.8+Math.random()*.2);
-      p.z+=(Math.random()-.5)*.8;
-    }
-    else if(mode==="fist"){
-      p=randomSphere(.45);
+    else if(mode==="explosion"){
+      p=randomSphere(3.2);
     }
     else{
-      p=randomSphere(2.1);
+      p=randomSphere(2);
     }
 
     targets[i*3]=p.x;
@@ -308,122 +412,191 @@ function setTargets(mode){
     targets[i*3+2]=p.z;
   }
 
-  particles.material.color.setHex(colors[mode]);
-  flash.style.opacity=".16";
-  setTimeout(()=>flash.style.opacity="0",100);
+  portalGroup.visible=mode==="portal";
+  shieldGroup.visible=mode==="shield";
+  orbMesh.visible=mode==="orb";
+  lightningLine.visible=mode==="lightning";
+
+  if(mode==="explosion"){
+    triggerExplosion();
+  }
+
+  gestureEl.textContent=names[mode];
+  lastChange=Date.now();
+
+  flash.style.opacity=".18";
+  setTimeout(()=>flash.style.opacity="0",120);
 }
 
-function updateLightning(){
-  const arr=lightning.geometry.attributes.position.array;
-  let x=0,y=-2,z=0;
-  for(let i=0;i<20;i++){
-    arr[i*3]=x;
-    arr[i*3+1]=y+i*.2;
-    arr[i*3+2]=z;
-    x+=(Math.random()-.5)*.7;
-    z+=(Math.random()-.5)*.4;
+function triggerExplosion(){
+  explosionActive=true;
+  lastExplosion=Date.now();
+
+  for(let i=0;i<COUNT;i++){
+    const j=i*3;
+    const direction=randomSphere(1);
+    const speed=1.5+Math.random()*4;
+
+    velocities[j]=direction.x*speed;
+    velocities[j+1]=direction.y*speed;
+    velocities[j+2]=direction.z*speed;
   }
-  lightning.geometry.attributes.position.needsUpdate=true;
-  lightning.geometry.computeBoundingSphere();
+}
+
+function updateExplosion(dt){
+  if(!explosionActive)return;
+
+  const elapsed=Date.now()-lastExplosion;
+
+  for(let i=0;i<COUNT;i++){
+    const j=i*3;
+
+    positions[j]+=velocities[j]*dt;
+    positions[j+1]+=velocities[j+1]*dt;
+    positions[j+2]+=velocities[j+2]*dt;
+
+    velocities[j]*=.985;
+    velocities[j+1]*=.985;
+    velocities[j+2]*=.985;
+
+    targets[j]=positions[j];
+    targets[j+1]=positions[j+1];
+    targets[j+2]=positions[j+2];
+  }
+
+  if(elapsed>1500){
+    explosionActive=false;
+    setMode("universe");
+  }
+}
+
+function updateEffects(){
+  portalGroup.position.copy(effectPosition);
+  shieldGroup.position.copy(effectPosition);
+  orbMesh.position.copy(effectPosition);
+  lightningLine.position.copy(effectPosition);
+
+  portalRing1.rotation.z+=.012;
+  portalRing2.rotation.z-=.018;
+  portalRing3.rotation.z+=.026;
+
+  portalRing1.rotation.x=.3;
+  portalRing2.rotation.x=-.3;
+
+  shieldGroup.rotation.y+=.009;
+  shieldGroup.rotation.x=.03;
+
+  const pulse=1+Math.sin(frame*.08)*.045;
+  shieldGroup.scale.setScalar(pulse);
+
+  orbMesh.rotation.x+=.012;
+  orbMesh.rotation.y+=.016;
+  orbMesh.scale.setScalar(
+    1+Math.sin(frame*.07)*.08
+  );
+
+  if(frame%3===0&&currentMode==="lightning"){
+    const arr=lightningLine.geometry.attributes.position.array;
+    let x=0,z=0;
+    for(let i=0;i<30;i++){
+      arr[i*3]=x;
+      arr[i*3+1]=-1.8+i*.13;
+      arr[i*3+2]=z;
+      x+=(Math.random()-.5)*.5;
+      z+=(Math.random()-.5)*.3;
+    }
+    lightningLine.geometry.attributes.position.needsUpdate=true;
+    lightningLine.geometry.computeBoundingSphere();
+  }
 }
 
 function animate(){
   requestAnimationFrame(animate);
   frame++;
 
+  const dt=Math.min(.04,1/60);
   const pos=geometry.attributes.position.array;
-  const speed=currentMode==="fist"?.12:.065;
 
-  for(let i=0;i<COUNT;i++){
-    const j=i*3;
-    pos[j]+=(targets[j]-pos[j])*speed;
-    pos[j+1]+=(targets[j+1]-pos[j+1])*speed;
-    pos[j+2]+=(targets[j+2]-pos[j+2])*speed;
-
-    if(currentMode==="universe"){
-      pos[j+1]+=Math.sin(frame*.01+i)*.0008;
+  if(currentMode==="explosion"){
+    updateExplosion(dt);
+  }else{
+    const speed=.065;
+    for(let i=0;i<COUNT;i++){
+      const j=i*3;
+      pos[j]+=(targets[j]-pos[j])*speed;
+      pos[j+1]+=(targets[j+1]-pos[j+1])*speed;
+      pos[j+2]+=(targets[j+2]-pos[j+2])*speed;
     }
   }
 
   geometry.attributes.position.needsUpdate=true;
 
-  particles.rotation.y+=.0025;
-  particles.rotation.x+=.0008;
+  particles.rotation.y+=.002;
+  particles.rotation.x+=.0006;
 
-  ring.visible=currentMode==="portal";
-  ring2.visible=currentMode==="portal";
-  ring.rotation.z+=.012;
-  ring2.rotation.z-=.009;
-  ring.scale.setScalar(1+Math.sin(frame*.05)*.06);
+  updateEffects();
 
-  orbMesh.visible=currentMode==="orb";
-  orbMesh.rotation.x+=.008;
-  orbMesh.rotation.y+=.012;
-  orbMesh.scale.setScalar(1+Math.sin(frame*.06)*.08);
-
-  lightning.visible=currentMode==="lightning";
-  if(frame%3===0)updateLightning();
+  handMarker.position.copy(handPosition);
+  handMarker.visible=running&&handVisible;
+  handMarker.rotation.z+=.025;
 
   renderer.render(scene,camera);
 }
 
-function fingerExtended(lm,tip,pip){
+let handVisible=false;
+
+function fingerUp(lm,tip,pip){
   return lm[tip].y<lm[pip].y;
 }
 
-function thumbExtended(lm){
+function thumbUp(lm){
   const wrist=lm[0];
   const tip=lm[4];
   const joint=lm[3];
-  const d1=Math.hypot(tip.x-wrist.x,tip.y-wrist.y);
-  const d2=Math.hypot(joint.x-wrist.x,joint.y-wrist.y);
-  return d1>d2*1.12;
+
+  const a=Math.hypot(
+    tip.x-wrist.x,tip.y-wrist.y
+  );
+  const b=Math.hypot(
+    joint.x-wrist.x,joint.y-wrist.y
+  );
+
+  return a>b*1.12;
 }
 
-function classifyHand(lm){
-  const thumb=thumbExtended(lm);
-  const index=fingerExtended(lm,8,6);
-  const middle=fingerExtended(lm,12,10);
-  const ringFinger=fingerExtended(lm,16,14);
-  const pinky=fingerExtended(lm,20,18);
+function classify(lm){
+  const th=thumbUp(lm);
+  const i=fingerUp(lm,8,6);
+  const m=fingerUp(lm,12,10);
+  const r=fingerUp(lm,16,14);
+  const p=fingerUp(lm,20,18);
 
-  // jempol ke atas
-  if(thumb&&!index&&!middle&&!ringFinger&&!pinky
-    &&lm[4].y<lm[3].y){
+  // thumbs up
+  if(th&&!i&&!m&&!r&&!p&&lm[4].y<lm[3].y)
     return "orb";
-  }
 
-  // shaka: jempol dan kelingking
-  if(thumb&&!index&&!middle&&!ringFinger&&pinky){
+  // shaka
+  if(th&&!i&&!m&&!r&&p)
     return "portal";
-  }
 
-  // rock: telunjuk dan kelingking
-  if(!thumb&&index&&!middle&&!ringFinger&&pinky){
+  // rock
+  if(!th&&i&&!m&&!r&&p)
     return "lightning";
-  }
 
   // peace
-  if(!thumb&&index&&middle&&!ringFinger&&!pinky){
+  if(!th&&i&&m&&!r&&!p)
     return "heart";
-  }
 
-  // kepalan tangan
-  if(!index&&!middle&&!ringFinger&&!pinky&&!thumb){
-    return "fist";
-  }
+  // fist
+  if(!i&&!m&&!r&&!p&&!th)
+    return "shield";
+
+  // open palm
+  if(th&&i&&m&&r&&p)
+    return "explosion";
 
   return "universe";
 }
-
-const labels={
- universe:"✦ UNIVERSE MODE",
- portal:"🌀 PORTAL DIMENSI AKTIF",
- lightning:"⚡ LIGHTNING POWER",
- orb:"🔥 ENERGY ORB",
- heart:"💜 HEART PARTICLES",
- fist:"✊ PARTICLES COLLAPSE"
-};
 
 function updateGesture(mode){
   if(mode===lastCandidate){
@@ -433,21 +606,22 @@ function updateGesture(mode){
     stableCount=0;
   }
 
-  if(stableCount>7&&mode!==currentMode
-    &&Date.now()-lastChange>650){
-    currentMode=mode;
-    targetMode=mode;
-    setTargets(mode);
-    gestureEl.textContent=labels[mode];
-    lastChange=Date.now();
+  if(stableCount>=7&&mode!==currentMode&&
+     Date.now()-lastChange>700){
+    setMode(mode);
   }
 }
 
 async function startCamera(){
-  const btn=document.getElementById("start");
+  const btn=$("start");
+
   try{
     if(!window.isSecureContext){
-      throw new Error("Gunakan HTTPS untuk membuka kamera.");
+      throw new Error("Buka melalui HTTPS, bukan file lokal.");
+    }
+
+    if(!navigator.mediaDevices?.getUserMedia){
+      throw new Error("Browser tidak mendukung kamera.");
     }
 
     btn.disabled=true;
@@ -459,12 +633,13 @@ async function startCamera(){
         facingMode:"user",
         width:{ideal:640},
         height:{ideal:480},
-        frameRate:{ideal:30,max:30}
+        frameRate:{ideal:24,max:30}
       }
     });
 
     video.srcObject=stream;
     preview.srcObject=stream;
+
     await video.play();
     await preview.play();
 
@@ -474,43 +649,40 @@ async function startCamera(){
       "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm"
     );
 
+    const options={
+      baseOptions:{
+        modelAssetPath:
+        "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
+        delegate:"GPU"
+      },
+      runningMode:"VIDEO",
+      numHands:1
+    };
+
     try{
       handLandmarker=await HandLandmarker.createFromOptions(
-        vision,{
-          baseOptions:{
-            modelAssetPath:
-            "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
-            delegate:"GPU"
-          },
-          runningMode:"VIDEO",
-          numHands:1
-        }
+        vision,options
       );
-    }catch(gpuError){
+    }catch(e){
+      options.baseOptions.delegate="CPU";
       handLandmarker=await HandLandmarker.createFromOptions(
-        vision,{
-          baseOptions:{
-            modelAssetPath:
-            "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
-            delegate:"CPU"
-          },
-          runningMode:"VIDEO",
-          numHands:1
-        }
+        vision,options
       );
     }
 
     running=true;
-    statusEl.textContent="KAMERA AKTIF • TUNJUKKAN GESTUR";
+    statusEl.textContent="AI ACTIVE • SHOW YOUR HAND";
     btn.textContent="KAMERA AKTIF";
     btn.disabled=false;
+
     detectLoop();
 
-  }catch(err){
-    console.error(err);
-    statusEl.textContent="GAGAL: "+err.message;
+  }catch(e){
+    console.error(e);
+    statusEl.textContent="ERROR: "+e.message;
     btn.disabled=false;
     btn.textContent="COBA LAGI";
+
     if(stream){
       stream.getTracks().forEach(t=>t.stop());
       stream=null;
@@ -521,26 +693,35 @@ async function startCamera(){
 function detectLoop(){
   if(!running)return;
 
-  if(video.readyState>=2&&video.currentTime!==lastVideoTime){
+  if(video.readyState>=2&&
+     video.currentTime!==lastVideoTime){
+
     lastVideoTime=video.currentTime;
 
     const result=handLandmarker.detectForVideo(
       video,performance.now()
     );
 
-    if(result.landmarks&&result.landmarks.length){
+    if(result.landmarks?.length){
       const lm=result.landmarks[0];
-      const mode=classifyHand(lm);
-      updateGesture(mode);
 
-      cursor.visible=true;
-      cursor.position.set(
-        (0.5-lm[9].x)*5,
-        (0.5-lm[9].y)*4,
+      handVisible=true;
+
+      const x=(.5-lm[9].x)*5;
+      const y=(.5-lm[9].y)*4;
+
+      handPosition.set(
+        THREE.MathUtils.clamp(x,-2.5,2.5),
+        THREE.MathUtils.clamp(y,-2,2),
         0
       );
+
+      effectPosition.lerp(handPosition,.18);
+
+      updateGesture(classify(lm));
+
     }else{
-      cursor.visible=false;
+      handVisible=false;
       lastCandidate="";
       stableCount=0;
     }
@@ -549,18 +730,15 @@ function detectLoop(){
   requestAnimationFrame(detectLoop);
 }
 
-document.getElementById("start").addEventListener(
-  "click",startCamera
-);
+$("start").addEventListener("click",startCamera);
 
 window.addEventListener("resize",()=>{
-  if(!renderer)return;
   camera.aspect=innerWidth/innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(innerWidth,innerHeight);
 });
 
-initThree();
+init();
 </script>
 </body>
 </html>

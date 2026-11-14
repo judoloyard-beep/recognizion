@@ -1,601 +1,566 @@
+HTML
 
 <!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#090817">
-<title>Yuna AI 3D</title>
+<title>SENKO UNIVERSE V6</title>
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{
- background:#090817;color:white;font-family:Arial;
- min-height:100vh;overflow-x:hidden;
+  background:#050510;color:white;
+  font-family:Arial,sans-serif;overflow:hidden;
 }
-header{
- padding:17px;display:flex;justify-content:space-between;
- border-bottom:1px solid #ffffff20;
-}
-.logo{color:#d8a0ff;font-weight:bold;letter-spacing:3px}
-.status{font-size:11px;color:#78ffbb}
-main{max-width:500px;margin:auto;padding:14px}
-.scene{
- height:430px;position:relative;overflow:hidden;
- border:1px solid #9f5ee455;border-radius:20px;
- background:radial-gradient(ellipse at center,#40245d,#100d22 72%);
-}
-#world{width:100%;height:100%;display:block}
-.scene-label{
- position:absolute;top:15px;left:15px;
- font-size:10px;letter-spacing:2px;color:#dfbaff;
- pointer-events:none;
-}
-.scene-bottom{
- position:absolute;bottom:13px;width:100%;
- text-align:center;color:#cba6ed;font-size:11px;
- letter-spacing:3px;pointer-events:none;
-}
-.info{
- text-align:center;padding:14px 5px;
-}
-.info h2{color:#e7b7ff;letter-spacing:3px}
-.info p{color:#bda8d2;font-size:12px;margin-top:7px}
-.expression{
- color:#a9dfff;font-size:11px;
- margin-top:9px;letter-spacing:2px;
-}
+#scene{position:fixed;inset:0}
+video{display:none}
 .panel{
- background:#171329;border:1px solid #ffffff17;
- border-radius:15px;padding:14px;margin-bottom:13px;
+  position:fixed;top:18px;left:50%;
+  transform:translateX(-50%);
+  width:92%;max-width:480px;text-align:center;
+  z-index:5;pointer-events:none;
 }
-.title{
- color:#d9a4ff;font-size:11px;
- letter-spacing:2px;margin-bottom:12px;
+h1{
+  font-size:22px;letter-spacing:4px;
+  color:#d9b5ff;
+  text-shadow:0 0 15px #9d42ff;
 }
-.actions{
- display:grid;grid-template-columns:repeat(4,1fr);gap:8px;
+#status{font-size:12px;color:#b9a6d8;margin-top:8px}
+#gesture{
+  margin-top:13px;font-size:17px;
+  font-weight:bold;color:#fff;
+  text-shadow:0 0 12px #b44aff;
 }
-.actions button{
- background:#38234e;border:1px solid #a86cce66;
- color:white;padding:12px 3px;border-radius:10px;
- font-size:11px;
+#hint{
+  position:fixed;bottom:95px;left:50%;
+  transform:translateX(-50%);
+  width:90%;text-align:center;
+  font-size:12px;color:#c8b9e8;
+  line-height:1.7;z-index:5;
+  pointer-events:none;
 }
-.actions span{display:block;font-size:20px;margin-bottom:6px}
-.chat{
- height:170px;overflow-y:auto;
- display:flex;flex-direction:column;gap:9px;
+.controls{
+  position:fixed;bottom:20px;left:0;right:0;
+  display:flex;justify-content:center;z-index:10;
 }
-.msg{
- padding:10px 12px;border-radius:10px;
- max-width:90%;font-size:13px;line-height:1.5;
- overflow-wrap:anywhere;
+button{
+  border:1px solid #a44cff;
+  background:#170d2c;color:white;
+  padding:13px 25px;border-radius:30px;
+  font-weight:bold;box-shadow:0 0 18px #852dca66;
 }
-.bot{background:#36234d;align-self:flex-start}
-.user{background:#60408b;align-self:flex-end}
-.controls{display:flex;gap:7px;margin-top:10px}
-input{
- flex:1;min-width:0;background:#0c0a19;
- color:white;border:1px solid #76518c;
- padding:12px;border-radius:9px;outline:none;
+#cameraPreview{
+  position:fixed;right:12px;top:12px;
+  width:90px;height:68px;object-fit:cover;
+  border:1px solid #a44cff;border-radius:12px;
+  transform:scaleX(-1);opacity:.55;z-index:4;
 }
-button{cursor:pointer}
-.send,.mic{
- background:linear-gradient(100deg,#7544ae,#ad61d5);
- color:white;border:0;border-radius:9px;padding:12px;
+#flash{
+  position:fixed;inset:0;pointer-events:none;
+  background:#b45aff;opacity:0;z-index:3;
 }
-.mic{width:100%;margin-top:9px}
-.mic.active{background:#9c376b}
-#typing{color:#bba0d1;font-size:11px;margin-top:8px}
-.footer{
- text-align:center;padding:15px;color:#806d94;
- font-size:10px;letter-spacing:2px;
-}
-button:disabled{opacity:.5}
 </style>
 </head>
 
 <body>
+<div id="scene"></div>
+<video id="video" autoplay playsinline muted></video>
+<video id="cameraPreview" autoplay playsinline muted></video>
+<div id="flash"></div>
 
-<header>
- <div class="logo">✦ YUNA AI 3D</div>
- <div class="status">● ONLINE</div>
-</header>
+<div class="panel">
+  <h1>SENKO UNIVERSE</h1>
+  <div id="status">KAMERA BELUM AKTIF</div>
+  <div id="gesture">✦ SIAPKAN TANGANMU ✦</div>
+</div>
 
-<main>
+<div id="hint">
+  🤙 SHAKA: PORTAL<br>
+  🤘 ROCK: PETIR<br>
+  👍 THUMBS UP: ENERGY ORB<br>
+  ✌️ PEACE: HEART<br>
+  ✊ FIST: COLLAPSE
+</div>
 
- <section class="scene">
-  <canvas id="world"></canvas>
-  <div class="scene-label">3D AVATAR SYSTEM</div>
-  <div class="scene-bottom">Y U N A • VIRTUAL COMPANION</div>
- </section>
+<div class="controls">
+  <button id="start">AKTIFKAN KAMERA</button>
+</div>
 
- <section class="info">
-  <h2>YUNA</h2>
-  <p>Halo kaka! Aku siap menemani kaka hari ini 💜</p>
-  <div class="expression" id="expression">EXPRESSION: HAPPY</div>
- </section>
-
- <section class="panel">
-  <div class="title">LIVE EMOTION</div>
-  <div class="actions">
-   <button onclick="setMood('happy')"><span>😊</span>Happy</button>
-   <button onclick="setMood('sad')"><span>🥺</span>Sad</button>
-   <button onclick="setMood('surprised')"><span>😲</span>Surprise</button>
-   <button onclick="setMood('shy')"><span>☺️</span>Shy</button>
-  </div>
- </section>
-
- <section class="panel">
-  <div class="title">YUNA AI CHAT</div>
-  <div class="chat" id="chat">
-   <div class="msg bot">
-    Yuna: Kaka! Akhirnya kita bisa ngobrol lagi. Aku sekarang punya tubuh 3D! ✨
-   </div>
-  </div>
-  <div id="typing"></div>
-  <div class="controls">
-   <input id="message" placeholder="Ngobrol dengan Yuna...">
-   <button class="send" id="send" onclick="sendMessage()">➤</button>
-  </div>
-  <button class="mic" id="mic" onclick="toggleMic()">🎙️ VOICE INPUT</button>
- </section>
-
- <section class="panel">
-  <div class="title">VOICE SYSTEM</div>
-  <div class="actions">
-   <button onclick="speak('Halo kaka! Aku Yuna!')"><span>🔊</span>Test Voice</button>
-   <button onclick="stopVoice()"><span>🔇</span>Stop</button>
-   <button onclick="setMood('happy')"><span>💜</span>Smile</button>
-   <button onclick="resetCamera()"><span>🔄</span>Reset</button>
-  </div>
- </section>
-
- <div class="footer">YUNA AI 3D • PERSONAL COMPANION</div>
-</main>
+<script type="importmap">
+{
+  "imports":{
+    "three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+  }
+}
+</script>
 
 <script type="module">
-import * as THREE from
-'https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js';
+import * as THREE from "three";
+import {FilesetResolver,HandLandmarker}
+from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14";
 
-const canvas=document.getElementById("world");
+const sceneEl=document.getElementById("scene");
+const video=document.getElementById("video");
+const preview=document.getElementById("cameraPreview");
+const statusEl=document.getElementById("status");
+const gestureEl=document.getElementById("gesture");
+const flash=document.getElementById("flash");
 
-const scene=new THREE.Scene();
-scene.background=new THREE.Color("#160d29");
+let renderer,scene,camera,particles,geometry;
+let handLandmarker=null,stream=null;
+let running=false,lastVideoTime=-1;
+let currentMode="universe";
+let targetMode="universe";
+let stableCount=0,lastCandidate="";
+let lastChange=0;
+let frame=0;
 
-const camera=new THREE.PerspectiveCamera(
- 38,canvas.clientWidth/canvas.clientHeight,.1,100
-);
-camera.position.set(0,2.0,7.2);
-camera.lookAt(0,1.55,0);
+const COUNT=2200;
+const positions=new Float32Array(COUNT*3);
+const targets=new Float32Array(COUNT*3);
 
-const renderer=new THREE.WebGLRenderer({
- canvas,antialias:true,alpha:true
-});
-renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
-renderer.setSize(canvas.clientWidth,canvas.clientHeight);
-renderer.outputColorSpace=THREE.SRGBColorSpace;
-
-scene.add(new THREE.HemisphereLight(0xcbaaff,0x24152e,2));
-
-const light=new THREE.DirectionalLight(0xffffff,2.5);
-light.position.set(3,5,5);
-scene.add(light);
-
-const purpleLight=new THREE.PointLight(0xa64bff,30,10);
-purpleLight.position.set(-2,2,2);
-scene.add(purpleLight);
-
-const blueLight=new THREE.PointLight(0x55aaff,20,10);
-blueLight.position.set(2,1,3);
-scene.add(blueLight);
-
-const avatar=new THREE.Group();
-scene.add(avatar);
-
-function material(color,roughness=.7){
- return new THREE.MeshStandardMaterial({
-  color,roughness,metalness:.05
- });
-}
-
-function sphere(parent,name,pos,scale,color){
- const obj=new THREE.Mesh(
-  new THREE.SphereGeometry(1,32,24),
-  material(color)
- );
- obj.name=name;
- obj.position.set(...pos);
- obj.scale.set(...scale);
- parent.add(obj);
- return obj;
-}
-
-// BODY
-const body=sphere(
- avatar,"body",[0,.95,0],[.53,.7,.32],"#d7b2ed"
-);
-
-// NECK
-sphere(avatar,"neck",[0,1.55,0],[.17,.22,.17],"#f5c9c2");
-
-// HEAD
-const head=new THREE.Group();
-head.position.set(0,2.15,0);
-avatar.add(head);
-
-sphere(head,"face",[0,0,0],[.65,.77,.53],"#ffd9ce");
-
-// HAIR BACK
-sphere(head,"hairBack",[0,.2,-.13],[.69,.85,.56],"#42215d");
-
-// HAIR TOP
-sphere(head,"hairTop",[0,.53,.02],[.69,.45,.58],"#522a76");
-
-// HAIR SIDE
-sphere(head,"hairLeft",[-.57,-.1,-.05],[.2,.67,.27],"#44205f");
-sphere(head,"hairRight",[.57,-.1,-.05],[.2,.67,.27],"#44205f");
-
-// BANGS
-sphere(head,"bang1",[-.3,.35,.43],[.31,.38,.16],"#563079");
-sphere(head,"bang2",[0,.32,.47],[.32,.4,.15],"#63358a");
-sphere(head,"bang3",[.3,.35,.42],[.29,.37,.15],"#48235f");
-
-// EYES
-const eyes=[];
-const irises=[];
-
-for(const x of [-.25,.25]){
- const eye=sphere(
-  head,"eye",[x,-.06,.49],[.105,.16,.055],"#35204e"
- );
- eyes.push(eye);
-
- const iris=sphere(
-  head,"iris",[x,-.06,.54],[.052,.09,.025],"#9b59d1"
- );
- irises.push(iris);
-
- sphere(
-  head,"eyeShine",[x-.015,-.015,.565],
-  [.023,.035,.012],"#ffffff"
- );
-}
-
-// EYEBROWS
-const brows=[];
-for(const x of [-.25,.25]){
- const b=sphere(
-  head,"brow",[x,.17,.49],[.13,.025,.025],"#663b71"
- );
- brows.push(b);
-}
-
-// BLUSH
-const blush=[];
-for(const x of [-.4,.4]){
- blush.push(sphere(
-  head,"blush",[x,-.29,.43],[.13,.055,.025],"#ee819f"
- ));
-}
-
-// MOUTH
-const mouth=sphere(
- head,"mouth",[0,-.38,.49],[.075,.025,.025],"#a74775"
-);
-
-// ARMS
-const arms=[];
-for(const x of [-.59,.59]){
- const arm=sphere(
-  avatar,"arm",[x,.98,0],[.17,.48,.18],"#f3c8d0"
- );
- arms.push(arm);
-}
-
-// LEGS
-for(const x of [-.22,.22]){
- sphere(
-  avatar,"leg",[x,.18,0],[.2,.3,.23],"#f1d7fa"
- );
-}
-
-// HAIR DECORATION
-sphere(head,"clip",[.5,.43,.51],[.09,.09,.045],"#d69aff");
-
-// FLOOR
-const floor=new THREE.Mesh(
- new THREE.CircleGeometry(2,64),
- new THREE.MeshBasicMaterial({
-  color:"#713e94",transparent:true,opacity:.22
- })
-);
-floor.rotation.x=-Math.PI/2;
-floor.position.y=-.12;
-scene.add(floor);
-
-// STARS
-const starGeo=new THREE.BufferGeometry();
-const starPos=[];
-for(let i=0;i<180;i++){
- starPos.push(
-  (Math.random()-.5)*9,
-  Math.random()*5,
-  -2-Math.random()*3
- );
-}
-starGeo.setAttribute(
- "position",new THREE.Float32BufferAttribute(starPos,3)
-);
-scene.add(new THREE.Points(
- starGeo,
- new THREE.PointsMaterial({
-  color:"#e5baff",size:.035
- })
-));
-
-// EXPRESSIONS
-let currentMood="happy";
-
-window.setMood=function(mood){
- currentMood=mood;
- const label=document.getElementById("expression");
- label.textContent="EXPRESSION: "+mood.toUpperCase();
-
- eyes.forEach(e=>{
-  e.scale.y=.16;
-  e.scale.x=.105;
- });
- mouth.scale.set(.075,.025,.025);
-
- if(mood==="happy"){
-  mouth.scale.y=.075;
-  blush.forEach(b=>b.material.color.set("#ee819f"));
- }
- else if(mood==="sad"){
-  eyes.forEach(e=>e.scale.y=.11);
-  mouth.position.y=-.43;
-  mouth.scale.y=.035;
-  blush.forEach(b=>b.material.color.set("#b88aa8"));
- }
- else if(mood==="surprised"){
-  eyes.forEach(e=>e.scale.y=.2);
-  mouth.scale.set(.055,.095,.04);
- }
- else if(mood==="shy"){
-  eyes.forEach(e=>e.scale.y=.07);
-  mouth.scale.y=.018;
-  blush.forEach(b=>b.material.color.set("#ff668d"));
- }
-
- if(mood!=="sad")mouth.position.y=-.38;
+const colors={
+ universe:0xb66cff,
+ portal:0x39eaff,
+ lightning:0x9b75ff,
+ orb:0xffc45e,
+ heart:0xff4caa,
+ fist:0x9c5bff
 };
 
-window.resetCamera=function(){
- camera.position.set(0,2,7.2);
- camera.lookAt(0,1.55,0);
- avatar.rotation.y=0;
-};
+function initThree(){
+  scene=new THREE.Scene();
+  scene.fog=new THREE.FogExp2(0x050510,0.025);
 
-// BLINK + ANIMATION
-let clock=new THREE.Clock();
-let blinkTimer=0;
-let isSpeaking=false;
+  camera=new THREE.PerspectiveCamera(
+    65,innerWidth/innerHeight,0.1,100
+  );
+  camera.position.z=8;
 
-window.setTalking=function(value){
- isSpeaking=value;
-};
-
-function animate(){
- requestAnimationFrame(animate);
- const t=clock.getElapsedTime();
-
- avatar.position.y=Math.sin(t*1.7)*.045;
- head.rotation.y=Math.sin(t*.7)*.10;
- head.rotation.x=Math.sin(t*1.2)*.025;
-
- arms[0].rotation.z=.08+Math.sin(t*1.4)*.04;
- arms[1].rotation.z=-.08-Math.sin(t*1.4)*.04;
-
- blinkTimer+=.016;
- if(blinkTimer>3.5){
-  eyes.forEach(e=>e.scale.y=.015);
-  setTimeout(()=>{
-   if(currentMood!=="sad"){
-    eyes.forEach(e=>e.scale.y=.16);
-   }
-  },140);
-  blinkTimer=0;
- }
-
- mouth.scale.y=isSpeaking?
-  .025+Math.abs(Math.sin(t*13))*.065:
-  (currentMood==="happy"?.075:.025);
-
- renderer.render(scene,camera);
-}
-animate();
-
-const resize=()=>{
- const w=canvas.clientWidth;
- const h=canvas.clientHeight;
- if(!w||!h)return;
- camera.aspect=w/h;
- camera.updateProjectionMatrix();
- renderer.setSize(w,h);
-};
-
-new ResizeObserver(resize).observe(canvas);
-
-</script>
-
-<script>
-const $=id=>document.getElementById(id);
-
-let history=[];
-let busy=false;
-let recognition=null;
-let listening=false;
-let speaking=false;
-
-function addMessage(text,type){
- const div=document.createElement("div");
- div.className="msg "+type;
- div.textContent=text;
- $("chat").appendChild(div);
- $("chat").scrollTop=$("chat").scrollHeight;
-}
-
-function detectMood(mood){
- const allowed=["happy","sad","surprised","shy"];
- if(allowed.includes(mood)){
-  window.setMood(mood);
- }else{
-  window.setMood("happy");
- }
-}
-
-function speak(text){
- if(!("speechSynthesis" in window))return;
-
- speechSynthesis.cancel();
-
- const u=new SpeechSynthesisUtterance(text);
- u.lang="id-ID";
- u.rate=.95;
- u.pitch=1.25;
-
- const voices=speechSynthesis.getVoices();
- const female=voices.find(v=>
-  /female|woman|zira|google.*indonesia/i.test(v.name)
- );
-
- if(female)u.voice=female;
-
- u.onstart=()=>{
-  speaking=true;
-  window.setTalking(true);
- };
- u.onend=()=>{
-  speaking=false;
-  window.setTalking(false);
- };
- u.onerror=()=>{
-  speaking=false;
-  window.setTalking(false);
- };
-
- speechSynthesis.speak(u);
-}
-
-window.stopVoice=function(){
- speechSynthesis.cancel();
- speaking=false;
- window.setTalking(false);
-};
-
-async function sendMessage(){
- if(busy)return;
-
- const input=$("message");
- const text=input.value.trim();
- if(!text)return;
-
- input.value="";
- addMessage("Kaka: "+text,"user");
-
- history.push({role:"user",text});
- history=history.slice(-12);
-
- $("typing").textContent="Yuna sedang berpikir...";
- $("send").disabled=true;
- busy=true;
-
- try{
-  const response=await fetch("/api/chat",{
-   method:"POST",
-   headers:{"Content-Type":"application/json"},
-   body:JSON.stringify({messages:history})
+  renderer=new THREE.WebGLRenderer({
+    antialias:false,alpha:true
   });
+  renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
+  renderer.setSize(innerWidth,innerHeight);
+  sceneEl.appendChild(renderer.domElement);
 
-  const data=await response.json();
-
-  if(!response.ok){
-   throw new Error(data.error||"AI server error");
+  for(let i=0;i<COUNT;i++){
+    const p=randomSphere(2.1);
+    positions[i*3]=p.x;
+    positions[i*3+1]=p.y;
+    positions[i*3+2]=p.z;
   }
 
-  const answer=data.reply||"Kaka, coba ulangi ya.";
-  const mood=data.mood||"happy";
-
-  history.push({role:"assistant",text:answer});
-  history=history.slice(-12);
-
-  addMessage("Yuna: "+answer,"bot");
-  detectMood(mood);
-  speak(answer);
-
- }catch(error){
-  addMessage(
-   "Yuna: Koneksi AI belum tersedia. Periksa deployment dan API key ya kaka. ("+error.message+")",
-   "bot"
+  geometry=new THREE.BufferGeometry();
+  geometry.setAttribute(
+    "position",new THREE.BufferAttribute(positions,3)
   );
-  window.setMood("sad");
- }finally{
-  $("typing").textContent="";
-  $("send").disabled=false;
-  busy=false;
- }
+
+  const material=new THREE.PointsMaterial({
+    color:colors.universe,size:0.035,
+    transparent:true,opacity:.9,
+    blending:THREE.AdditiveBlending,
+    depthWrite:false
+  });
+
+  particles=new THREE.Points(geometry,material);
+  scene.add(particles);
+
+  // bintang latar
+  const starGeo=new THREE.BufferGeometry();
+  const starPos=[];
+  for(let i=0;i<700;i++){
+    starPos.push(
+      (Math.random()-.5)*35,
+      (Math.random()-.5)*25,
+      (Math.random()-.5)*18-5
+    );
+  }
+  starGeo.setAttribute(
+    "position",new THREE.Float32BufferAttribute(starPos,3)
+  );
+  const stars=new THREE.Points(
+    starGeo,
+    new THREE.PointsMaterial({
+      color:0x9e82ca,size:.025,transparent:true,opacity:.65
+    })
+  );
+  scene.add(stars);
+
+  createRing();
+  createLightning();
+  createCursor();
+
+  animate();
 }
 
-$("message").addEventListener("keydown",e=>{
- if(e.key==="Enter")sendMessage();
+let ring,ring2,orbMesh,lightning,cursor;
+
+function createRing(){
+  ring=new THREE.Mesh(
+    new THREE.TorusGeometry(1.7,.025,8,100),
+    new THREE.MeshBasicMaterial({
+      color:0x55ddff,transparent:true,opacity:.9
+    })
+  );
+  ring2=new THREE.Mesh(
+    new THREE.TorusGeometry(1.35,.018,8,100),
+    new THREE.MeshBasicMaterial({
+      color:0xc16aff,transparent:true,opacity:.7
+    })
+  );
+  scene.add(ring,ring2);
+
+  orbMesh=new THREE.Mesh(
+    new THREE.SphereGeometry(.8,24,24),
+    new THREE.MeshBasicMaterial({
+      color:0xffc45e,wireframe:true,
+      transparent:true,opacity:.5
+    })
+  );
+  scene.add(orbMesh);
+}
+
+function createLightning(){
+  const pts=[];
+  for(let i=0;i<60;i++){
+    pts.push(new THREE.Vector3(0,0,0));
+  }
+  const geo=new THREE.BufferGeometry().setFromPoints(pts);
+  lightning=new THREE.Line(
+    geo,
+    new THREE.LineBasicMaterial({
+      color:0xc18aff,transparent:true,opacity:.9
+    })
+  );
+  scene.add(lightning);
+}
+
+function createCursor(){
+  cursor=new THREE.Mesh(
+    new THREE.TorusGeometry(.22,.018,8,40),
+    new THREE.MeshBasicMaterial({color:0x52eaff})
+  );
+  cursor.visible=false;
+  scene.add(cursor);
+}
+
+function randomSphere(radius){
+  const u=Math.random()*2-1;
+  const a=Math.random()*Math.PI*2;
+  const r=radius*Math.cbrt(Math.random());
+  return new THREE.Vector3(
+    r*Math.sqrt(1-u*u)*Math.cos(a),
+    r*Math.sqrt(1-u*u)*Math.sin(a),
+    r*u
+  );
+}
+
+function heartPoint(t){
+  return new THREE.Vector3(
+    .16*Math.pow(Math.sin(t),3)*7,
+    (13*Math.cos(t)-5*Math.cos(2*t)
+    -2*Math.cos(3*t)-Math.cos(4*t))*.16,
+    0
+  );
+}
+
+function setTargets(mode){
+  for(let i=0;i<COUNT;i++){
+    let p;
+
+    if(mode==="portal"){
+      const a=Math.random()*Math.PI*2;
+      const r=1.65+(Math.random()-.5)*.22;
+      p=new THREE.Vector3(
+        Math.cos(a)*r,
+        Math.sin(a)*r,
+        (Math.random()-.5)*.45
+      );
+    }
+    else if(mode==="lightning"){
+      const t=Math.random();
+      p=new THREE.Vector3(
+        (Math.random()-.5)*2.5,
+        (t-.5)*4,
+        (Math.random()-.5)*1.3
+      );
+    }
+    else if(mode==="orb"){
+      p=randomSphere(1.05);
+    }
+    else if(mode==="heart"){
+      const t=Math.random()*Math.PI*2;
+      p=heartPoint(t);
+      p.multiplyScalar(.8+Math.random()*.2);
+      p.z+=(Math.random()-.5)*.8;
+    }
+    else if(mode==="fist"){
+      p=randomSphere(.45);
+    }
+    else{
+      p=randomSphere(2.1);
+    }
+
+    targets[i*3]=p.x;
+    targets[i*3+1]=p.y;
+    targets[i*3+2]=p.z;
+  }
+
+  particles.material.color.setHex(colors[mode]);
+  flash.style.opacity=".16";
+  setTimeout(()=>flash.style.opacity="0",100);
+}
+
+function updateLightning(){
+  const arr=lightning.geometry.attributes.position.array;
+  let x=0,y=-2,z=0;
+  for(let i=0;i<20;i++){
+    arr[i*3]=x;
+    arr[i*3+1]=y+i*.2;
+    arr[i*3+2]=z;
+    x+=(Math.random()-.5)*.7;
+    z+=(Math.random()-.5)*.4;
+  }
+  lightning.geometry.attributes.position.needsUpdate=true;
+  lightning.geometry.computeBoundingSphere();
+}
+
+function animate(){
+  requestAnimationFrame(animate);
+  frame++;
+
+  const pos=geometry.attributes.position.array;
+  const speed=currentMode==="fist"?.12:.065;
+
+  for(let i=0;i<COUNT;i++){
+    const j=i*3;
+    pos[j]+=(targets[j]-pos[j])*speed;
+    pos[j+1]+=(targets[j+1]-pos[j+1])*speed;
+    pos[j+2]+=(targets[j+2]-pos[j+2])*speed;
+
+    if(currentMode==="universe"){
+      pos[j+1]+=Math.sin(frame*.01+i)*.0008;
+    }
+  }
+
+  geometry.attributes.position.needsUpdate=true;
+
+  particles.rotation.y+=.0025;
+  particles.rotation.x+=.0008;
+
+  ring.visible=currentMode==="portal";
+  ring2.visible=currentMode==="portal";
+  ring.rotation.z+=.012;
+  ring2.rotation.z-=.009;
+  ring.scale.setScalar(1+Math.sin(frame*.05)*.06);
+
+  orbMesh.visible=currentMode==="orb";
+  orbMesh.rotation.x+=.008;
+  orbMesh.rotation.y+=.012;
+  orbMesh.scale.setScalar(1+Math.sin(frame*.06)*.08);
+
+  lightning.visible=currentMode==="lightning";
+  if(frame%3===0)updateLightning();
+
+  renderer.render(scene,camera);
+}
+
+function fingerExtended(lm,tip,pip){
+  return lm[tip].y<lm[pip].y;
+}
+
+function thumbExtended(lm){
+  const wrist=lm[0];
+  const tip=lm[4];
+  const joint=lm[3];
+  const d1=Math.hypot(tip.x-wrist.x,tip.y-wrist.y);
+  const d2=Math.hypot(joint.x-wrist.x,joint.y-wrist.y);
+  return d1>d2*1.12;
+}
+
+function classifyHand(lm){
+  const thumb=thumbExtended(lm);
+  const index=fingerExtended(lm,8,6);
+  const middle=fingerExtended(lm,12,10);
+  const ringFinger=fingerExtended(lm,16,14);
+  const pinky=fingerExtended(lm,20,18);
+
+  // jempol ke atas
+  if(thumb&&!index&&!middle&&!ringFinger&&!pinky
+    &&lm[4].y<lm[3].y){
+    return "orb";
+  }
+
+  // shaka: jempol dan kelingking
+  if(thumb&&!index&&!middle&&!ringFinger&&pinky){
+    return "portal";
+  }
+
+  // rock: telunjuk dan kelingking
+  if(!thumb&&index&&!middle&&!ringFinger&&pinky){
+    return "lightning";
+  }
+
+  // peace
+  if(!thumb&&index&&middle&&!ringFinger&&!pinky){
+    return "heart";
+  }
+
+  // kepalan tangan
+  if(!index&&!middle&&!ringFinger&&!pinky&&!thumb){
+    return "fist";
+  }
+
+  return "universe";
+}
+
+const labels={
+ universe:"✦ UNIVERSE MODE",
+ portal:"🌀 PORTAL DIMENSI AKTIF",
+ lightning:"⚡ LIGHTNING POWER",
+ orb:"🔥 ENERGY ORB",
+ heart:"💜 HEART PARTICLES",
+ fist:"✊ PARTICLES COLLAPSE"
+};
+
+function updateGesture(mode){
+  if(mode===lastCandidate){
+    stableCount++;
+  }else{
+    lastCandidate=mode;
+    stableCount=0;
+  }
+
+  if(stableCount>7&&mode!==currentMode
+    &&Date.now()-lastChange>650){
+    currentMode=mode;
+    targetMode=mode;
+    setTargets(mode);
+    gestureEl.textContent=labels[mode];
+    lastChange=Date.now();
+  }
+}
+
+async function startCamera(){
+  const btn=document.getElementById("start");
+  try{
+    if(!window.isSecureContext){
+      throw new Error("Gunakan HTTPS untuk membuka kamera.");
+    }
+
+    btn.disabled=true;
+    statusEl.textContent="MEMINTA IZIN KAMERA...";
+
+    stream=await navigator.mediaDevices.getUserMedia({
+      audio:false,
+      video:{
+        facingMode:"user",
+        width:{ideal:640},
+        height:{ideal:480},
+        frameRate:{ideal:30,max:30}
+      }
+    });
+
+    video.srcObject=stream;
+    preview.srcObject=stream;
+    await video.play();
+    await preview.play();
+
+    statusEl.textContent="MEMUAT AI HAND TRACKING...";
+
+    const vision=await FilesetResolver.forVisionTasks(
+      "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm"
+    );
+
+    try{
+      handLandmarker=await HandLandmarker.createFromOptions(
+        vision,{
+          baseOptions:{
+            modelAssetPath:
+            "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
+            delegate:"GPU"
+          },
+          runningMode:"VIDEO",
+          numHands:1
+        }
+      );
+    }catch(gpuError){
+      handLandmarker=await HandLandmarker.createFromOptions(
+        vision,{
+          baseOptions:{
+            modelAssetPath:
+            "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
+            delegate:"CPU"
+          },
+          runningMode:"VIDEO",
+          numHands:1
+        }
+      );
+    }
+
+    running=true;
+    statusEl.textContent="KAMERA AKTIF • TUNJUKKAN GESTUR";
+    btn.textContent="KAMERA AKTIF";
+    btn.disabled=false;
+    detectLoop();
+
+  }catch(err){
+    console.error(err);
+    statusEl.textContent="GAGAL: "+err.message;
+    btn.disabled=false;
+    btn.textContent="COBA LAGI";
+    if(stream){
+      stream.getTracks().forEach(t=>t.stop());
+      stream=null;
+    }
+  }
+}
+
+function detectLoop(){
+  if(!running)return;
+
+  if(video.readyState>=2&&video.currentTime!==lastVideoTime){
+    lastVideoTime=video.currentTime;
+
+    const result=handLandmarker.detectForVideo(
+      video,performance.now()
+    );
+
+    if(result.landmarks&&result.landmarks.length){
+      const lm=result.landmarks[0];
+      const mode=classifyHand(lm);
+      updateGesture(mode);
+
+      cursor.visible=true;
+      cursor.position.set(
+        (0.5-lm[9].x)*5,
+        (0.5-lm[9].y)*4,
+        0
+      );
+    }else{
+      cursor.visible=false;
+      lastCandidate="";
+      stableCount=0;
+    }
+  }
+
+  requestAnimationFrame(detectLoop);
+}
+
+document.getElementById("start").addEventListener(
+  "click",startCamera
+);
+
+window.addEventListener("resize",()=>{
+  if(!renderer)return;
+  camera.aspect=innerWidth/innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth,innerHeight);
 });
 
-function toggleMic(){
- const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-
- if(!SR){
-  addMessage("Yuna: Browser belum mendukung voice recognition.","bot");
-  return;
- }
-
- if(listening){
-  recognition.stop();
-  return;
- }
-
- recognition=new SR();
- recognition.lang="id-ID";
- recognition.continuous=false;
-
- recognition.onstart=()=>{
-  listening=true;
-  $("mic").textContent="🔴 MENDENGARKAN...";
-  $("mic").classList.add("active");
- };
-
- recognition.onresult=e=>{
-  $("message").value=e.results[0][0].transcript;
-  sendMessage();
- };
-
- recognition.onerror=()=>{
-  listening=false;
- };
-
- recognition.onend=()=>{
-  listening=false;
-  $("mic").textContent="🎙️ VOICE INPUT";
-  $("mic").classList.remove("active");
- };
-
- try{recognition.start()}catch(e){}
-}
-
-window.toggleMic=toggleMic;
-
-speechSynthesis.getVoices();
+initThree();
 </script>
-
 </body>
 </html>

@@ -3,742 +3,430 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>SENKO UNIVERSE V6</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rasengan AR</title>
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{
-  overflow:hidden;background:#03030c;color:white;
-  font-family:Arial,sans-serif;
+* {
+  box-sizing: border-box;
 }
-#scene{position:fixed;inset:0}
-video{display:none}
-.panel{
-  position:fixed;top:17px;left:50%;
-  transform:translateX(-50%);
-  width:92%;text-align:center;z-index:5;
-  pointer-events:none;
+body {
+  margin: 0;
+  background: #050914;
+  color: white;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
 }
-h1{
-  font-size:22px;letter-spacing:4px;
-  color:#dfc5ff;
-  text-shadow:0 0 16px #9e42ff;
+header {
+  position: absolute;
+  top: 18px;
+  width: 100%;
+  text-align: center;
+  z-index: 5;
+  pointer-events: none;
 }
-#status{font-size:11px;color:#bba5dc;margin-top:8px}
-#gesture{
-  margin-top:12px;font-size:16px;
-  font-weight:bold;text-shadow:0 0 14px #a54bff;
+h1 {
+  margin: 0;
+  color: #76caff;
+  letter-spacing: 5px;
+  text-shadow: 0 0 20px #008cff;
 }
-#cameraPreview{
-  position:fixed;right:12px;top:12px;
-  width:82px;height:62px;object-fit:cover;
-  border-radius:10px;border:1px solid #a65aff;
-  transform:scaleX(-1);opacity:.5;z-index:6;
+header p {
+  font-size: 11px;
+  color: #a8dfff;
+  letter-spacing: 3px;
 }
-#hint{
-  position:fixed;bottom:88px;left:50%;
-  transform:translateX(-50%);
-  width:94%;text-align:center;
-  color:#c5b3df;font-size:10px;
-  line-height:1.8;z-index:5;pointer-events:none;
+#stage {
+  position: relative;
+  width: 100vw;
+  height: 100dvh;
+  overflow: hidden;
+  background: radial-gradient(#102a48, #050914);
 }
-.controls{
-  position:fixed;bottom:19px;left:0;right:0;
-  display:flex;justify-content:center;z-index:10;
+video, canvas {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
 }
-button{
-  padding:13px 25px;border-radius:30px;
-  border:1px solid #a45aff;
-  background:#160b2b;color:white;
-  font-weight:bold;letter-spacing:1px;
-  box-shadow:0 0 20px #8d3bca66;
+canvas {
+  z-index: 2;
 }
-#flash{
-  position:fixed;inset:0;z-index:4;
-  background:#c18aff;opacity:0;
-  pointer-events:none;
+#message {
+  position: absolute;
+  top: 48%;
+  width: 100%;
+  text-align: center;
+  z-index: 3;
+  color: #b8e8ff;
+  font-size: 14px;
+  text-shadow: 0 0 10px #008cff;
+  pointer-events: none;
+}
+#controls {
+  position: absolute;
+  bottom: 28px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  z-index: 5;
+}
+button {
+  border: 1px solid #56baff;
+  border-radius: 30px;
+  background: #092849dd;
+  color: white;
+  padding: 14px 20px;
+  font-weight: bold;
+  box-shadow: 0 0 18px #008cff55;
+}
+button:active {
+  background: #0879c9;
+}
+#status {
+  position: absolute;
+  bottom: 95px;
+  width: 100%;
+  text-align: center;
+  z-index: 5;
+  color: #8bd8ff;
+  font-size: 12px;
+  letter-spacing: 2px;
 }
 </style>
 </head>
 
 <body>
-<div id="scene"></div>
-<video id="video" autoplay playsinline muted></video>
-<video id="cameraPreview" autoplay playsinline muted></video>
-<div id="flash"></div>
+<div id="stage">
+  <header>
+    <h1>RASENGAN</h1>
+    <p>CHAKRA DETECTION SYSTEM</p>
+  </header>
 
-<div class="panel">
-  <h1>SENKO UNIVERSE</h1>
+  <video id="camera" autoplay playsinline muted></video>
+  <canvas id="fx"></canvas>
+
+  <div id="message">
+    AKTIFKAN KAMERA DAN TUNJUKKAN TANGAN
+  </div>
+
   <div id="status">SYSTEM STANDBY</div>
-  <div id="gesture">✦ UNIVERSE MODE ✦</div>
-</div>
 
-<div id="hint">
-  ✋ OPEN PALM: PARTICLE EXPLOSION |
-  ✊ FIST: ENERGY SHIELD<br>
-  🤙 SHAKA: DIMENSIONAL PORTAL |
-  ✌️ PEACE: HEART<br>
-  👍 THUMBS UP: ENERGY ORB |
-  🤘 ROCK: LIGHTNING
+  <div id="controls">
+    <button id="start">AKTIFKAN KAMERA</button>
+    <button id="switch">GANTI KAMERA</button>
+  </div>
 </div>
-
-<div class="controls">
-  <button id="start">AKTIFKAN KAMERA</button>
-</div>
-
-<script type="importmap">
-{
-  "imports":{
-    "three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
-  }
-}
-</script>
 
 <script type="module">
-import * as THREE from "three";
 import {
-  FilesetResolver,
-  HandLandmarker
+  HandLandmarker,
+  FilesetResolver
 } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14";
 
-const $=id=>document.getElementById(id);
+const video = document.getElementById("camera");
+const canvas = document.getElementById("fx");
+const ctx = canvas.getContext("2d");
+const message = document.getElementById("message");
+const status = document.getElementById("status");
 
-const sceneEl=$("scene");
-const video=$("video");
-const preview=$("cameraPreview");
-const statusEl=$("status");
-const gestureEl=$("gesture");
-const flash=$("flash");
+let detector;
+let stream;
+let facing = "user";
+let running = false;
+let lastVideoTime = -1;
+let handPosition = null;
+let particles = [];
 
-let scene,camera,renderer;
-let particles,geometry,material;
-let handLandmarker=null,stream=null;
-let running=false;
-let lastVideoTime=-1;
-let frame=0;
+async function setupAI() {
+  status.textContent = "LOADING CHAKRA SYSTEM...";
 
-const COUNT=1600;
-const positions=new Float32Array(COUNT*3);
-const targets=new Float32Array(COUNT*3);
-const velocities=new Float32Array(COUNT*3);
-
-let currentMode="universe";
-let lastCandidate="";
-let stableCount=0;
-let lastChange=0;
-let lastExplosion=0;
-let explosionActive=false;
-let handPosition=new THREE.Vector3(0,0,0);
-let effectPosition=new THREE.Vector3(0,0,0);
-
-const palette={
- universe:0xa95aff,
- explosion:0xffb34d,
- shield:0x40dfff,
- portal:0x9c4dff,
- heart:0xff4baf,
- orb:0xffd36a,
- lightning:0x7d9cff
-};
-
-const names={
- universe:"✦ UNIVERSE MODE",
- explosion:"💥 PARTICLE EXPLOSION",
- shield:"🛡️ ENERGY SHIELD",
- portal:"🌀 DIMENSIONAL PORTAL",
- heart:"💜 HEART PARTICLES",
- orb:"🔥 ENERGY ORB",
- lightning:"⚡ LIGHTNING MODE"
-};
-
-function randomSphere(r){
-  const u=Math.random()*2-1;
-  const a=Math.random()*Math.PI*2;
-  const radius=r*Math.cbrt(Math.random());
-  return new THREE.Vector3(
-    radius*Math.sqrt(1-u*u)*Math.cos(a),
-    radius*Math.sqrt(1-u*u)*Math.sin(a),
-    radius*u
-  );
-}
-
-function init(){
-  scene=new THREE.Scene();
-  scene.fog=new THREE.FogExp2(0x03030c,.025);
-
-  camera=new THREE.PerspectiveCamera(
-    65,innerWidth/innerHeight,.1,100
-  );
-  camera.position.z=8;
-
-  renderer=new THREE.WebGLRenderer({
-    antialias:false,alpha:true
-  });
-  renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
-  renderer.setSize(innerWidth,innerHeight);
-  sceneEl.appendChild(renderer.domElement);
-
-  for(let i=0;i<COUNT;i++){
-    const p=randomSphere(2);
-    positions[i*3]=p.x;
-    positions[i*3+1]=p.y;
-    positions[i*3+2]=p.z;
-  }
-
-  geometry=new THREE.BufferGeometry();
-  geometry.setAttribute(
-    "position",new THREE.BufferAttribute(positions,3)
+  const vision = await FilesetResolver.forVisionTasks(
+    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm"
   );
 
-  material=new THREE.PointsMaterial({
-    color:palette.universe,
-    size:.035,
-    transparent:true,
-    opacity:.9,
-    blending:THREE.AdditiveBlending,
-    depthWrite:false
+  detector = await HandLandmarker.createFromOptions(vision, {
+    baseOptions: {
+      modelAssetPath:
+      "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
+      delegate: "GPU"
+    },
+    runningMode: "VIDEO",
+    numHands: 2
   });
 
-  particles=new THREE.Points(geometry,material);
-  scene.add(particles);
-
-  createBackground();
-  createPortal();
-  createShield();
-  createOrb();
-  createLightning();
-  createHandMarker();
-
-  animate();
+  status.textContent = "CHAKRA SYSTEM READY";
 }
 
-function createBackground(){
-  const p=[];
-  for(let i=0;i<500;i++){
-    p.push(
-      (Math.random()-.5)*35,
-      (Math.random()-.5)*25,
-      (Math.random()-.5)*20-5
-    );
-  }
+async function startCamera() {
+  try {
+    if (!detector) await setupAI();
 
-  const g=new THREE.BufferGeometry();
-  g.setAttribute(
-    "position",new THREE.Float32BufferAttribute(p,3)
-  );
-
-  scene.add(new THREE.Points(
-    g,new THREE.PointsMaterial({
-      color:0x8e75b8,size:.025,transparent:true,opacity:.7
-    })
-  ));
-}
-
-let portalGroup,portalRing1,portalRing2,portalRing3;
-let shieldGroup,shieldMesh,shieldWire;
-let orbMesh,lightningLine,handMarker;
-
-function createPortal(){
-  portalGroup=new THREE.Group();
-
-  portalRing1=new THREE.Mesh(
-    new THREE.TorusGeometry(1.5,.035,10,100),
-    new THREE.MeshBasicMaterial({
-      color:0x5ceaff
-    })
-  );
-
-  portalRing2=new THREE.Mesh(
-    new THREE.TorusGeometry(1.2,.025,10,100),
-    new THREE.MeshBasicMaterial({
-      color:0xb45aff
-    })
-  );
-
-  portalRing3=new THREE.Mesh(
-    new THREE.TorusGeometry(.85,.014,8,100),
-    new THREE.MeshBasicMaterial({
-      color:0xffffff
-    })
-  );
-
-  const inner=new THREE.Mesh(
-    new THREE.CircleGeometry(.8,64),
-    new THREE.MeshBasicMaterial({
-      color:0x471477,
-      transparent:true,
-      opacity:.35,
-      side:THREE.DoubleSide
-    })
-  );
-
-  portalGroup.add(
-    portalRing1,portalRing2,portalRing3,inner
-  );
-  portalGroup.visible=false;
-  scene.add(portalGroup);
-}
-
-function createShield(){
-  shieldGroup=new THREE.Group();
-
-  const geo=new THREE.SphereGeometry(1.65,32,24,0,Math.PI*2,0,Math.PI*.65);
-
-  shieldMesh=new THREE.Mesh(
-    geo,new THREE.MeshBasicMaterial({
-      color:0x31dfff,
-      transparent:true,
-      opacity:.12,
-      side:THREE.DoubleSide
-    })
-  );
-
-  shieldWire=new THREE.Mesh(
-    geo,new THREE.MeshBasicMaterial({
-      color:0x54dfff,
-      wireframe:true,
-      transparent:true,
-      opacity:.45
-    })
-  );
-
-  shieldGroup.add(shieldMesh,shieldWire);
-  shieldGroup.visible=false;
-  scene.add(shieldGroup);
-}
-
-function createOrb(){
-  orbMesh=new THREE.Mesh(
-    new THREE.IcosahedronGeometry(.8,2),
-    new THREE.MeshBasicMaterial({
-      color:palette.orb,
-      wireframe:true,
-      transparent:true,
-      opacity:.8
-    })
-  );
-  orbMesh.visible=false;
-  scene.add(orbMesh);
-}
-
-function createLightning(){
-  const points=[];
-  for(let i=0;i<30;i++){
-    points.push(new THREE.Vector3(0,0,0));
-  }
-
-  const g=new THREE.BufferGeometry().setFromPoints(points);
-  lightningLine=new THREE.Line(
-    g,new THREE.LineBasicMaterial({
-      color:0x9e8bff,
-      transparent:true,
-      opacity:.9
-    })
-  );
-  lightningLine.visible=false;
-  scene.add(lightningLine);
-}
-
-function createHandMarker(){
-  handMarker=new THREE.Mesh(
-    new THREE.TorusGeometry(.18,.015,8,32),
-    new THREE.MeshBasicMaterial({color:0x5ceaff})
-  );
-  handMarker.visible=false;
-  scene.add(handMarker);
-}
-
-function heartPoint(t){
-  return new THREE.Vector3(
-    16*Math.pow(Math.sin(t),3)*.12,
-    (13*Math.cos(t)-5*Math.cos(2*t)
-    -2*Math.cos(3*t)-Math.cos(4*t))*.12,
-    0
-  );
-}
-
-function setMode(mode){
-  currentMode=mode;
-  material.color.setHex(palette[mode]);
-
-  for(let i=0;i<COUNT;i++){
-    let p;
-
-    if(mode==="portal"){
-      const a=Math.random()*Math.PI*2;
-      const r=1.5+(Math.random()-.5)*.2;
-      p=new THREE.Vector3(
-        Math.cos(a)*r,
-        Math.sin(a)*r,
-        (Math.random()-.5)*.4
-      );
-    }
-    else if(mode==="shield"){
-      const a=Math.random()*Math.PI*2;
-      const y=Math.random()*1.6-.2;
-      const r=Math.sqrt(Math.max(.1,1-(y/1.65)**2));
-      p=new THREE.Vector3(
-        Math.cos(a)*r*1.6,
-        y,
-        Math.sin(a)*r*1.6
-      );
-    }
-    else if(mode==="heart"){
-      p=heartPoint(Math.random()*Math.PI*2);
-      p.multiplyScalar(.8+Math.random()*.2);
-      p.z+=(Math.random()-.5)*.5;
-    }
-    else if(mode==="orb"){
-      p=randomSphere(.85);
-    }
-    else if(mode==="lightning"){
-      const t=Math.random();
-      p=new THREE.Vector3(
-        (Math.random()-.5)*.5,
-        (t-.5)*3.5,
-        (Math.random()-.5)*.5
-      );
-    }
-    else if(mode==="explosion"){
-      p=randomSphere(3.2);
-    }
-    else{
-      p=randomSphere(2);
+    if (stream) {
+      stream.getTracks().forEach(t => t.stop());
     }
 
-    targets[i*3]=p.x;
-    targets[i*3+1]=p.y;
-    targets[i*3+2]=p.z;
-  }
-
-  portalGroup.visible=mode==="portal";
-  shieldGroup.visible=mode==="shield";
-  orbMesh.visible=mode==="orb";
-  lightningLine.visible=mode==="lightning";
-
-  if(mode==="explosion"){
-    triggerExplosion();
-  }
-
-  gestureEl.textContent=names[mode];
-  lastChange=Date.now();
-
-  flash.style.opacity=".18";
-  setTimeout(()=>flash.style.opacity="0",120);
-}
-
-function triggerExplosion(){
-  explosionActive=true;
-  lastExplosion=Date.now();
-
-  for(let i=0;i<COUNT;i++){
-    const j=i*3;
-    const direction=randomSphere(1);
-    const speed=1.5+Math.random()*4;
-
-    velocities[j]=direction.x*speed;
-    velocities[j+1]=direction.y*speed;
-    velocities[j+2]=direction.z*speed;
-  }
-}
-
-function updateExplosion(dt){
-  if(!explosionActive)return;
-
-  const elapsed=Date.now()-lastExplosion;
-
-  for(let i=0;i<COUNT;i++){
-    const j=i*3;
-
-    positions[j]+=velocities[j]*dt;
-    positions[j+1]+=velocities[j+1]*dt;
-    positions[j+2]+=velocities[j+2]*dt;
-
-    velocities[j]*=.985;
-    velocities[j+1]*=.985;
-    velocities[j+2]*=.985;
-
-    targets[j]=positions[j];
-    targets[j+1]=positions[j+1];
-    targets[j+2]=positions[j+2];
-  }
-
-  if(elapsed>1500){
-    explosionActive=false;
-    setMode("universe");
-  }
-}
-
-function updateEffects(){
-  portalGroup.position.copy(effectPosition);
-  shieldGroup.position.copy(effectPosition);
-  orbMesh.position.copy(effectPosition);
-  lightningLine.position.copy(effectPosition);
-
-  portalRing1.rotation.z+=.012;
-  portalRing2.rotation.z-=.018;
-  portalRing3.rotation.z+=.026;
-
-  portalRing1.rotation.x=.3;
-  portalRing2.rotation.x=-.3;
-
-  shieldGroup.rotation.y+=.009;
-  shieldGroup.rotation.x=.03;
-
-  const pulse=1+Math.sin(frame*.08)*.045;
-  shieldGroup.scale.setScalar(pulse);
-
-  orbMesh.rotation.x+=.012;
-  orbMesh.rotation.y+=.016;
-  orbMesh.scale.setScalar(
-    1+Math.sin(frame*.07)*.08
-  );
-
-  if(frame%3===0&&currentMode==="lightning"){
-    const arr=lightningLine.geometry.attributes.position.array;
-    let x=0,z=0;
-    for(let i=0;i<30;i++){
-      arr[i*3]=x;
-      arr[i*3+1]=-1.8+i*.13;
-      arr[i*3+2]=z;
-      x+=(Math.random()-.5)*.5;
-      z+=(Math.random()-.5)*.3;
-    }
-    lightningLine.geometry.attributes.position.needsUpdate=true;
-    lightningLine.geometry.computeBoundingSphere();
-  }
-}
-
-function animate(){
-  requestAnimationFrame(animate);
-  frame++;
-
-  const dt=Math.min(.04,1/60);
-  const pos=geometry.attributes.position.array;
-
-  if(currentMode==="explosion"){
-    updateExplosion(dt);
-  }else{
-    const speed=.065;
-    for(let i=0;i<COUNT;i++){
-      const j=i*3;
-      pos[j]+=(targets[j]-pos[j])*speed;
-      pos[j+1]+=(targets[j+1]-pos[j+1])*speed;
-      pos[j+2]+=(targets[j+2]-pos[j+2])*speed;
-    }
-  }
-
-  geometry.attributes.position.needsUpdate=true;
-
-  particles.rotation.y+=.002;
-  particles.rotation.x+=.0006;
-
-  updateEffects();
-
-  handMarker.position.copy(handPosition);
-  handMarker.visible=running&&handVisible;
-  handMarker.rotation.z+=.025;
-
-  renderer.render(scene,camera);
-}
-
-let handVisible=false;
-
-function fingerUp(lm,tip,pip){
-  return lm[tip].y<lm[pip].y;
-}
-
-function thumbUp(lm){
-  const wrist=lm[0];
-  const tip=lm[4];
-  const joint=lm[3];
-
-  const a=Math.hypot(
-    tip.x-wrist.x,tip.y-wrist.y
-  );
-  const b=Math.hypot(
-    joint.x-wrist.x,joint.y-wrist.y
-  );
-
-  return a>b*1.12;
-}
-
-function classify(lm){
-  const th=thumbUp(lm);
-  const i=fingerUp(lm,8,6);
-  const m=fingerUp(lm,12,10);
-  const r=fingerUp(lm,16,14);
-  const p=fingerUp(lm,20,18);
-
-  // thumbs up
-  if(th&&!i&&!m&&!r&&!p&&lm[4].y<lm[3].y)
-    return "orb";
-
-  // shaka
-  if(th&&!i&&!m&&!r&&p)
-    return "portal";
-
-  // rock
-  if(!th&&i&&!m&&!r&&p)
-    return "lightning";
-
-  // peace
-  if(!th&&i&&m&&!r&&!p)
-    return "heart";
-
-  // fist
-  if(!i&&!m&&!r&&!p&&!th)
-    return "shield";
-
-  // open palm
-  if(th&&i&&m&&r&&p)
-    return "explosion";
-
-  return "universe";
-}
-
-function updateGesture(mode){
-  if(mode===lastCandidate){
-    stableCount++;
-  }else{
-    lastCandidate=mode;
-    stableCount=0;
-  }
-
-  if(stableCount>=7&&mode!==currentMode&&
-     Date.now()-lastChange>700){
-    setMode(mode);
-  }
-}
-
-async function startCamera(){
-  const btn=$("start");
-
-  try{
-    if(!window.isSecureContext){
-      throw new Error("Buka melalui HTTPS, bukan file lokal.");
-    }
-
-    if(!navigator.mediaDevices?.getUserMedia){
-      throw new Error("Browser tidak mendukung kamera.");
-    }
-
-    btn.disabled=true;
-    statusEl.textContent="MEMINTA IZIN KAMERA...";
-
-    stream=await navigator.mediaDevices.getUserMedia({
-      audio:false,
-      video:{
-        facingMode:"user",
-        width:{ideal:640},
-        height:{ideal:480},
-        frameRate:{ideal:24,max:30}
+    stream = await navigator.mediaDevices.getUserMedia({
+      audio: false,
+      video: {
+        facingMode: facing,
+        width: { ideal: 1280 },
+        height: { ideal: 720 }
       }
     });
 
-    video.srcObject=stream;
-    preview.srcObject=stream;
-
+    video.srcObject = stream;
     await video.play();
-    await preview.play();
 
-    statusEl.textContent="MEMUAT AI HAND TRACKING...";
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
 
-    const vision=await FilesetResolver.forVisionTasks(
-      "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm"
-    );
+    running = true;
+    message.style.display = "none";
+    status.textContent = "SCANNING HAND...";
+    document.getElementById("start").textContent = "MATIKAN KAMERA";
 
-    const options={
-      baseOptions:{
-        modelAssetPath:
-        "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
-        delegate:"GPU"
-      },
-      runningMode:"VIDEO",
-      numHands:1
-    };
+    requestAnimationFrame(loop);
 
-    try{
-      handLandmarker=await HandLandmarker.createFromOptions(
-        vision,options
-      );
-    }catch(e){
-      options.baseOptions.delegate="CPU";
-      handLandmarker=await HandLandmarker.createFromOptions(
-        vision,options
-      );
-    }
-
-    running=true;
-    statusEl.textContent="AI ACTIVE • SHOW YOUR HAND";
-    btn.textContent="KAMERA AKTIF";
-    btn.disabled=false;
-
-    detectLoop();
-
-  }catch(e){
-    console.error(e);
-    statusEl.textContent="ERROR: "+e.message;
-    btn.disabled=false;
-    btn.textContent="COBA LAGI";
-
-    if(stream){
-      stream.getTracks().forEach(t=>t.stop());
-      stream=null;
-    }
+  } catch (err) {
+    status.textContent = "KAMERA GAGAL DIAKTIFKAN";
+    message.style.display = "block";
+    message.textContent = err.message;
   }
 }
 
-function detectLoop(){
-  if(!running)return;
+function distance(a, b) {
+  return Math.hypot(a.x - b.x, a.y - b.y);
+}
 
-  if(video.readyState>=2&&
-     video.currentTime!==lastVideoTime){
+function isFist(hand) {
+  const wrist = hand[0];
+  const fingers = [8, 12, 16, 20];
+  const joints = [6, 10, 14, 18];
 
-    lastVideoTime=video.currentTime;
+  let curled = 0;
 
-    const result=handLandmarker.detectForVideo(
-      video,performance.now()
+  for (let i = 0; i < 4; i++) {
+    if (
+      distance(hand[fingers[i]], wrist) <
+      distance(hand[joints[i]], wrist)
+    ) curled++;
+  }
+
+  return curled >= 3;
+}
+
+function createParticles(x, y, radius, time) {
+  for (let i = 0; i < 3; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const r = radius * (0.8 + Math.random() * 1.5);
+
+    particles.push({
+      x: x + Math.cos(angle) * r,
+      y: y + Math.sin(angle) * r,
+      vx: Math.cos(angle) * (1 + Math.random() * 2),
+      vy: Math.sin(angle) * (1 + Math.random() * 2),
+      life: 1,
+      size: 1 + Math.random() * 4
+    });
+  }
+}
+
+function drawRasengan(x, y, size, time, fist) {
+  const radius = size * (fist ? 1.15 : 0.9);
+
+  ctx.save();
+  ctx.globalCompositeOperation = "lighter";
+
+  // Cahaya luar
+  const glow = ctx.createRadialGradient(
+    x, y, 2, x, y, radius * 2.2
+  );
+
+  glow.addColorStop(0, "#ffffff");
+  glow.addColorStop(0.2, "#69dcff");
+  glow.addColorStop(0.5, "#087eff55");
+  glow.addColorStop(1, "#0077ff00");
+
+  ctx.fillStyle = glow;
+  ctx.beginPath();
+  ctx.arc(x, y, radius * 2.2, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Bola chakra
+  const ball = ctx.createRadialGradient(
+    x - radius * 0.25,
+    y - radius * 0.3,
+    2,
+    x, y, radius
+  );
+
+  ball.addColorStop(0, "#ffffff");
+  ball.addColorStop(0.2, "#b9f5ff");
+  ball.addColorStop(0.5, "#36baff");
+  ball.addColorStop(0.85, "#0066ff");
+  ball.addColorStop(1, "#001e88");
+
+  ctx.fillStyle = ball;
+  ctx.beginPath();
+  ctx.arc(x, y, radius, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Pusaran chakra
+  for (let i = 0; i < 5; i++) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(time * (0.0015 + i * 0.00025) + i);
+
+    ctx.strokeStyle = i % 2
+      ? "#ffffff"
+      : "#7deaff";
+
+    ctx.lineWidth = 2 + i % 2;
+    ctx.shadowBlur = 15;
+    ctx.shadowColor = "#00aaff";
+
+    ctx.beginPath();
+    ctx.ellipse(
+      0, 0,
+      radius * (0.45 + i * 0.09),
+      radius * (0.15 + i * 0.025),
+      0, 0, Math.PI * 1.7
     );
+    ctx.stroke();
+    ctx.restore();
+  }
 
-    if(result.landmarks?.length){
-      const lm=result.landmarks[0];
+  // Kilatan cahaya
+  for (let i = 0; i < 8; i++) {
+    const angle = time * 0.003 + i * Math.PI / 4;
+    const r = radius * (1.1 + Math.sin(time * 0.005 + i) * 0.2);
 
-      handVisible=true;
+    ctx.fillStyle = "#c8f6ff";
+    ctx.shadowBlur = 15;
+    ctx.shadowColor = "#00aaff";
 
-      const x=(.5-lm[9].x)*5;
-      const y=(.5-lm[9].y)*4;
+    ctx.beginPath();
+    ctx.arc(
+      x + Math.cos(angle) * r,
+      y + Math.sin(angle) * r,
+      3, 0, Math.PI * 2
+    );
+    ctx.fill();
+  }
 
-      handPosition.set(
-        THREE.MathUtils.clamp(x,-2.5,2.5),
-        THREE.MathUtils.clamp(y,-2,2),
-        0
+  ctx.restore();
+
+  createParticles(x, y, radius, time);
+}
+
+function drawParticles() {
+  ctx.save();
+  ctx.globalCompositeOperation = "lighter";
+
+  particles.forEach(p => {
+    p.x += p.vx;
+    p.y += p.vy;
+    p.life -= 0.018;
+
+    ctx.globalAlpha = Math.max(0, p.life);
+    ctx.fillStyle = "#78dfff";
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = "#008cff";
+
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  ctx.restore();
+  particles = particles.filter(p => p.life > 0);
+}
+
+function loop(time) {
+  if (!running) return;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  if (
+    video.readyState >= 2 &&
+    video.currentTime !== lastVideoTime
+  ) {
+    lastVideoTime = video.currentTime;
+
+    const result = detector.detectForVideo(video, time);
+
+    if (result.landmarks.length > 0) {
+      const hand = result.landmarks[0];
+
+      // Posisi tengah telapak tangan
+      const palm = hand[9];
+      const x = palm.x * canvas.width;
+      const y = palm.y * canvas.height;
+
+      // Ukuran bola mengikuti jarak tangan ke kamera
+      const handSize = distance(hand[5], hand[17]);
+      const size = Math.max(
+        38,
+        Math.min(100, handSize * canvas.width * 1.15)
       );
 
-      effectPosition.lerp(handPosition,.18);
+      const fist = isFist(hand);
 
-      updateGesture(classify(lm));
+      handPosition = { x, y, size, fist };
 
-    }else{
-      handVisible=false;
-      lastCandidate="";
-      stableCount=0;
+      status.textContent = fist
+        ? "CHAKRA POWER: CHARGING!"
+        : "RASENGAN DETECTED!";
+
+    } else {
+      handPosition = null;
+      status.textContent = "SEARCHING FOR HAND...";
     }
   }
 
-  requestAnimationFrame(detectLoop);
+  if (handPosition) {
+    drawRasengan(
+      handPosition.x,
+      handPosition.y,
+      handPosition.size,
+      time,
+      handPosition.fist
+    );
+  }
+
+  drawParticles();
+  requestAnimationFrame(loop);
 }
 
-$("start").addEventListener("click",startCamera);
+document.getElementById("start").onclick = () => {
+  if (running) {
+    running = false;
+    if (stream) {
+      stream.getTracks().forEach(t => t.stop());
+      stream = null;
+    }
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    handPosition = null;
+    particles = [];
+    video.srcObject = null;
+    message.style.display = "block";
+    message.textContent = "KAMERA DIMATIKAN";
+    status.textContent = "SYSTEM STANDBY";
+    document.getElementById("start").textContent = "AKTIFKAN KAMERA";
+  } else {
+    startCamera();
+  }
+};
 
-window.addEventListener("resize",()=>{
-  camera.aspect=innerWidth/innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth,innerHeight);
-});
+document.getElementById("switch").onclick = async () => {
+  facing = facing === "user" ? "environment" : "user";
+  if (running) await startCamera();
+};
 
-init();
 </script>
 </body>
 </html>

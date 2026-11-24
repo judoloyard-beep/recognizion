@@ -3,46 +3,31 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rasengan AR</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>RASENGAN AR 2.0</title>
 
 <style>
 * {
   box-sizing: border-box;
-}
-body {
   margin: 0;
-  background: #050914;
+  padding: 0;
+}
+
+body {
+  background: #020713;
   color: white;
   font-family: Arial, sans-serif;
   overflow: hidden;
 }
-header {
-  position: absolute;
-  top: 18px;
-  width: 100%;
-  text-align: center;
-  z-index: 5;
-  pointer-events: none;
-}
-h1 {
-  margin: 0;
-  color: #76caff;
-  letter-spacing: 5px;
-  text-shadow: 0 0 20px #008cff;
-}
-header p {
-  font-size: 11px;
-  color: #a8dfff;
-  letter-spacing: 3px;
-}
+
 #stage {
   position: relative;
   width: 100vw;
   height: 100dvh;
   overflow: hidden;
-  background: radial-gradient(#102a48, #050914);
+  background: radial-gradient(#102b50, #020713);
 }
+
 video, canvas {
   position: absolute;
   width: 100%;
@@ -50,78 +35,134 @@ video, canvas {
   object-fit: cover;
   transform: scaleX(-1);
 }
+
+video {
+  z-index: 1;
+}
+
 canvas {
   z-index: 2;
+  pointer-events: none;
 }
-#message {
+
+header {
   position: absolute;
-  top: 48%;
+  z-index: 5;
+  top: 22px;
   width: 100%;
   text-align: center;
-  z-index: 3;
-  color: #b8e8ff;
-  font-size: 14px;
+  pointer-events: none;
+}
+
+h1 {
+  color: #9ce7ff;
+  font-size: 27px;
+  letter-spacing: 6px;
+  text-shadow: 0 0 12px #00aaff, 0 0 35px #0077ff;
+}
+
+header p {
+  color: #78caff;
+  font-size: 10px;
+  letter-spacing: 4px;
+  margin-top: 6px;
+}
+
+#status {
+  position: absolute;
+  z-index: 5;
+  top: 100px;
+  width: 100%;
+  text-align: center;
+  font-size: 11px;
+  color: #9deaff;
+  letter-spacing: 2px;
   text-shadow: 0 0 10px #008cff;
   pointer-events: none;
 }
-#controls {
+
+#hint {
   position: absolute;
-  bottom: 28px;
-  left: 0;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  gap: 12px;
   z-index: 5;
-}
-button {
-  border: 1px solid #56baff;
-  border-radius: 30px;
-  background: #092849dd;
-  color: white;
-  padding: 14px 20px;
-  font-weight: bold;
-  box-shadow: 0 0 18px #008cff55;
-}
-button:active {
-  background: #0879c9;
-}
-#status {
-  position: absolute;
-  bottom: 95px;
+  top: 48%;
   width: 100%;
   text-align: center;
-  z-index: 5;
-  color: #8bd8ff;
-  font-size: 12px;
-  letter-spacing: 2px;
+  color: #b7eaff;
+  font-size: 13px;
+  text-shadow: 0 0 12px #008cff;
+  pointer-events: none;
 }
+
+.controls {
+  position: absolute;
+  bottom: 30px;
+  width: 100%;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 12px;
+}
+
+button {
+  background: #082b50ee;
+  border: 1px solid #42baff;
+  color: white;
+  border-radius: 30px;
+  padding: 14px 17px;
+  font-weight: bold;
+  font-size: 11px;
+  letter-spacing: 1px;
+  box-shadow: 0 0 15px #008cff55;
+}
+
+button:active {
+  background: #087bc8;
+}
+
+#power {
+  position: absolute;
+  z-index: 5;
+  bottom: 100px;
+  width: 100%;
+  text-align: center;
+  color: #a7e9ff;
+  font-size: 11px;
+  letter-spacing: 2px;
+  pointer-events: none;
+}
+
 </style>
 </head>
 
 <body>
 <div id="stage">
-  <header>
-    <h1>RASENGAN</h1>
-    <p>CHAKRA DETECTION SYSTEM</p>
-  </header>
 
-  <video id="camera" autoplay playsinline muted></video>
-  <canvas id="fx"></canvas>
+<header>
+  <h1>RASENGAN</h1>
+  <p>CHAKRA TECHNOLOGY 2.0</p>
+</header>
 
-  <div id="message">
-    AKTIFKAN KAMERA DAN TUNJUKKAN TANGAN
-  </div>
+<div id="status">SYSTEM STANDBY</div>
 
-  <div id="status">SYSTEM STANDBY</div>
+<video id="camera" autoplay playsinline muted></video>
+<canvas id="fx"></canvas>
 
-  <div id="controls">
-    <button id="start">AKTIFKAN KAMERA</button>
-    <button id="switch">GANTI KAMERA</button>
-  </div>
+<div id="hint">
+  AKTIFKAN KAMERA UNTUK MEMULAI
+</div>
+
+<div id="power">CHAKRA POWER : 0%</div>
+
+<div class="controls">
+  <button id="start">START CAMERA</button>
+  <button id="switch">SWITCH</button>
+</div>
+
 </div>
 
 <script type="module">
+
 import {
   HandLandmarker,
   FilesetResolver
@@ -129,41 +170,84 @@ import {
 
 const video = document.getElementById("camera");
 const canvas = document.getElementById("fx");
-const ctx = canvas.getContext("2d");
-const message = document.getElementById("message");
-const status = document.getElementById("status");
+const ctx = canvas.getContext("2d", {
+  alpha: true
+});
 
-let detector;
-let stream;
-let facing = "user";
+const status = document.getElementById("status");
+const hint = document.getElementById("hint");
+const powerText = document.getElementById("power");
+const startBtn = document.getElementById("start");
+
+let detector = null;
+let stream = null;
 let running = false;
-let lastVideoTime = -1;
-let handPosition = null;
+let facing = "user";
+
+let target = null;
+let smooth = null;
 let particles = [];
 
-async function setupAI() {
-  status.textContent = "LOADING CHAKRA SYSTEM...";
+let lastDetect = 0;
+let lastVideoTime = -1;
+let lastParticle = 0;
+let previousZ = null;
+let previousSize = null;
+
+let power = 0;
+let push = 0;
+
+const MAX_PARTICLES = 100;
+
+async function initializeAI() {
+
+  status.textContent = "LOADING AI SYSTEM...";
 
   const vision = await FilesetResolver.forVisionTasks(
     "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm"
   );
 
-  detector = await HandLandmarker.createFromOptions(vision, {
+  const options = {
     baseOptions: {
       modelAssetPath:
       "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
       delegate: "GPU"
     },
     runningMode: "VIDEO",
-    numHands: 2
-  });
+    numHands: 1,
+    minHandDetectionConfidence: 0.55,
+    minHandPresenceConfidence: 0.55,
+    minTrackingConfidence: 0.55
+  };
 
-  status.textContent = "CHAKRA SYSTEM READY";
+  try {
+    detector = await HandLandmarker.createFromOptions(
+      vision, options
+    );
+  } catch (e) {
+    options.baseOptions.delegate = "CPU";
+
+    detector = await HandLandmarker.createFromOptions(
+      vision, options
+    );
+  }
+
+  status.textContent = "AI SYSTEM READY";
 }
 
 async function startCamera() {
+
   try {
-    if (!detector) await setupAI();
+
+    status.textContent = "STARTING CAMERA...";
+
+    if (!navigator.mediaDevices?.getUserMedia) {
+      throw new Error("Gunakan HTTPS atau localhost.");
+    }
+
+    if (!detector) {
+      await initializeAI();
+    }
 
     if (stream) {
       stream.getTracks().forEach(t => t.stop());
@@ -173,260 +257,452 @@ async function startCamera() {
       audio: false,
       video: {
         facingMode: facing,
-        width: { ideal: 1280 },
-        height: { ideal: 720 }
+        width: { ideal: 960 },
+        height: { ideal: 540 },
+        frameRate: { ideal: 30, max: 30 }
       }
     });
 
     video.srcObject = stream;
     await video.play();
 
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
+    // Resolusi internal dibatasi agar lebih ringan
+    const scale = Math.min(
+      1,
+      960 / video.videoWidth
+    );
+
+    canvas.width = Math.round(video.videoWidth * scale);
+    canvas.height = Math.round(video.videoHeight * scale);
 
     running = true;
-    message.style.display = "none";
+    target = null;
+    smooth = null;
+    previousZ = null;
+    previousSize = null;
+    particles = [];
+    lastVideoTime = -1;
+
+    hint.style.display = "none";
+    startBtn.textContent = "STOP CAMERA";
     status.textContent = "SCANNING HAND...";
-    document.getElementById("start").textContent = "MATIKAN KAMERA";
 
     requestAnimationFrame(loop);
 
   } catch (err) {
-    status.textContent = "KAMERA GAGAL DIAKTIFKAN";
-    message.style.display = "block";
-    message.textContent = err.message;
+
+    console.error(err);
+
+    status.textContent = "ERROR: " + err.message;
+    hint.style.display = "block";
+    hint.textContent = "GAGAL: " + err.message;
+
   }
 }
 
-function distance(a, b) {
-  return Math.hypot(a.x - b.x, a.y - b.y);
+// Menghitung jarak titik tangan
+function dist(a, b) {
+  return Math.hypot(
+    a.x - b.x,
+    a.y - b.y
+  );
 }
 
+// Deteksi tangan mengepal
 function isFist(hand) {
-  const wrist = hand[0];
-  const fingers = [8, 12, 16, 20];
-  const joints = [6, 10, 14, 18];
 
-  let curled = 0;
+  const tips = [8, 12, 16, 20];
+  const bases = [5, 9, 13, 17];
+
+  let closed = 0;
 
   for (let i = 0; i < 4; i++) {
+
     if (
-      distance(hand[fingers[i]], wrist) <
-      distance(hand[joints[i]], wrist)
-    ) curled++;
+      dist(hand[tips[i]], hand[0]) <
+      dist(hand[bases[i]], hand[0]) * 1.35
+    ) {
+      closed++;
+    }
+
   }
 
-  return curled >= 3;
+  return closed >= 3;
 }
 
-function createParticles(x, y, radius, time) {
+// Tracking posisi telapak
+function detectHand(now) {
+
+  if (
+    video.readyState < 2 ||
+    video.currentTime === lastVideoTime ||
+    now - lastDetect < 33
+  ) return;
+
+  lastVideoTime = video.currentTime;
+  lastDetect = now;
+
+  const result = detector.detectForVideo(video, now);
+
+  if (!result.landmarks.length) {
+    target = null;
+    return;
+  }
+
+  const hand = result.landmarks[0];
+
+  const palm = hand[9];
+  const fist = isFist(hand);
+
+  const handWidth = dist(hand[5], hand[17]);
+
+  const size = Math.max(
+    35,
+    Math.min(110, handWidth * canvas.width * 1.25)
+  );
+
+  // Estimasi gerakan mendekati kamera dari z
+  const z = palm.z;
+
+  if (previousZ !== null) {
+
+    const zChange = previousZ - z;
+
+    if (zChange > 0.004) {
+      push = Math.min(1, push + 0.15);
+    } else {
+      push *= 0.94;
+    }
+
+  }
+
+  previousZ = z;
+
+  target = {
+    x: palm.x * canvas.width,
+    y: palm.y * canvas.height,
+    size,
+    fist
+  };
+
+  // Charging
+  const desiredPower = fist ? 1 : 0.35;
+
+  power += (desiredPower - power) * 0.12;
+
+  status.textContent = fist
+    ? "RASENGAN CHARGING!"
+    : "CHAKRA DETECTED";
+
+  powerText.textContent =
+    "CHAKRA POWER : " +
+    Math.round(power * 100) + "%";
+
+}
+
+// Interpolasi agar gerakan halus
+function smoothTracking() {
+
+  if (!target) {
+    smooth = null;
+    power *= 0.94;
+    return;
+  }
+
+  if (!smooth) {
+    smooth = { ...target };
+    return;
+  }
+
+  const speed = 0.32;
+
+  smooth.x += (target.x - smooth.x) * speed;
+  smooth.y += (target.y - smooth.y) * speed;
+  smooth.size += (target.size - smooth.size) * 0.2;
+
+  smooth.fist = target.fist;
+}
+
+// Membuat partikel energi
+function spawnParticles(x, y, radius, now) {
+
+  if (now - lastParticle < 65) return;
+
+  lastParticle = now;
+
   for (let i = 0; i < 3; i++) {
+
+    if (particles.length >= MAX_PARTICLES) break;
+
     const angle = Math.random() * Math.PI * 2;
-    const r = radius * (0.8 + Math.random() * 1.5);
+    const distance = radius * (0.8 + Math.random());
 
     particles.push({
-      x: x + Math.cos(angle) * r,
-      y: y + Math.sin(angle) * r,
+      x: x + Math.cos(angle) * distance,
+      y: y + Math.sin(angle) * distance,
       vx: Math.cos(angle) * (1 + Math.random() * 2),
       vy: Math.sin(angle) * (1 + Math.random() * 2),
       life: 1,
-      size: 1 + Math.random() * 4
+      size: 1 + Math.random() * 3
     });
-  }
-}
 
-function drawRasengan(x, y, size, time, fist) {
-  const radius = size * (fist ? 1.15 : 0.9);
-
-  ctx.save();
-  ctx.globalCompositeOperation = "lighter";
-
-  // Cahaya luar
-  const glow = ctx.createRadialGradient(
-    x, y, 2, x, y, radius * 2.2
-  );
-
-  glow.addColorStop(0, "#ffffff");
-  glow.addColorStop(0.2, "#69dcff");
-  glow.addColorStop(0.5, "#087eff55");
-  glow.addColorStop(1, "#0077ff00");
-
-  ctx.fillStyle = glow;
-  ctx.beginPath();
-  ctx.arc(x, y, radius * 2.2, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Bola chakra
-  const ball = ctx.createRadialGradient(
-    x - radius * 0.25,
-    y - radius * 0.3,
-    2,
-    x, y, radius
-  );
-
-  ball.addColorStop(0, "#ffffff");
-  ball.addColorStop(0.2, "#b9f5ff");
-  ball.addColorStop(0.5, "#36baff");
-  ball.addColorStop(0.85, "#0066ff");
-  ball.addColorStop(1, "#001e88");
-
-  ctx.fillStyle = ball;
-  ctx.beginPath();
-  ctx.arc(x, y, radius, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Pusaran chakra
-  for (let i = 0; i < 5; i++) {
-    ctx.save();
-    ctx.translate(x, y);
-    ctx.rotate(time * (0.0015 + i * 0.00025) + i);
-
-    ctx.strokeStyle = i % 2
-      ? "#ffffff"
-      : "#7deaff";
-
-    ctx.lineWidth = 2 + i % 2;
-    ctx.shadowBlur = 15;
-    ctx.shadowColor = "#00aaff";
-
-    ctx.beginPath();
-    ctx.ellipse(
-      0, 0,
-      radius * (0.45 + i * 0.09),
-      radius * (0.15 + i * 0.025),
-      0, 0, Math.PI * 1.7
-    );
-    ctx.stroke();
-    ctx.restore();
   }
 
-  // Kilatan cahaya
-  for (let i = 0; i < 8; i++) {
-    const angle = time * 0.003 + i * Math.PI / 4;
-    const r = radius * (1.1 + Math.sin(time * 0.005 + i) * 0.2);
-
-    ctx.fillStyle = "#c8f6ff";
-    ctx.shadowBlur = 15;
-    ctx.shadowColor = "#00aaff";
-
-    ctx.beginPath();
-    ctx.arc(
-      x + Math.cos(angle) * r,
-      y + Math.sin(angle) * r,
-      3, 0, Math.PI * 2
-    );
-    ctx.fill();
-  }
-
-  ctx.restore();
-
-  createParticles(x, y, radius, time);
 }
 
 function drawParticles() {
+
   ctx.save();
   ctx.globalCompositeOperation = "lighter";
 
-  particles.forEach(p => {
+  for (const p of particles) {
+
     p.x += p.vx;
     p.y += p.vy;
-    p.life -= 0.018;
+    p.life -= 0.025;
 
     ctx.globalAlpha = Math.max(0, p.life);
-    ctx.fillStyle = "#78dfff";
-    ctx.shadowBlur = 10;
+    ctx.fillStyle = "#9eeaff";
+    ctx.shadowBlur = 12;
     ctx.shadowColor = "#008cff";
 
     ctx.beginPath();
     ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
     ctx.fill();
-  });
+
+  }
 
   ctx.restore();
+
   particles = particles.filter(p => p.life > 0);
+
+}
+
+// Menggambar energi utama
+function drawRasengan(x, y, radius, time) {
+
+  const charging = smooth.fist ? 1 : 0;
+  const pulse = 1 + Math.sin(time * 0.006) * 0.045;
+
+  radius *= pulse * (1 + push * 0.25 + charging * 0.12);
+
+  ctx.save();
+  ctx.globalCompositeOperation = "lighter";
+
+  // Aura besar
+  const aura = ctx.createRadialGradient(
+    x, y, 2,
+    x, y, radius * 2.5
+  );
+
+  aura.addColorStop(0, "#ffffffaa");
+  aura.addColorStop(0.2, "#35caff77");
+  aura.addColorStop(0.55, "#0077ff33");
+  aura.addColorStop(1, "#0077ff00");
+
+  ctx.fillStyle = aura;
+  ctx.beginPath();
+  ctx.arc(x, y, radius * 2.5, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Lingkaran pusaran luar
+  for (let i = 0; i < 4; i++) {
+
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(time * 0.0015 * (i % 2 ? -1 : 1) + i);
+
+    ctx.strokeStyle = i % 2
+      ? "#ffffffbb"
+      : "#38d8ff";
+
+    ctx.lineWidth = 3;
+    ctx.shadowBlur = 18;
+    ctx.shadowColor = "#00aaff";
+
+    ctx.beginPath();
+    ctx.ellipse(
+      0, 0,
+      radius * (1.1 + i * 0.12),
+      radius * (0.48 + i * 0.06),
+      0, 0, Math.PI * 1.75
+    );
+    ctx.stroke();
+
+    ctx.restore();
+
+  }
+
+  // Bola utama
+  const ball = ctx.createRadialGradient(
+    x - radius * 0.3,
+    y - radius * 0.35,
+    2,
+    x, y, radius
+  );
+
+  ball.addColorStop(0, "#ffffff");
+  ball.addColorStop(0.16, "#d6faff");
+  ball.addColorStop(0.35, "#70ddff");
+  ball.addColorStop(0.65, "#138fff");
+  ball.addColorStop(0.9, "#0050d9");
+  ball.addColorStop(1, "#001a75");
+
+  ctx.fillStyle = ball;
+  ctx.shadowBlur = 30;
+  ctx.shadowColor = "#008cff";
+
+  ctx.beginPath();
+  ctx.arc(x, y, radius, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Pusaran di permukaan
+  for (let i = 0; i < 8; i++) {
+
+    ctx.save();
+
+    ctx.translate(x, y);
+    ctx.rotate(time * 0.0025 * (i % 2 ? -1 : 1) + i);
+
+    ctx.strokeStyle = i % 2
+      ? "#ffffff"
+      : "#8ceaff";
+
+    ctx.lineWidth = 2 + charging * 1.5;
+    ctx.shadowBlur = 15;
+    ctx.shadowColor = "#ffffff";
+
+    ctx.beginPath();
+
+    ctx.arc(
+      0, 0,
+      radius * (0.25 + (i % 4) * 0.13),
+      -0.7,
+      Math.PI * 1.15
+    );
+
+    ctx.stroke();
+
+    ctx.restore();
+
+  }
+
+  // Inti putih bercahaya
+  ctx.fillStyle = "#ffffff";
+  ctx.shadowBlur = 25;
+  ctx.shadowColor = "#ffffff";
+
+  ctx.beginPath();
+  ctx.arc(
+    x - radius * 0.1,
+    y - radius * 0.1,
+    radius * 0.12,
+    0, Math.PI * 2
+  );
+  ctx.fill();
+
+  // Gelombang saat didorong
+  if (push > 0.1) {
+
+    ctx.strokeStyle = "#8beaff";
+    ctx.lineWidth = 3;
+    ctx.globalAlpha = push;
+
+    ctx.beginPath();
+    ctx.arc(
+      x, y,
+      radius * (1.5 + push),
+      0, Math.PI * 2
+    );
+    ctx.stroke();
+
+  }
+
+  ctx.restore();
+
+  spawnParticles(x, y, radius, time);
 }
 
 function loop(time) {
+
   if (!running) return;
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  if (
-    video.readyState >= 2 &&
-    video.currentTime !== lastVideoTime
-  ) {
-    lastVideoTime = video.currentTime;
+  detectHand(time);
+  smoothTracking();
 
-    const result = detector.detectForVideo(video, time);
+  if (smooth) {
 
-    if (result.landmarks.length > 0) {
-      const hand = result.landmarks[0];
-
-      // Posisi tengah telapak tangan
-      const palm = hand[9];
-      const x = palm.x * canvas.width;
-      const y = palm.y * canvas.height;
-
-      // Ukuran bola mengikuti jarak tangan ke kamera
-      const handSize = distance(hand[5], hand[17]);
-      const size = Math.max(
-        38,
-        Math.min(100, handSize * canvas.width * 1.15)
-      );
-
-      const fist = isFist(hand);
-
-      handPosition = { x, y, size, fist };
-
-      status.textContent = fist
-        ? "CHAKRA POWER: CHARGING!"
-        : "RASENGAN DETECTED!";
-
-    } else {
-      handPosition = null;
-      status.textContent = "SEARCHING FOR HAND...";
-    }
-  }
-
-  if (handPosition) {
     drawRasengan(
-      handPosition.x,
-      handPosition.y,
-      handPosition.size,
-      time,
-      handPosition.fist
+      smooth.x,
+      smooth.y,
+      smooth.size,
+      time
     );
+
+  } else {
+
+    status.textContent = "SEARCHING FOR HAND...";
+
   }
 
   drawParticles();
+
   requestAnimationFrame(loop);
+
 }
 
-document.getElementById("start").onclick = () => {
+// Tombol kamera
+startBtn.addEventListener("click", async () => {
+
   if (running) {
+
     running = false;
+
     if (stream) {
       stream.getTracks().forEach(t => t.stop());
       stream = null;
     }
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    handPosition = null;
-    particles = [];
-    video.srcObject = null;
-    message.style.display = "block";
-    message.textContent = "KAMERA DIMATIKAN";
-    status.textContent = "SYSTEM STANDBY";
-    document.getElementById("start").textContent = "AKTIFKAN KAMERA";
-  } else {
-    startCamera();
-  }
-};
 
-document.getElementById("switch").onclick = async () => {
-  facing = facing === "user" ? "environment" : "user";
-  if (running) await startCamera();
-};
+    video.srcObject = null;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    smooth = null;
+    target = null;
+    particles = [];
+
+    hint.style.display = "block";
+    hint.textContent = "KAMERA DIMATIKAN";
+
+    status.textContent = "SYSTEM STANDBY";
+    startBtn.textContent = "START CAMERA";
+
+  } else {
+
+    await startCamera();
+
+  }
+
+});
+
+// Ganti kamera
+document.getElementById("switch").addEventListener(
+  "click",
+  async () => {
+
+    facing = facing === "user"
+      ? "environment"
+      : "user";
+
+    if (running) {
+      await startCamera();
+    }
+
+  }
+);
 
 </script>
 </body>
-</html>
+  </html>
+  
